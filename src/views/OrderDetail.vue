@@ -44,6 +44,13 @@
           </span>
         </div>
         <div class="sendqr-detail-box">
+          <span class="sendqr-detail-box__title">补价记录</span>
+          <span class="sendqr-detail-box__yin">:</span>
+          <span class="sendqr-detail-box__content">
+            <button class="pay" @click.stop="goBootList">点击查看</button>
+          </span>
+        </div>
+        <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">备注</span>
           <span class="sendqr-detail-box__yin">:</span>
           <span class="sendqr-detail-box__content">{{data.remove}}</span>
@@ -238,6 +245,10 @@ export default {
     },
     goBootDetail ({id}) {
       this.$router.push({path: 'bootdeal', query: {id}})
+      return
+    },
+    goBootList () {
+      this.$router.push({path: 'bootlist', query: {serialnumber: this.serialnumber}})
       return
     }
   }

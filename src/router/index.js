@@ -102,5 +102,13 @@ export default new Router({
       intro: '补价处理页面',
       requiresAuth: false
     }
+  }, {
+    path: '/bootlist',
+    name: 'BootList',
+    component: require('@/views/BootList'),
+    meta: {
+      intro: '补价记录',
+      requiresAuth: false
+    }
   }]
 })
