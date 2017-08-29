@@ -4,11 +4,9 @@
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
-        <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="20" placeholder="请填写身份证号/护照号" required></x-input>
+        <x-input v-show="type === 2" type="text" title="证件" v-model="idnumber" :max="50" placeholder="请填写身份证号/护照号" required></x-input>
         <x-input title="电话" type="text" :max="20" v-model="iphone" placeholder="请输入手机号" required></x-input>
-        <div @click="steppickershow = !steppickershow">
-          <x-input disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
-        </div>
+        <x-input  @click.native="steppickershow = !steppickershow" disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号 (限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22">

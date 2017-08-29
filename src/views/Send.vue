@@ -265,6 +265,9 @@ export default {
     }
   },
   async created () {
+    this.$vux.loading.show({
+      text: ' '
+    })
     // 1. 创建时将SET_PAGE创建为send
     this.$store.commit('SET_PAGE', {page: 'send'})
     // 2. 初始化wx jssdk
@@ -365,6 +368,7 @@ export default {
     })
     this.productionTypeOption = productionTypeOption
     this.productionType = sendInfo['productionType']
+    this.$vux.loading.hide()
   },
   computed: {
     ...mapGetters({
@@ -582,6 +586,7 @@ export default {
         const result = await request({
           method: 'post',
           url: sendApi.create,
+          auth: true,
           params: {
             serialnumber: this.serialnumber,
             type: '包裹',

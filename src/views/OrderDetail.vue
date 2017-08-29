@@ -4,7 +4,7 @@
       <div class="sendqr-detail">
         <div class="sendqr-detail-box">
           <div class="sendqr-detail-box__icon">
-            <span class="bgblue">寄</span>
+            <span class="bgblack">寄</span>
           </div>
           <div class="sendqr-detail-box__detail">
             <p>{{data.listMailingaddress[0].linkman + '   ' + data.listMailingaddress[0].iphone}}</p>
@@ -14,18 +14,13 @@
         </div>
         <div class="sendqr-detail-box">
           <div class="sendqr-detail-box__icon">
-            <span class="bgyellow">收</span>
+            <span class="bgred">收</span>
           </div>
           <div class="sendqr-detail-box__detail">
             <p>{{data.listConsigneeaddress[0].recipients + '   ' + data.listConsigneeaddress[0].iphone}}</p>
             <p>{{pickupAddress}}</p>
             <p>{{data.listConsigneeaddress[0].detaliedinformation}}</p>
           </div>
-        </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">备注</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.remove}}</span>
         </div>
         <div class="sendqr-detail-box">
           <span class="sendqr-detail-box__title">订单状态</span>
@@ -48,13 +43,11 @@
             <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
           </span>
         </div>
-<!--         <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">补价记录</span>
+        <div class="sendqr-detail-box">
+          <span class="sendqr-detail-box__title">备注</span>
           <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">
-            <router-link to="/boot/history">点击查看</router-link>
-          </span>
-        </div> -->
+          <span class="sendqr-detail-box__content">{{data.remove}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -254,11 +247,11 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
-.bgblue {
-  background-color: @light-blue;
+.bgblack {
+  background-color: black;
 }
-.bgyellow {
-  background-color: @dark-yellow;
+.bgred {
+  background-color: @red;
 }
 .darkyellow {
   color: @dark-yellow;

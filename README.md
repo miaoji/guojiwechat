@@ -24,31 +24,3 @@ vux
 https://github.com/airyland/vux
 
 https://vux.li/#/zh-CN/README
-
-
-accesstoken api
-
-baseUrl: http://1a699l6063.imwork.net
-
-1. /WeChatService/GetAccessToken
-
-method: post
-
-code  随机数
-
-param  md5加密后的结果
-
-param  md5（code+"quandi"）加密后的结果
-
-2. /WeChatService/GetRanCode
-
-post
-
-获取短信验证码接口
-
-openid
-
-mobile
-=======
-# guojikuaidi
-guojikuaidi wechat
