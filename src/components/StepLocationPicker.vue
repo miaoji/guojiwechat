@@ -10,7 +10,7 @@
       <div class="steplocationpicker-edit--right" @click="step<4&&step++" v-show="step!==4">
         <span>下一步</span>
       </div>
-      <div class="steplocationpicker-edit--right" @click="confirm" v-show="step===4">
+      <div class="steplocationpicker-edit--right" @click="confirm">
         <span>确定</span>
       </div>
     </div>
