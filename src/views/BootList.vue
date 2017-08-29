@@ -67,10 +67,10 @@ export default {
       for (let i = 0; i < this.data.length; i++) {
         this.data[i].index = i
       }
-    } else if (res.obj.length <= 0) {
+    } else if (res.code === 200 && res.obj.length <= 0) {
       this.error = '暂无改价记录'
       return
-    } else if (res.code === 200) {
+    } else if (res.code !== 200) {
       this.error = '网络错误'
     }
   },
