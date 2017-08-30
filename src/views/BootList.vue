@@ -94,6 +94,7 @@ export default {
   color: @red;
 }
 .bootlist-main{
+  margin-top: 1.17647059em;
   text-align: left;
   padding: 2rem 0;
   background-color: #fff;
@@ -103,11 +104,11 @@ export default {
     .box-title{
       font-size: 1.4rem;
       font-weight: bold;
-      padding: 0.8rem 2rem;
+      padding: 0.3rem 2rem;
     }
     .box-item{
       font-size: 1.4rem;
-      padding: 0.5rem 2rem;
+      padding: 0.1rem 2rem;
       .list-box-left{
         display: inline-block;
         width:7rem;
@@ -123,6 +124,7 @@ export default {
   }
 }
 .error{
+  margin-top: 1.17647059em;
   padding: 8rem 2rem;
   text-align: center;
   font-size: 1.6rem;
