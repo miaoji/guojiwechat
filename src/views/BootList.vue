@@ -1,11 +1,11 @@
 <template>
   <div class="bootlist-main">
+    <div class="header">改价纪录明细</div>
     <div v-if="error" class="error">
       <div class="error-item">{{error}}</div>
       <button class="pay" @click.stop="goBack">点击返回</button>
     </div>
     <div v-else>
-    <div class="header">改价纪录明细</div>
       <div v-for="item in data"class="list-main" >
         <div class="box-title">第 {{item.index+1}} 条记录</div>
           <div class="box-item">
@@ -53,6 +53,7 @@ export default {
   },
   async created () {
     let query = this.$route.query
+    console.log('query', this)
     let serialnumber = query.serialnumber || 1
     this.serialnumber = serialnumber
     const res = await request({
@@ -91,23 +92,25 @@ export default {
 .header{
   padding: 0.8rem 2rem;
   font-size: 1.6rem;
-  color: @red;
+  color: @light-yellow;
 }
 .bootlist-main{
+  margin-top: 1.17647059em;
   text-align: left;
   padding: 2rem 0;
   background-color: #fff;
   .list-main{
+    color: @text-color;
     padding: 0.5rem 0;
     border-bottom: 1px solid #dedede;
     .box-title{
       font-size: 1.4rem;
       font-weight: bold;
-      padding: 0.8rem 2rem;
+      padding: 0.5rem 3rem;
     }
     .box-item{
       font-size: 1.4rem;
-      padding: 0.5rem 2rem;
+      padding: 0.1rem 2rem;
       .list-box-left{
         display: inline-block;
         width:7rem;
@@ -123,6 +126,7 @@ export default {
   }
 }
 .error{
+  margin-top: 1.17647059em;
   padding: 8rem 2rem;
   text-align: center;
   font-size: 1.6rem;
