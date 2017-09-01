@@ -106,15 +106,18 @@ export default {
     .box-title{
       font-size: 1.4rem;
       font-weight: bold;
-      padding: 0.5rem 3rem;
+      padding: 0.5rem 2rem;
     }
     .box-item{
       font-size: 1.4rem;
       padding: 0.1rem 2rem;
       .list-box-left{
         display: inline-block;
-        width:7rem;
-        text-align: center;
+        width:5.2rem;
+        text-align: left;
+      }
+      .list-box-ico {
+        padding: 0 .1rem;
       }
       .list-box-right{
         color: @red;

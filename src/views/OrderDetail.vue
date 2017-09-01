@@ -1,77 +1,102 @@
 <template>
-  <div class="sendqr">
+  <div class="orderdetail">
     <div class="container">
-      <div class="sendqr-detail">
-        <div class="sendqr-detail-box">
-          <div class="sendqr-detail-box__icon">
+      <!-- 寄件收件地址 -->
+      <div class="orderdetail-detail">
+        <div class="orderdetail-detail-box">
+          <div class="orderdetail-detail-box__icon">
             <span class="bgblack">寄</span>
           </div>
-          <div class="sendqr-detail-box__detail">
+          <div class="orderdetail-detail-box__detail">
             <p>{{data.listMailingaddress[0].linkman + '   ' + data.listMailingaddress[0].iphone}}</p>
             <p>{{sendAddress}}</p>
             <p>{{ data.listMailingaddress[0].detailedinformation}}</p>
           </div>
         </div>
-        <div class="sendqr-detail-box">
-          <div class="sendqr-detail-box__icon">
+        <div class="orderdetail-detail-box">
+          <div class="orderdetail-detail-box__icon">
             <span class="bgred">收</span>
           </div>
-          <div class="sendqr-detail-box__detail">
+          <div class="orderdetail-detail-box__detail">
             <p>{{data.listConsigneeaddress[0].recipients + '   ' + data.listConsigneeaddress[0].iphone}}</p>
             <p>{{pickupAddress}}</p>
             <p>{{data.listConsigneeaddress[0].detaliedinformation}}</p>
           </div>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">订单状态</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">
+      </div>
+      <!-- 订单状态等 -->
+      <div class="orderdetail-detail">
+        <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">订单状态</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">
             {{data.starte | orderstatus}}
             <button class="pay" @click.stop="wxpay" v-show="data.starte === 1">立即付款</button>
           </span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">预付金额</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.totalFee/100}}元</span>
+        <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">预付金额</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">{{data.totalFee/100}}元</span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">待补价</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">
-            {{bootStatus['val'] === 0 ? '无' : '有'}}
-            <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
+        <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">待补价</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">
+            <load-more v-show="!getBootStatusDone" :show-loading="!getBootStatusDone"></load-more>
+            <div v-show="getBootStatusDone">
+              {{bootStatus['val'] === 0 ? '无' : '有'}}
+              <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
+            </div>
           </span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">补价记录</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">
+        <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">补价记录</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">
             <button class="pay" @click.stop="goBootList">点击查看</button>
           </span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">备注</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{data.remove}}</span>
+        <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">备注</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">{{data.remove}}</span>
+        </div>
+      </div>
+      <!-- 国内/中通路由信息 -->
+      <div class="orderdetail-detail">
+        <div class="logisticsresult">
+          <p class="logisticsresult-title">物流信息:</p>
+          <load-more v-show="!getRouteDone" :show-loading="!getRouteDone"></load-more>
+          <h2 v-show="!route.status">{{route.msg}}</h2>
+          <div v-for="part, index in traces" class="logisticsresult-content" :class="{isfirstPart: index === 0}">
+            <div class="line logisticsresult-content--part">
+              <div class="line-div">
+              </div>
+            </div>
+            <div class="logisticsresult-content--part">       
+              <p>{{'[' + part.OptCity + ']'}}{{part.OptSiteName}}&nbsp;{{part.OptReason}}&nbsp;
+                 <span v-show="part.OptMan">{{'发件人:' + part.OptMan}}</span>{{'网点客服电话:' + part.OptManPhone}}
+              </p>
+              <p>{{part.OptDate}}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { LoadMore } from 'vux'
 import { mapActions } from 'vuex'
-import axios from 'axios'
 import { order as orderApi, wx as wxApi } from '@/api'
-
-let instance = axios.create({
-  timeout: 5000
-})
-
-const localStorage = window.localStorage
+import request from '@/utils/request'
 
 export default {
   name: 'orderdetail',
+  components: {
+    LoadMore
+  },
   data () {
     return {
       data: {},
@@ -83,19 +108,24 @@ export default {
         val: 0,
         id: 0
       },
-      payloading: false
+      payloading: false,
+      getBootStatusDone: false,
+      getRouteDone: false,
+      route: {},
+      traces: {}
     }
   },
   async created () {
+    this.$vux.loading.show({text: ' '})
     // 初始化wxssdk
-    const wxconfig = await instance({
+    const wxconfig = await request({
       method: 'post',
       url: wxApi.jssdk,
       params: {
         url: 'http://guoji.didalive.net/wechat/'
       }
     })
-    const jssdk = JSON.parse(wxconfig.data.obj)
+    const jssdk = JSON.parse(wxconfig.obj)
     window.wx.config({
       debug: false,
       appId: 'wxddd3ecf13e8fca82',
@@ -114,6 +144,7 @@ export default {
     let serialnumber = query.serialnumber || 1
     this.serialnumber = serialnumber
     await this.getOrderDetail(serialnumber)
+    this.$vux.loading.hide()
     const sendgeography = this.data['listMailingaddress'][0]
     const sendAddress = await this.getGeography({countryid: sendgeography.nationid, provinceid: sendgeography.provinnce, cityid: sendgeography.city, countyid: sendgeography.county})
     this.sendAddress = sendAddress.data
@@ -140,6 +171,15 @@ export default {
       }
       this.bootStatus = bootStatus
     }
+    this.getBootStatusDone = true
+    // 根据中通单号获取路由信息
+    const ZTONO = this.data.ZTONO
+    if (!ZTONO) {
+      this.getRouteDone = true
+      this.route['msg'] = '暂未接入物流'
+    } else {
+      this.getZTORoute(ZTONO)
+    }
   },
   mounted () {
     window.document.title = '寄件明细'
@@ -151,29 +191,22 @@ export default {
     ]),
     async getOrderDetail (serialnumber = 1) {
       try {
-        const orderdetail = await instance({
+        const orderdetail = await request({
           method: 'post',
+          auth: true,
           url: orderApi.detailbyserialnumber,
           params: {
             serialnumber
-          },
-          headers: {'token': localStorage.getItem('mj_token')}
+          }
         })
-        if (orderdetail.status !== 200) {
+        if (orderdetail.code !== 200) {
           return this.$vux.toast.show({
-            text: '获取寄件详情失败',
+            text: orderdetail.mess,
             type: 'warn',
             width: '18rem'
           })
         }
-        if (orderdetail.data.code !== 200) {
-          return this.$vux.toast.show({
-            text: orderdetail.data.mess,
-            type: 'warn',
-            width: '18rem'
-          })
-        }
-        let data = orderdetail.data.obj
+        let data = orderdetail.obj
         if (data.length > 0) {
           data.sort(function (a, b) {
             return a.id < b.id
@@ -193,7 +226,7 @@ export default {
     async wxpay () {
       if (this.payloading) return
       this.payloading = true
-      const wxpay = await instance({
+      const wxpay = await request({
         method: 'post',
         url: wxApi.wxpay,
         params: {
@@ -204,7 +237,7 @@ export default {
           payType: 0
         }
       })
-      const wxpayCon = wxpay.data
+      const wxpayCon = wxpay
       const _this = this
       const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
       window.wx.ready(function () {
@@ -216,7 +249,7 @@ export default {
           'signType': 'MD5',
           'paySign': wxpayCon.paySign,
           success: function (res) {
-            instance({
+            request({
               method: 'post',
               url: wxApi.update,
               params: {
@@ -250,7 +283,42 @@ export default {
     goBootList () {
       this.$router.push({path: 'bootlist', query: {serialnumber: this.serialnumber}})
       return
+    },
+    async getZTORoute (logisticsId) {
+      try {
+        const orderdetail = await request({
+          method: 'post',
+          url: orderApi.ztoinfo,
+          auth: true,
+          params: {
+            logisticsId
+          }
+        })
+        this.getRouteDone = true
+        if (orderdetail.code !== 200) {
+          return this.$vux.toast.show({
+            text: orderdetail.mess,
+            type: 'warn',
+            width: '18rem'
+          })
+        }
+        let data = JSON.parse(orderdetail.obj)
+        console.log('data', data)
+        this.route['status'] = data.status
+        this.route['msg'] = data.msg
+        this.traces = data.data.traces.reverse()
+      } catch (e) {
+        console.error(e)
+        return this.$vux.toast.show({
+          text: e.message,
+          type: 'warn',
+          width: '18rem'
+        })
+      }
     }
+  },
+  beforeDestroy () {
+    this.$vux.loading.hide()
   }
 }
 </script>
@@ -258,6 +326,20 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
+@grey: #efeff4;
+
+.isfirstPart {
+  color: @red;
+  .line {
+    &:before {
+      background: @red!important;
+    }
+    &-div {
+      background: @red!important;
+    }
+  }
+}
+
 .bgblack {
   background-color: black;
 }
@@ -271,7 +353,8 @@ export default {
 .lightyellow {
   color: @red!important;
 }
-.sendqr {
+
+.orderdetail {
   .container {
   }
   &-img {
@@ -349,15 +432,15 @@ export default {
         }
       }
       &__title {
-        font-size: 1.6rem;
-        width: 7rem;
+        font-size: 1.4rem;
+        width: 5.7rem;
         text-align: left;
       }
       &__yin {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
       }
       &__content {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
         color: @red;
         margin-left: 1rem;
         white-space: nowrap;
@@ -377,6 +460,69 @@ export default {
           border-radius: 3px;
           color: @red;
         }
+      }
+    }
+  }
+}
+
+.logisticsresult {
+  background: white;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  &-title {
+    padding-left: 2rem;
+    font-size: 1.4rem;
+    text-align: left;
+  }
+  &-content {
+    display: flex;
+    padding: 1rem;
+    padding-bottom: 0;
+    &:first-child {
+      p {
+        color: @dark-yellow;
+      }
+    }
+    .date-intro {
+      max-width: 8rem;
+    }
+    &--part {
+      text-align: justify;
+      padding: 0 1rem;
+      // flex: 1;
+      p {
+        font-size: 1.4rem;
+      }
+      p.minute {
+        text-align: center;
+        font-size: 1.4rem;
+        max-height: 1.4rem;
+        // overflow: hidden;
+        white-space: nowrap;
+      }
+      p.date {
+        text-align: center;
+        font-size: 1.3rem;
+        max-height: 1.3rem;
+        // overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+    div.line {
+      width: 1rem;
+      &:before {
+        content: ' ';
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #999;
+        border-radius: 50%;
+      }
+      &-div {
+        height: 6rem;
+        width: 2px;
+        margin-left: 38%;
+        background: #999;
       }
     }
   }

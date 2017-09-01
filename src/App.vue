@@ -138,4 +138,12 @@ select,option,textarea {
   }
 }
 
+.orderdetail {
+  .orderdetail-detail-box__content {
+    .weui-loadmore {
+      margin: 0 auto;
+    }
+  }
+}
+
 </style>

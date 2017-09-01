@@ -101,7 +101,8 @@ export const order = {
   update: url + 'wx/OrderInfo/UpdateOrderInfostarte',
   updatenumber: url + 'wx/OrderInfo/Updateserialnumberstarte',
   detail: url + 'wx/OrderInfo/ShowOrderInfoid',
-  detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber'
+  detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber',
+  ztoinfo: url + 'wx/order/getOrderInfo'
 }
 
 // 查询补价
