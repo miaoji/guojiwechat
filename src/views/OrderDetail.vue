@@ -116,69 +116,74 @@ export default {
     }
   },
   async created () {
-    this.$vux.loading.show({text: ' '})
-    // 初始化wxssdk
-    const wxconfig = await request({
-      method: 'post',
-      url: wxApi.jssdk,
-      params: {
-        url: 'http://guoji.didalive.net/wechat/'
-      }
-    })
-    const jssdk = JSON.parse(wxconfig.obj)
-    window.wx.config({
-      debug: false,
-      appId: 'wxddd3ecf13e8fca82',
-      timestamp: jssdk.timestamp,
-      nonceStr: jssdk.nonceStr,
-      signature: jssdk.signature,
-      jsApiList: [
-        'chooseImage',
-        'chooseWXPay'
-      ]
-    })
-    window.wx.error(function (res) {
-      console.log('wx error res', res)
-    })
-    let query = this.$route.query
-    let serialnumber = query.serialnumber || 1
-    this.serialnumber = serialnumber
-    await this.getOrderDetail(serialnumber)
-    this.$vux.loading.hide()
-    const sendgeography = this.data['listMailingaddress'][0]
-    const sendAddress = await this.getGeography({countryid: sendgeography.nationid, provinceid: sendgeography.provinnce, cityid: sendgeography.city, countyid: sendgeography.county})
-    this.sendAddress = sendAddress.data
-    const pickupgeography = this.data['listConsigneeaddress'][0]
-    const pickupAddress = await this.getGeography({countryid: pickupgeography.nation, provinceid: pickupgeography.provinnce, cityid: pickupgeography.city, countyid: pickupgeography.county})
-    this.pickupAddress = pickupAddress.data
-    // 获取订单补价信息, 并从中筛选出最新的补价，判断是否有为 1 或 2 状态的boot，并保存他的id
-    const boot = await this.getBoot({ serialnumber })
-    if (boot.code === 200) {
-      const bootData = boot.obj
-      let bootStatus = {
-        val: 0, // 0表示不需要补价， 1相反
-        id: 0
-      }
-      for (let item in bootData) {
-        let status = bootData[item].status
-        if (status !== 2) {
-          bootStatus = {
-            val: 1,
-            id: bootData[item].id
-          }
-          break
+    try {
+      this.$vux.loading.show({text: ' '})
+      // 初始化wxssdk
+      const wxconfig = await request({
+        method: 'post',
+        url: wxApi.jssdk,
+        params: {
+          url: 'http://guoji.didalive.net/wechat/'
         }
+      })
+      const jssdk = JSON.parse(wxconfig.obj)
+      window.wx.config({
+        debug: false,
+        appId: 'wxddd3ecf13e8fca82',
+        timestamp: jssdk.timestamp,
+        nonceStr: jssdk.nonceStr,
+        signature: jssdk.signature,
+        jsApiList: [
+          'chooseImage',
+          'chooseWXPay'
+        ]
+      })
+      window.wx.error(function (res) {
+        console.log('wx error res', res)
+      })
+      let query = this.$route.query
+      let serialnumber = query.serialnumber || 1
+      this.serialnumber = serialnumber
+      await this.getOrderDetail(serialnumber)
+      this.$vux.loading.hide()
+      const sendgeography = this.data['listMailingaddress'][0]
+      const sendAddress = await this.getGeography({countryid: sendgeography.nationid, provinceid: sendgeography.provinnce, cityid: sendgeography.city, countyid: sendgeography.county})
+      this.sendAddress = sendAddress.data
+      const pickupgeography = this.data['listConsigneeaddress'][0]
+      const pickupAddress = await this.getGeography({countryid: pickupgeography.nation, provinceid: pickupgeography.provinnce, cityid: pickupgeography.city, countyid: pickupgeography.county})
+      this.pickupAddress = pickupAddress.data
+      // 获取订单补价信息, 并从中筛选出最新的补价，判断是否有为 1 或 2 状态的boot，并保存他的id
+      const boot = await this.getBoot({ serialnumber })
+      if (boot.code === 200) {
+        const bootData = boot.obj
+        let bootStatus = {
+          val: 0, // 0表示不需要补价， 1相反
+          id: 0
+        }
+        for (let item in bootData) {
+          let status = bootData[item].status
+          if (status !== 2) {
+            bootStatus = {
+              val: 1,
+              id: bootData[item].id
+            }
+            break
+          }
+        }
+        this.bootStatus = bootStatus
       }
-      this.bootStatus = bootStatus
-    }
-    this.getBootStatusDone = true
-    // 根据中通单号获取路由信息
-    const ZTONO = this.data.ZTONO
-    if (!ZTONO) {
-      this.getRouteDone = true
-      this.route['msg'] = '暂未接入物流'
-    } else {
-      this.getZTORoute(ZTONO)
+      this.getBootStatusDone = true
+      // 根据中通单号获取路由信息
+      const ZTONO = this.data.ZTONO
+      if (!ZTONO) {
+        this.getRouteDone = true
+        this.route['msg'] = '暂未接入物流'
+      } else {
+        this.getZTORoute(ZTONO)
+      }
+    } catch (err) {
+      console.error(err)
+      this.$vux.loading.hide()
     }
   },
   mounted () {

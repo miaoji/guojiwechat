@@ -11,14 +11,33 @@ import { Loading } from 'vux'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { storage } from '@/utils'
 
+const NODE_ENV = process.env.NODE_ENV
 // 微信公众号appid等配置
-let appid = config.dev.appid
-let secret = config.dev.appsecret
-let redirectUri = 'http://guoji.didalive.net/redirect/'
-if (process.env.NODE_ENV !== 'development') {
-  appid = config.pro.appid
-  secret = config.pro.appsecret
-  redirectUri = 'http://guoji.didalive.net/redirect/'
+let appid
+let secret
+let redirectUri
+
+switch (NODE_ENV) {
+  case 'development':
+    appid = config.dev.appid
+    secret = config.dev.appsecret
+    redirectUri = config.dev.redirectUri
+    break
+  case 'production':
+    appid = config.pro.appid
+    secret = config.pro.appsecret
+    redirectUri = config.pro.redirectUri
+    break
+  case 'test':
+    appid = config.test.appid
+    secret = config.test.appsecret
+    redirectUri = config.test.redirectUri
+    break
+  default:
+    appid = config.pro.appid
+    secret = config.pro.appsecret
+    redirectUri = config.pro.redirectUri
+    break
 }
 
 export default {

@@ -8,7 +8,6 @@
           </cell>
         </group>
       </div>
-      
       <div class="send-container-address flex" style="border-bottom: 1px solid #dedede;">
         <div class="send-container-address__intro">
           <span class="bgblue">寄</span>
@@ -513,12 +512,6 @@ export default {
               console.error(err)
               _this.showToast({text: '提交失败', type: 'warn'})
             })
-          },
-          fail: function (res) {
-          },
-          cancle: function () {
-          },
-          complete: function () {
           }
         })
       })
@@ -880,6 +873,7 @@ export default {
     margin-bottom: 8px;
   }
 }
+
 .package-dialog {
   .package-close {
     position: absolute;
@@ -929,7 +923,6 @@ export default {
 .bgblue {
   background-color: black;
 }
-
 .bgyellow {
   background-color: @dark-yellow;
 }

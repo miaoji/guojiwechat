@@ -1,10 +1,11 @@
 import request from './request'
+import { wx as wxApi } from '@/api'
 
 /**
  * [初始化wx jssdk]
  * @return {[type]} [description]
  */
-export const init = function () {
+export const init = async function () {
   const wxconfig = await request({
     method: 'post',
     url: wxApi.jssdk,

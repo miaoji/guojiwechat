@@ -72,13 +72,6 @@ export default new Router({
     name: 'NoUser',
     component: require('@/views/NoUser')
   }, {
-    path: '/express/route',
-    name: 'ExpressRoute',
-    component: require('@/views/ExpressRoute'),
-    meta: {
-      intro: '快递路由信息'
-    }
-  }, {
     path: '/order/list',
     name: 'OrderList',
     component: require('@/views/OrderList'),
