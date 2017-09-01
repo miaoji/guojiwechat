@@ -84,7 +84,7 @@ export default {
       this.steppickershow = val
     },
     confirmStep (val) {
-      this.location = val.show
+      this.location = val.show.replace(/undefined/g, '')
       this.locationid = val.val
     },
     change (value) {
@@ -126,6 +126,8 @@ export default {
       this.$vux.toast.show(res)
       this.$router.go(-1)
     }
+  },
+  beforeDestroy () {
   }
 }
 </script>

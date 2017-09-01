@@ -656,7 +656,6 @@ export default {
     },
     volumeConfirm () {
       if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
-        this.weight = null
         this.$vux.toast.show({
           text: '重量不能大于30kg不能为0',
           width: '18rem',
@@ -672,6 +671,7 @@ export default {
         })
         return
       }
+      this.weight = Number(this.weight)
       this.dialogshow = false
     },
     /**
@@ -762,22 +762,20 @@ export default {
       if (!val) {
         return
       }
-      if (val > 30) {
+      if (Number(val) > 30) {
         _this.$vux.toast.show({
           text: '重量不能大于30kg',
           width: '18rem',
           type: 'warn'
         })
-        _this.weight = null
         return
       }
-      if (val <= 0) {
+      if (Number(val) <= 0) {
         _this.$vux.toast.show({
           text: '重量不能小于等于0kg',
           width: '18rem',
           type: 'warn'
         })
-        _this.weight = null
         return
       }
       this.getPrice()
