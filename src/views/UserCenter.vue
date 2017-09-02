@@ -17,7 +17,7 @@
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service flex">
           <p>客服热线:&nbsp;&nbsp;</p>
-          <p><a href="tel:4008201563">400-820-1563</a></p>
+          <p><a href="tel:021-60314051">021-60314051</a></p>
         </div>
         <div @click="dialogshow = false">
           <span class="vux-close"></span>

@@ -8,9 +8,9 @@
             <span class="bgblack">寄</span>
           </div>
           <div class="orderdetail-detail-box__detail">
-            <p>{{data.listMailingaddress[0].linkman + '   ' + data.listMailingaddress[0].iphone}}</p>
+            <p>{{data.listMailingaddress ? data.listMailingaddress[0].linkman : ''}}&nbsp;{{data.listMailingaddress ? data.listMailingaddress[0].iphone : ''}}</p>
             <p>{{sendAddress}}</p>
-            <p>{{ data.listMailingaddress[0].detailedinformation}}</p>
+            <p>{{data.listMailingaddress ? data.listMailingaddress[0].detailedinformation : ''}}</p>
           </div>
         </div>
         <div class="orderdetail-detail-box">
@@ -18,9 +18,9 @@
             <span class="bgred">收</span>
           </div>
           <div class="orderdetail-detail-box__detail">
-            <p>{{data.listConsigneeaddress[0].recipients + '   ' + data.listConsigneeaddress[0].iphone}}</p>
+            <p>{{data.listConsigneeaddress ? data.listConsigneeaddress[0].recipients : ''}}&nbsp;{{data.listConsigneeaddress ? data.listConsigneeaddress[0].iphone : ''}}</p>
             <p>{{pickupAddress}}</p>
-            <p>{{data.listConsigneeaddress[0].detaliedinformation}}</p>
+            <p>{{data.listConsigneeaddress ? data.listConsigneeaddress[0].detaliedinformation : ''}}</p>
           </div>
         </div>
       </div>
@@ -63,20 +63,35 @@
           <span class="orderdetail-detail-box__content">{{data.remove}}</span>
         </div>
       </div>
-      <!-- 国内/中通路由信息 -->
+      <!-- 路由信息 -->
       <div class="orderdetail-detail">
         <div class="logisticsresult">
           <p class="logisticsresult-title">物流信息:</p>
           <load-more v-show="!getRouteDone" :show-loading="!getRouteDone"></load-more>
           <h2 v-show="!route.status">{{route.msg}}</h2>
-          <div v-for="part, index in traces" class="logisticsresult-content" :class="{isfirstPart: index === 0}">
+          <!-- 国际路由信息 -->
+          <div v-for="part, index in interTraces" class="logisticsresult-content" :class="{isfirstPart: index === 0}">
             <div class="line logisticsresult-content--part">
               <div class="line-div">
               </div>
             </div>
-            <div class="logisticsresult-content--part">       
-              <p>{{'[' + part.OptCity + ']'}}{{part.OptSiteName}}&nbsp;{{part.OptReason}}&nbsp;
-                 <span v-show="part.OptMan">{{'发件人:' + part.OptMan}}</span>{{'网点客服电话:' + part.OptManPhone}}
+            <div class="logisticsresult-content--part">
+              <p>{{part.context}}
+              </p>
+              <p>{{part.time}}</p>
+            </div>
+          </div>
+          <!-- 国内/中通路由信息 -->
+          <div v-for="part, index in traces" class="logisticsresult-content">
+            <div class="line logisticsresult-content--part">
+              <div class="line-div">
+              </div>
+            </div>
+            <div class="logisticsresult-content--part">
+              <p v-show="Number(part.Status) === 720">
+                {{'[' + part.OptCity + ']'}}快递已经抵达上海仓，正发往机场
+              </p>
+              <p  v-show="Number(part.Status) === 10">{{'[' + part.OptCity + ']'}}{{part.OptSiteName}}&nbsp;{{part.OptReason}}&nbsp;
               </p>
               <p>{{part.OptDate}}</p>
             </div>
@@ -89,8 +104,10 @@
 <script>
 import { LoadMore } from 'vux'
 import { mapActions } from 'vuex'
-import { order as orderApi, wx as wxApi } from '@/api'
+import { order as orderApi } from '@/api'
+import { storage } from '@/utils'
 import request from '@/utils/request'
+import * as wxUtil from '@/utils/wx'
 
 export default {
   name: 'orderdetail',
@@ -112,35 +129,16 @@ export default {
       getBootStatusDone: false,
       getRouteDone: false,
       route: {},
-      traces: {}
+      traces: {},
+      interTracesRes: {},
+      interTraces: []
     }
   },
   async created () {
     try {
       this.$vux.loading.show({text: ' '})
       // 初始化wxssdk
-      const wxconfig = await request({
-        method: 'post',
-        url: wxApi.jssdk,
-        params: {
-          url: 'http://guoji.didalive.net/wechat/'
-        }
-      })
-      const jssdk = JSON.parse(wxconfig.obj)
-      window.wx.config({
-        debug: false,
-        appId: 'wxddd3ecf13e8fca82',
-        timestamp: jssdk.timestamp,
-        nonceStr: jssdk.nonceStr,
-        signature: jssdk.signature,
-        jsApiList: [
-          'chooseImage',
-          'chooseWXPay'
-        ]
-      })
-      window.wx.error(function (res) {
-        console.log('wx error res', res)
-      })
+      await wxUtil.init()
       let query = this.$route.query
       let serialnumber = query.serialnumber || 1
       this.serialnumber = serialnumber
@@ -180,6 +178,16 @@ export default {
         this.route['msg'] = '暂未接入物流'
       } else {
         this.getZTORoute(ZTONO)
+      }
+      // 根据国际单号获取路由信息
+      const FPXNO = this.data.FPXNO
+      if (!FPXNO) {
+        console.log('暂未到国外')
+      } else {
+        this.getInterRoute({
+          company: this.data.national_express_com,
+          num: FPXNO
+        })
       }
     } catch (err) {
       console.error(err)
@@ -231,55 +239,25 @@ export default {
     async wxpay () {
       if (this.payloading) return
       this.payloading = true
-      const wxpay = await request({
-        method: 'post',
-        url: wxApi.wxpay,
-        params: {
-          openid: localStorage.getItem('mj_openid'),
-          money: (this.data.totalFee),
-          serialnumber: this.serialnumber,
-          body: '国际快递包裹',
-          payType: 0
-        }
-      })
-      const wxpayCon = wxpay
-      const _this = this
-      const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
-      window.wx.ready(function () {
-        console.log('wx jssdk 初始化成功')
-        window.wx.chooseWXPay({
-          'timestamp': wxpayCon.timeStamp,
-          'nonceStr': wxpayCon.nonceStr,
-          'package': wxpayCon.package,
-          'signType': 'MD5',
-          'paySign': wxpayCon.paySign,
-          success: function (res) {
-            request({
-              method: 'post',
-              url: wxApi.update,
-              params: {
-                serialnumber: _this.serialnumber,
-                prepayId,
-                isPay: 1,
-                payType: 0
-              }
-            })
-            .then(orderres => {
-              _this.showToast({text: '支付成功'})
-              _this.data.starte = 2
-            }).catch(err => {
-              console.error(err)
-            })
-          },
-          fail: function (res) {
-          },
-          cancle: function () {
-          },
-          complete: function () {
-            this.payloading = false
-          }
-        })
-      })
+      const serialnumber = this.serialnumber
+      let intParams = {
+        openid: storage({key: 'openid'}),
+        money: (this.data.totalFee),
+        serialnumber,
+        body: '国际快递包裹',
+        payType: 0
+      }
+      let successParams = {
+        serialnumber,
+        isPay: 1,
+        payType: 0
+      }
+      const wxPayRes = await wxUtil.pay({intParams, successParams})
+      this.showToast(wxPayRes)
+      if (wxPayRes.success) {
+        this.data.starte = 2
+      }
+      this.payloading = false
     },
     goBootDetail ({id}) {
       this.$router.push({path: 'bootdeal', query: {id}})
@@ -307,11 +285,39 @@ export default {
             width: '18rem'
           })
         }
-        let data = JSON.parse(orderdetail.obj)
-        console.log('data', data)
+        let data = orderdetail.obj
         this.route['status'] = data.status
         this.route['msg'] = data.msg
-        this.traces = data.data.traces.reverse()
+        let traces = data.data.traces.reverse()
+        this.traces = []
+        for (let i = 0, len = traces.length; i < len; i++) {
+          if (Number(traces[i].Status) === 720 || Number(traces[i].Status) === 10) {
+            this.traces.push(traces[i])
+          }
+        }
+      } catch (e) {
+        console.error(e)
+        return this.$vux.toast.show({
+          text: e.message,
+          type: 'warn',
+          width: '18rem'
+        })
+      }
+    },
+    async getInterRoute ({company, num}) {
+      try {
+        const interTraces = await request({
+          method: 'post',
+          url: orderApi.kd100,
+          auth: true,
+          params: {
+            company,
+            num
+          }
+        })
+        console.log('interTraces', interTraces)
+        this.interTracesRes = interTraces.obj.message
+        this.interTraces = interTraces.obj.data
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({

@@ -8,7 +8,8 @@ let url = 'http://api.didalive.net/DHL/'
 
 switch (NODE_ENV) {
   case 'development':
-    url = 'http://api.didalive.net/DHL/'
+    // url = 'http://api.didalive.net/DHL/'
+    url = 'http://api.mingz-tech.com/DHL/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/DHL/'
@@ -113,7 +114,8 @@ export const order = {
   updatenumber: url + 'wx/OrderInfo/Updateserialnumberstarte',
   detail: url + 'wx/OrderInfo/ShowOrderInfoid',
   detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber',
-  ztoinfo: url + 'wx/order/getOrderInfo'
+  ztoinfo: url + 'wx/order/getOrderInfo',
+  kd100: url + '/wx/order/queryByCompany'
 }
 
 // 查询补价

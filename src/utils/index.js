@@ -1,4 +1,5 @@
 import lodash from 'lodash'
+import config from 'config'
 import * as time from './time'
 import * as reg from './reg'
 import { localPrefix } from './config'
@@ -149,11 +150,37 @@ const getNameById = function (obj, id) {
   return newobj['name']
 }
 
+/**
+ * [根据node环境获取config]
+ * @param  {[type]} options.env [description]
+ * @return {[type]}             [description]
+ */
+const getConfByEnv = function () {
+  const NODE_ENV = process.env.NODE_ENV
+  let conf
+  switch (NODE_ENV) {
+    case 'development':
+      conf = config.dev
+      break
+    case 'production':
+      conf = config.pro
+      break
+    case 'test':
+      conf = config.test
+      break
+    default:
+      conf = config.pro
+      break
+  }
+  return conf
+}
+
 export {
   queryURL,
   queryArray,
   arrayToTree,
   getNameById,
+  getConfByEnv,
   storage,
   time,
   reg
