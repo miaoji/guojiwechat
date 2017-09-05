@@ -25,7 +25,7 @@
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
-import { reg as regUtil } from '../utils'
+import { reg as regUtil, storage } from '../utils'
 
 export default {
   name: 'addaddress',
@@ -38,7 +38,8 @@ export default {
     Picker
   },
   mounted () {
-    window.document.title = '添加地址'
+    const type = this.type === 1 ? '寄件地址' : '收件地址'
+    window.document.title = `添加${type}`
   },
   created () {
     const query = this.$route.query
@@ -128,6 +129,12 @@ export default {
     }
   },
   beforeDestroy () {
+    // 如果未新建，保存已设置的值
+    storage({
+      key: 'add_address_propotype',
+      val: this.linkman,
+      type: 'set'
+    })
   }
 }
 </script>

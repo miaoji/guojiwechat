@@ -185,7 +185,7 @@ export default {
         console.log('暂未到国外')
       } else {
         this.getInterRoute({
-          company: this.data.national_express_com,
+          company: this.data.nation_express_com,
           num: FPXNO
         })
       }
@@ -315,7 +315,6 @@ export default {
             num
           }
         })
-        console.log('interTraces', interTraces)
         this.interTracesRes = interTraces.obj.message
         this.interTraces = interTraces.obj.data
       } catch (e) {

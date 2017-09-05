@@ -53,7 +53,6 @@ export default {
   },
   async created () {
     let query = this.$route.query
-    console.log('query', this)
     let serialnumber = query.serialnumber || 1
     this.serialnumber = serialnumber
     const res = await request({
@@ -113,7 +112,7 @@ export default {
       padding: 0.1rem 2rem;
       .list-box-left{
         display: inline-block;
-        width:5.2rem;
+        width:5.6rem;
         text-align: left;
       }
       .list-box-ico {

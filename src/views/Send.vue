@@ -1079,7 +1079,7 @@ label {
 
       &__table {
         padding: .5rem 0;
-        border: 1px solid @greyfont;
+        border: 1px solid #dedede;
         border-left-width: 0;
         border-right-width: 0;
         table {
