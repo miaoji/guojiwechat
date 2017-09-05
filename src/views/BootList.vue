@@ -1,6 +1,6 @@
 <template>
   <div class="bootlist-main">
-    <div class="header">改价纪录明细</div>
+    <div class="header">补价纪录明细</div>
     <div v-if="error" class="error">
       <div class="error-item">{{error}}</div>
       <button class="pay" @click.stop="goBack">点击返回</button>
@@ -113,7 +113,7 @@ export default {
       padding: 0.1rem 2rem;
       .list-box-left{
         display: inline-block;
-        width:5.2rem;
+        width:6rem;
         text-align: left;
       }
       .list-box-ico {
