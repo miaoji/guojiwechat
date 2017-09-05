@@ -121,6 +121,7 @@ export default {
       }
       .list-box-right{
         color: @red;
+        padding-left: 0.5rem;
       }
     }
   }
