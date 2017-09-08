@@ -4,12 +4,6 @@
       <div class="steplocationpicker-edit--left" @click="close">
         <span>取消</span>
       </div>
-      <div class="steplocationpicker-edit--right" v-show="step > 1" @click="step>=0&&step--">
-        <span>上一步</span>
-      </div>
-      <div class="steplocationpicker-edit--right" @click="step<4&&step++" v-show="step!==4">
-        <span>下一步</span>
-      </div>
       <div class="steplocationpicker-edit--right" @click="confirm">
         <span>确定</span>
       </div>
@@ -17,18 +11,6 @@
     <div class="steplocationpicker-step" v-show="step === 1">
       <p>选择国家</p>
       <picker :data='countryData' v-model='countryVal' :fixed-columns="1" :columns="1"></picker>
-    </div>
-    <div class="steplocationpicker-step" v-show="step === 2">
-      <p>选择省</p>
-      <picker :data='provinceData' v-model='provinceVal' :fixed-columns="1" :columns="1"></picker>
-    </div>
-    <div class="steplocationpicker-step" v-show="step === 3">
-      <p>选择市</p>
-      <picker :data='cityData' v-model='cityVal' :fixed-columns="1" :columns="1"></picker>
-    </div>
-    <div class="steplocationpicker-step" v-show="step === 4">
-      <p>选择区</p>
-      <picker :data='countyData' v-model='countyVal' :fixed-columns="1" :columns="1"></picker>
     </div>
   </div>
 </template>
@@ -65,12 +47,7 @@ export default {
       step: 1,
       countryData: [],
       countryVal: [],
-      provinceData: [],
-      provinceVal: [],
-      cityData: [],
-      cityVal: [],
-      countyData: [],
-      countyVal: []
+      provinceData: []
     }
   },
   async created () {
@@ -131,145 +108,54 @@ export default {
       })
       return newobj['name']
     },
-    confirm () {
+    async getprovincedate () {
+      try {
+        const res = await instance({
+          method: 'post',
+          url: geographyApi.showprovince,
+          params: {
+            countryid: Number(this.countryVal)
+          },
+          headers: {'token': window.localStorage.getItem('mj_token')}
+        })
+        if (res.status !== 200) {
+          return this.$vux.toast.show({
+            type: 'warn',
+            text: '获取路由失败'
+          })
+        }
+        const data = res.data
+        if (data.code !== 200) {
+          return this.$vux.toast.show({
+            type: 'warn',
+            text: data.mess
+          })
+        }
+        this.provinceData = data.obj.map(function (elem) {
+          return {
+            name: elem.name,
+            value: elem.id
+          }
+        })
+      } catch (e) {
+        console.error(e)
+        return this.$vux.toast.show({
+          type: 'warn',
+          width: '18rem',
+          text: '网络请求错误'
+        })
+      }
+    },
+    async confirm () {
       const country = this.getNameById(this.countryData, this.countryVal)
-      const province = this.getNameById(this.provinceData, this.provinceVal)
-      const city = this.getNameById(this.cityData, this.cityVal)
-      const county = this.getNameById(this.countyData, this.countyVal)
       const location = {
-        show: country + province + city + county,
+        show: country,
         val: {
-          nationid: Number(this.countryVal),
-          provinnce: Number(this.provinceVal),
-          city: Number(this.cityVal),
-          county: Number(this.countyVal)
+          nationid: Number(this.countryVal)
         }
       }
-      this.step = 1
       this.$emit('listenConfrim', location)
       this.$emit('listenClose', false)
-    }
-  },
-  watch: {
-    async step (val, oldval) {
-      switch (val) {
-        case 2:
-          try {
-            const res = await instance({
-              method: 'post',
-              url: geographyApi.showprovince,
-              params: {
-                countryid: Number(this.countryVal)
-              },
-              headers: {'token': window.localStorage.getItem('mj_token')}
-            })
-            if (res.status !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: '获取路由失败'
-              })
-            }
-            const data = res.data
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            this.provinceData = data.obj.map(function (elem) {
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
-          }
-          break
-        case 3:
-          try {
-            const res = await instance({
-              method: 'post',
-              url: geographyApi.showcity,
-              params: {
-                provinceid: Number(this.provinceVal)
-              },
-              headers: {'token': window.localStorage.getItem('mj_token')}
-            })
-            if (res.status !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: '获取路由失败'
-              })
-            }
-            const data = res.data
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            this.cityData = data.obj.map(function (elem) {
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
-          }
-          break
-        case 4:
-          try {
-            const res = await instance({
-              method: 'post',
-              url: geographyApi.showcounty,
-              params: {
-                cityid: Number(this.cityVal)
-              },
-              headers: {'token': window.localStorage.getItem('mj_token')}
-            })
-            if (res.status !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: '获取路由失败'
-              })
-            }
-            const data = res.data
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            this.countyData = data.obj.map(function (elem) {
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
-          }
-          break
-        default:
-          break
-      }
     }
   }
 }

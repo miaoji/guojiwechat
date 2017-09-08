@@ -5,7 +5,8 @@
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="steppickershow = !steppickershow" disabled title="地区" placeholder="请选择国家、省市区" type="text" required v-model="location"></x-input>
+        <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
+        <x-input @click.native="stepprovinceshow = !stepprovinceshow" disabled title="省份" placeholder="请选择省份" type="text" required v-model="provincedataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required>
@@ -14,8 +15,8 @@
        <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
        </group>
-       <step-location :type="typecn" :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep">
-       </step-location>
+       <step-location :type="typecn" :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep"></step-location>
+       <step-province :type="typecn" :stepprovinceshow="stepprovinceshow" :nationId="nationId" v-on:listenProvinceClose="closeStepProvince" v-on:listenProvinceConfrim="provinceStep"></step-province>
        <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
        </div>
@@ -50,7 +51,6 @@ export default {
       key: `add_address_${type}_prop`
     })
     localData = JSON.parse(localData)
-    console.log('localData', localData)
     this.linkman = localData.linkman
     this.iphone = localData.iphone
     this.postcode = localData.postcode
@@ -73,12 +73,17 @@ export default {
       iphone: '',
       location: '',
       locationid: {},
+      nationId: 0,
       detailedinformation: '',
       remove: '',
       value: false,
       addressVal: [],
       ajaxasync: false,
-      createRes: false
+      createRes: false,
+      provincedata: [],
+      provincedataShow: '',
+      provinceId: 0,
+      stepprovinceshow: false
     }
   },
   methods: {
@@ -86,12 +91,25 @@ export default {
       'addAddress',
       'eidtAddress'
     ]),
+    getProvincedata (val) {
+      this.provincedata = val
+      console.log('getProvincedata', this.provincedata)
+    },
     closeStepLocation (val) {
       this.steppickershow = val
+    },
+    closeStepProvince (val) {
+      this.stepprovinceshow = val
     },
     confirmStep (val) {
       this.location = val.show.replace(/undefined/g, '')
       this.locationid = val.val
+      this.nationId = val.val.nationid
+    },
+    provinceStep (val) {
+      console.log('fu fu ', val)
+      this.provincedataShow = val.show.replace(/undefined/g, '')
+      this.provinceId = val.val.provinceId
     },
     change (value) {
     },
@@ -147,7 +165,6 @@ export default {
         remove: this.remove,
         value: this.value
       }
-      console.log('addressInfo', addressInfo)
       storage({
         key: `add_address_${type}_prop`,
         val: JSON.stringify(addressInfo),

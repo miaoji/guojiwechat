@@ -8,9 +8,9 @@ switch (NODE_ENV) {
     // 仝舟
     // let url = 'http://192.168.0.127:8066/'
     // 测试 app 云端服务 Wechat
-    url = 'http://api.didalive.net/DHL/'
+    // url = 'http://api.didalive.net/DHL/'
     // 正式 app 云端服务 Wechat
-    // url = 'http://api.mingz-tech.com/DHL/'
+    url = 'http://api.mingz-tech.com/DHL/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/DHL/'
