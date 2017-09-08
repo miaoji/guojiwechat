@@ -18,8 +18,8 @@ export default {
       window.localStorage.setItem('mj_nickname', '明华')
       window.localStorage.setItem('mj_openid', 'osdH7vw74PjKl4x8jvxplraC-tiE')
       window.localStorage.setItem('mj_mobile', '17602180495')
-      window.localStorage.setItem('mj_userId', '18')
-      // window.localStorage.setItem('mj_userId', '36')
+      // window.localStorage.setItem('mj_userId', '18')
+      window.localStorage.setItem('mj_userId', '36')
       window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MTgsIm9wZW5pZCI6Im9zZEg3dnc3NFBqS2w0eDhqdnhwbHJhQy10aUUifQ.LeKzLIibWbRdWHxPpYoRrqzDS0Uvl8YQzjhIcIAZtx0')
       return
     }

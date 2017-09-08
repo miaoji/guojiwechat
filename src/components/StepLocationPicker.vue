@@ -93,8 +93,6 @@ export default {
     }
   },
   methods: {
-    change (value) {
-    },
     close () {
       this.step = 1
       this.$emit('listenClose', false)
@@ -108,44 +106,6 @@ export default {
       })
       return newobj['name']
     },
-    async getprovincedate () {
-      try {
-        const res = await instance({
-          method: 'post',
-          url: geographyApi.showprovince,
-          params: {
-            countryid: Number(this.countryVal)
-          },
-          headers: {'token': window.localStorage.getItem('mj_token')}
-        })
-        if (res.status !== 200) {
-          return this.$vux.toast.show({
-            type: 'warn',
-            text: '获取路由失败'
-          })
-        }
-        const data = res.data
-        if (data.code !== 200) {
-          return this.$vux.toast.show({
-            type: 'warn',
-            text: data.mess
-          })
-        }
-        this.provinceData = data.obj.map(function (elem) {
-          return {
-            name: elem.name,
-            value: elem.id
-          }
-        })
-      } catch (e) {
-        console.error(e)
-        return this.$vux.toast.show({
-          type: 'warn',
-          width: '18rem',
-          text: '网络请求错误'
-        })
-      }
-    },
     async confirm () {
       const country = this.getNameById(this.countryData, this.countryVal)
       const location = {
@@ -155,6 +115,7 @@ export default {
         }
       }
       this.$emit('listenConfrim', location)
+      console.log('location', location)
       this.$emit('listenClose', false)
     }
   }

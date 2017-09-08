@@ -7,6 +7,7 @@
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
         <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
         <x-input @click.native="stepprovinceshow = !stepprovinceshow" disabled title="省份" placeholder="请选择省份" type="text" required v-model="provincedataShow"></x-input>
+        <x-input @click.native="stepcityshow = !stepcityshow" disabled title="市级" placeholder="请选择市级" type="text" required v-model="citydataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required>
@@ -17,6 +18,7 @@
        </group>
        <step-location :type="typecn" :steppickerShow="steppickershow" v-on:listenClose="closeStepLocation" v-on:listenConfrim="confirmStep"></step-location>
        <step-province :type="typecn" :stepprovinceshow="stepprovinceshow" :nationId="nationId" v-on:listenProvinceClose="closeStepProvince" v-on:listenProvinceConfrim="provinceStep"></step-province>
+       <step-city :type="typecn" :stepcityshow="stepcityshow" :provinceId="provinceId" @listenProvinceClose="closeStepCity"  @listenCityConfrim="cityStep"></step-city>
        <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
        </div>
@@ -82,8 +84,10 @@ export default {
       createRes: false,
       provincedata: [],
       provincedataShow: '',
+      citydataShow: '',
       provinceId: 0,
-      stepprovinceshow: false
+      stepprovinceshow: false,
+      stepcityshow: false
     }
   },
   methods: {
@@ -101,6 +105,9 @@ export default {
     closeStepProvince (val) {
       this.stepprovinceshow = val
     },
+    closeStepCity (val) {
+      this.stepcityshow = val
+    },
     confirmStep (val) {
       this.location = val.show.replace(/undefined/g, '')
       this.locationid = val.val
@@ -110,6 +117,11 @@ export default {
       console.log('fu fu ', val)
       this.provincedataShow = val.show.replace(/undefined/g, '')
       this.provinceId = val.val.provinceId
+      console.log('provinceId', this.provinceId)
+    },
+    cityStep (val) {
+      this.citydatashow = val.show.replace(/undefined/g, '')
+      this.cityId = val.val.cityId
     },
     change (value) {
     },

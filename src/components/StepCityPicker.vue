@@ -1,16 +1,16 @@
 <template>
-  <div class="stepprovincepicker" v-show="stepprovinceshow">
-    <div class="stepprovincepicker-edit">
-      <div class="stepprovincepicker-edit--left" @click="close">
+  <div class="stepcitypicker" v-show="stepcityshow">
+    <div class="stepcitypicker-edit">
+      <div class="stepcitypicker-edit--left" @click="close">
         <span>取消</span>
       </div>
-      <div class="stepprovincepicker-edit--right" @click="confirm">
+      <div class="stepcitypicker-edit--right" @click="confirm">
         <span>确定</span>
       </div>
     </div>
-    <div class="stepprovincepicker-step">
-      <p>选择省</p>
-      <picker :data='provinceData' v-model='provinceVal' :fixed-columns="1" :columns="1"></picker>
+    <div class="stepcitypicker-step">
+      <p>选择市</p>
+      <picker :data='cityData' v-model='cityVal' :fixed-columns="1" :columns="1"></picker>
     </div>
   </div>
 </template>
@@ -22,17 +22,16 @@ import axios from 'axios'
 let instance = axios.create({
   timeout: 5000
 })
-
 export default {
-  name: 'stepprovincepicker',
+  name: 'stepcitypicker',
   props: {
-    stepprovinceshow: {
+    stepcityshow: {
       type: Boolean,
       default: false
     },
-    nationId: {
+    provinceId: {
       type: Number,
-      default: 0
+      defult: 0
     }
   },
   components: {
@@ -43,18 +42,60 @@ export default {
   },
   data () {
     return {
-      provinceData: [],
-      provinceVal: []
+      cityData: [],
+      cityVal: []
+    }
+  },
+  async created () {
+    try {
+      const res = await instance({
+        method: 'post',
+        url: geographyApi.showcountry,
+        headers: {'token': window.localStorage.getItem('mj_token')}
+      })
+      if (res.status !== 200) {
+        return this.$vux.toast.show({
+          type: 'warn',
+          text: '获取路由失败'
+        })
+      }
+      const data = res.data
+      if (data.code !== 200) {
+        return this.$vux.toast.show({
+          type: 'warn',
+          text: data.mess
+        })
+      }
+      let shift = 0
+      this.countryData = data.obj.map(function (elem, index) {
+        if (elem.name === '中国') {
+          shift = index
+        }
+        return {
+          name: elem.name,
+          value: elem.id
+        }
+      })
+      if (this.type === 'pickup') {
+        this.countryData.shift(shift)
+      }
+    } catch (e) {
+      console.error(e)
+      return this.$vux.toast.show({
+        type: 'warn',
+        width: '18rem',
+        text: '网络请求错误'
+      })
     }
   },
   methods: {
-    async getprovincedata () {
+    async getcitydata () {
       try {
         const res = await instance({
           method: 'post',
-          url: geographyApi.showprovince,
+          url: geographyApi.showcity,
           params: {
-            countryid: Number(this.nationId)
+            provinceid: Number(this.provinceId)
           },
           headers: {'token': window.localStorage.getItem('mj_token')}
         })
@@ -74,8 +115,7 @@ export default {
         this.provinceData = data.obj.map(function (elem) {
           return {
             name: elem.name,
-            value: elem.id,
-            id: elem.countryid
+            value: elem.id
           }
         })
       } catch (e) {
@@ -87,8 +127,11 @@ export default {
         })
       }
     },
+    change (value) {
+    },
     close () {
-      this.$emit('listenProvinceClose', false)
+      this.step = 1
+      this.$emit('listenClose', false)
     },
     getNameById (obj, id) {
       let newobj = ''
@@ -100,22 +143,23 @@ export default {
       return newobj['name']
     },
     confirm () {
-      const province = this.getNameById(this.provinceData, this.provinceVal)
-      const provincedata = {
-        show: province,
+      const city = this.getNameById(this.cityData, this.cityVal)
+      const citydata = {
+        show: city,
         val: {
-          provinceId: Number(this.provinceVal)
+          city: Number(this.cityVal)
         }
       }
-      this.$emit('listenProvinceConfrim', provincedata)
-      console.log('provincedata', provincedata)
-      this.$emit('listenProvinceClose', false)
+      this.step = 1
+      console.log('zi loca', citydata)
+      this.$emit('listenCityConfrim', citydata)
+      this.$emit('listenCityClose', false)
     }
   },
   watch: {
-    async stepprovinceshow (val) {
+    async stepcityshow (val) {
       if (val) {
-        await this.getprovincedata()
+        await this.getcitydata()
       }
     }
   }
@@ -127,7 +171,7 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 
-.stepprovincepicker {
+.stepcitypicker {
   position: fixed;
   bottom: 0;
   width: 100%;

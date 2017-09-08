@@ -13,6 +13,7 @@ import OrderItem from './components/OrderItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
 import StepLocationPicker from './components/StepLocationPicker.vue'
 import StepProvincePicker from './components/StepProvincePicker.vue'
+import StepCityPicker from './components/StepCityPicker.vue'
 
 FastClick.attach(document.body)
 
@@ -32,6 +33,7 @@ Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-orderitem', OrderItem)
 Vue.component('step-location', StepLocationPicker)
 Vue.component('step-province', StepProvincePicker)
+Vue.component('step-city', StepCityPicker)
 
 function SwitchfullPath (fullPath) {
   let page = ''
