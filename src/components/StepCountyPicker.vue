@@ -1,16 +1,16 @@
 <template>
-  <div class="stepcitypicker" v-show="stepcityshow">
-    <div class="stepcitypicker-edit">
-      <div class="stepcitypicker-edit--left" @click="close">
+  <div class="stepcountypicker" v-show="stepcountyshow">
+    <div class="stepcountypicker-edit">
+      <div class="stepcountypicker-edit--left" @click="close">
         <span>取消</span>
       </div>
-      <div class="stepcitypicker-edit--right" @click="confirm">
+      <div class="stepcountypicker-edit--right" @click="confirm">
         <span>确定</span>
       </div>
     </div>
-    <div class="stepcitypicker-step">
-      <p>选择市</p>
-      <picker :data='cityData' v-model='cityVal' :fixed-columns="1" :columns="1"></picker>
+    <div class="stepcountypicker-step">
+      <p>选择区</p>
+      <picker :data='countyData' v-model='countyVal' :fixed-columns="1" :columns="1"></picker>
     </div>
   </div>
 </template>
@@ -19,41 +19,45 @@
 import { XInput, Picker } from 'vux'
 import { geography as geographyApi } from '@/api'
 import axios from 'axios'
+
 let instance = axios.create({
-  timeout: 5000
+  timeout: 3000
 })
 export default {
-  name: 'stepcitypicker',
+  name: 'stepcountypicker',
   props: {
-    stepcityshow: {
+    stepcountyshow: {
       type: Boolean,
       default: false
     },
-    provinceId: {
+    type: {
+      type: String,
+      default: 'send'
+    },
+    cityId: {
       type: Number,
-      defult: 0
+      default: 0
     }
   },
   components: {
     Picker,
     XInput
   },
-  computed: {
-  },
   data () {
     return {
-      cityData: [],
-      cityVal: []
+      step: 1,
+      countyData: [],
+      countyVal: []
     }
   },
   methods: {
-    async getcitydata () {
+    async getcountydata () {
       try {
         const res = await instance({
           method: 'post',
-          url: geographyApi.showcity,
+          url: geographyApi.showcounty,
           params: {
-            provinceid: Number(this.provinceId)
+            cityid: Number(this.cityId)
           },
           headers: {'token': window.localStorage.getItem('mj_token')}
         })
@@ -70,7 +74,7 @@ export default {
             text: data.mess
           })
         }
-        this.cityData = data.obj.map(function (elem) {
+        this.countyData = data.obj.map(function (elem) {
           return {
             name: elem.name,
             value: elem.id
@@ -86,7 +90,7 @@ export default {
       }
     },
     close () {
-      this.$emit('listenCityClose', false)
+      this.$emit('listenCountyClose', false)
     },
     getNameById (obj, id) {
       let newobj = ''
@@ -98,23 +102,22 @@ export default {
       return newobj['name']
     },
     confirm () {
-      const city = this.getNameById(this.cityData, this.cityVal)
-      const citydata = {
-        show: city,
+      const county = this.getNameById(this.countyData, this.countyVal)
+      const countydata = {
+        show: county,
         val: {
-          city: Number(this.cityVal)
+          county: Number(this.countyVal)
         }
       }
-      this.step = 1
-      console.log('zi loca', citydata)
-      this.$emit('listenCityConfrim', citydata)
-      this.$emit('listenCityClose', false)
+      console.log('zi loca', countydata)
+      this.$emit('listenCountyConfrim', countydata)
+      this.$emit('listenCountyClose', false)
     }
   },
   watch: {
-    async stepcityshow (val) {
+    async stepcountyshow (val) {
       if (val) {
-        await this.getcitydata()
+        await this.getcountydata()
       }
     }
   }
@@ -126,7 +129,7 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 
-.stepcitypicker {
+.stepcountypicker {
   position: fixed;
   bottom: 0;
   width: 100%;

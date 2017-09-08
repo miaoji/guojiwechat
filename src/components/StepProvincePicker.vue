@@ -39,8 +39,6 @@ export default {
     Picker,
     XInput
   },
-  computed: {
-  },
   data () {
     return {
       provinceData: [],
