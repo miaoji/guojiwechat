@@ -43,21 +43,25 @@ export default {
   },
   created () {
     const query = this.$route.query
-    this.pagetype = query.pagetype || 'add'
     const type = query.type
     this.typecn = type
     this.type = type === 'send' ? 1 : 2
-    if (this.pagetype === 'edit') {
-      this.id = query.id
-      this.linkname = query.linkname
-      this.iphone = query.iphone
-      this.detailedinformation = query.detaliedinformation
-    }
+    let localData = storage({
+      key: `add_address_${type}_prop`
+    })
+    localData = JSON.parse(localData)
+    console.log('localData', localData)
+    this.linkman = localData.linkman
+    this.iphone = localData.iphone
+    this.postcode = localData.postcode
+    this.detailedinformation = localData.detailedinformation || ''
+    this.remove = localData.remove
+    this.value = localData.value
   },
   data () {
     return {
       type: 1,
-      typecn: 1,
+      typecn: 'send',
       steppickershow: false,
       picker: false,
       pagetype: 'add',
@@ -73,7 +77,8 @@ export default {
       remove: '',
       value: false,
       addressVal: [],
-      ajaxasync: false
+      ajaxasync: false,
+      createRes: false
     }
   },
   methods: {
@@ -122,19 +127,33 @@ export default {
       const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber, start})
       this.ajaxasync = false
       if (res.type !== 'success') {
+        this.createRes = false
         return this.$vux.toast.show(res)
       }
       this.$vux.toast.show(res)
+      this.createRes = true
       this.$router.go(-1)
     }
   },
   beforeDestroy () {
     // 如果未新建，保存已设置的值
-    storage({
-      key: 'add_address_propotype',
-      val: this.linkman,
-      type: 'set'
-    })
+    if (!this.createRes) {
+      const type = this.typecn
+      const addressInfo = {
+        linkman: this.linkman,
+        iphone: this.iphone,
+        postcode: this.postcode,
+        detailedinformation: this.detailedinformation,
+        remove: this.remove,
+        value: this.value
+      }
+      console.log('addressInfo', addressInfo)
+      storage({
+        key: `add_address_${type}_prop`,
+        val: JSON.stringify(addressInfo),
+        type: 'set'
+      })
+    }
   }
 }
 </script>
