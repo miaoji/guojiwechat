@@ -146,10 +146,11 @@ export default {
     },
     confirmStepCounty (val) {
       this.countydataShow = val.show.replace(/undefined/g, '')
-      this.countyId = val.val.countyId
+      console.log('this.citydataShow', this.countydataShow)
+      this.countyId = val.val.county
     },
     async saveAddress () {
-      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
+      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location || !this.provincedataShow || !this.provincedataShow || !this.countydataShow) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -177,7 +178,23 @@ export default {
       this.ajaxasync = true
       const locationId = this.locationid
       const start = this.value ? 3 : 1
-      const res = await this.addAddress({...locationId, detailedinformation: this.detailedinformation, postcode: this.postcode, iphone: this.iphone, linkman: this.linkman, company: this.company, remove: this.remove, type: this.type, idnumber: this.idnumber, start})
+      const res = await this.addAddress({
+        ...locationId,
+        detailedinformation: this.detailedinformation,
+        postcode: this.postcode,
+        iphone: this.iphone,
+        nationid: this.nationId,
+        provinnce: this.provinceId,
+        city: this.cityId,
+        county: this.countyId,
+        linkman: this.linkman,
+        company: this.company,
+        remove: this.remove,
+        type: this.type,
+        idnumber: this.idnumber,
+        start
+      })
+      console.log('locationId', res)
       this.ajaxasync = false
       if (res.type !== 'success') {
         this.createRes = false
