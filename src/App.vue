@@ -1,40 +1,14 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <loading v-model="isLoading"></loading>
   </div>
 </template>
 
 <script>
-import { Loading } from 'vux'
-import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'app',
   created () {
-  },
-  data () {
-    return {
-    }
-  },
-  components: {
-    Loading
-  },
-  computed: {
-    ...mapState({
-      isLoading: state => state.isLoading,
-      isJump: state => state.isJump,
-      jumpSrc: state => state.jumpSrc
-    }),
-    ...mapGetters({
-      'openid': 'getOpenId'
-    })
-  },
-  methods: {
-    ...mapActions([
-      'setOpenid',
-      'setUserInfo'
-    ])
   }
 }
 </script>
@@ -92,32 +66,6 @@ select,option,textarea {
     color: @red;
 }
 
-@keyframes pic-in {
-  0% {
-    transform: scale(0) rotate3d(360,360,360,360deg);
-  }
-  50% {
-    transform: scale(1.5) rotate3d(120,120,120,120deg);
-  }
-  100% {
-    transform: scale(1) rotate3d(0,0,0,0deg);
-  }
-}
-@keyframes pic-out {
-  0% {
-    transform: scale(1) rotate3d(0,0,0,0deg);
-  }
-  50% {
-    transform: scale(1.5) rotate3d(120,120,120,120deg);
-  }
-  100% {
-    transform: scale(0) rotate3d(360,360,360,360deg);
-  }
-}
-.amap-ui-smp-ifwn-content-body {
-  border: none!important;
-}
-
 .weui-toast {
   z-index: 6000;
 }
@@ -134,6 +82,14 @@ select,option,textarea {
   .weui-cell__bd.weui-cell__primary {
     input {
       text-align: right;
+    }
+  }
+}
+
+.orderdetail {
+  .orderdetail-detail-box__content {
+    .weui-loadmore {
+      margin: 0 auto;
     }
   }
 }

@@ -171,6 +171,15 @@ export const actions = {
     dispatch('changeAddress')
     return res
   },
+  /**
+   * [getGeography 根据国家省市区的id获取名称]
+   * @param  {[type]} options.commit     [description]
+   * @param  {[type]} options.countryid  [description]
+   * @param  {[type]} options.provinceid [description]
+   * @param  {[type]} options.cityid     [description]
+   * @param  {[type]} options.countyid   [description]
+   * @return {[type]}                    [description]
+   */
   async getGeography ({commit}, {countryid, provinceid, cityid, countyid}) {
     try {
       countryid = Number(countryid)
@@ -206,12 +215,23 @@ export const actions = {
         },
         headers: {'token': local.getItem('mj_token')}
       })
-      const str = getNameById(country.data.obj, countryid) + getNameById(province.data.obj, provinceid) + getNameById(city.data.obj, cityid) + getNameById(county.data.obj, countyid)
+      const countryName = getNameById(country.data.obj, countryid)
+      const provinceName = getNameById(province.data.obj, provinceid)
+      const cityName = getNameById(city.data.obj, cityid)
+      const countyName = getNameById(county.data.obj, countyid)
+      const allName = countryName + provinceName + cityName + countyName
+      const location = {
+        allName,
+        countryName,
+        provinceName,
+        cityName,
+        countyName
+      }
       return {
         type: 'success',
         text: '获取成功',
         width: '18rem',
-        data: str
+        data: location
       }
     } catch (e) {
       console.error(e)

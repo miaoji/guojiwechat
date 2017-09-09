@@ -8,7 +8,6 @@
           </cell>
         </group>
       </div>
-      
       <div class="send-container-address flex" style="border-bottom: 1px solid #dedede;">
         <div class="send-container-address__intro">
           <span class="bgblue">寄</span>
@@ -186,10 +185,11 @@
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-import { send as sendApi, wx as wxApi, price as priceApi, geography as geographyApi } from '@/api'
+import { send as sendApi, price as priceApi, geography as geographyApi } from '@/api'
 import * as addressService from '@/services/address'
 import { storage, time } from '../utils'
 import request from '../utils/request'
+import * as wxUtil from '@/utils/wx'
 
 const { format } = time
 
@@ -268,28 +268,12 @@ export default {
     // 1. 创建时将SET_PAGE创建为send
     this.$store.commit('SET_PAGE', {page: 'send'})
     // 2. 初始化wx jssdk
-    const wxconfig = await request({
-      method: 'post',
-      url: wxApi.jssdk,
-      params: {
-        url: 'http://guoji.didalive.net/wechat/'
-      }
-    })
-    const jssdk = JSON.parse(wxconfig.obj)
-    window.wx.config({
-      debug: false,
-      appId: 'wxddd3ecf13e8fca82',
-      timestamp: jssdk.timestamp,
-      nonceStr: jssdk.nonceStr,
-      signature: jssdk.signature,
-      jsApiList: [
-        'chooseImage',
-        'chooseWXPay'
-      ]
-    })
-    window.wx.error(function (res) {
-      console.log('wx error res', res)
-    })
+    try {
+      const wxIntRes = await wxUtil.init()
+      console.log('wxIntRes', wxIntRes)
+    } catch (e) {
+      console.error(e)
+    }
     // 3. 获取地址
     const sendLocal = JSON.parse(storage({key: 'send_sendaddress'}))
     if (sendLocal) {
@@ -467,61 +451,29 @@ export default {
       this.$router.push({path})
     },
     async wxpay ({money, serialnumber}) {
-      const wxpay = await request({
-        method: 'post',
-        url: wxApi.wxpay,
-        params: {
-          openid: storage({key: 'openid'}),
-          money: (money * 100),
-          serialnumber,
-          body: '国际快递包裹',
-          payType: 0
-        }
-      })
-      if (!wxpay.success) {
-        _this.showToast({text: '提交失败', type: 'warn'})
-        return
+      let intParams = {
+        openid: storage({key: 'openid'}),
+        money: (money * 100),
+        serialnumber,
+        body: '国际快递包裹',
+        payType: 0
       }
-      const wxpayCon = wxpay
+      let successParams = {
+        serialnumber,
+        isPay: 1,
+        payType: 0
+      }
       const _this = this
-      const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
-      window.wx.ready(function () {
-        console.log('wx jssdk 初始化成功')
-        window.wx.chooseWXPay({
-          'timestamp': wxpayCon.timeStamp,
-          'nonceStr': wxpayCon.nonceStr,
-          'package': wxpayCon.package,
-          'signType': 'MD5',
-          'paySign': wxpayCon.paySign,
-          success: function (res) {
-            request({
-              method: 'post',
-              url: wxApi.update,
-              params: {
-                serialnumber,
-                prepayId,
-                isPay: 1,
-                payType: 0
-              }
-            })
-            .then(orderres => {
-              _this.showToast({text: '支付成功'})
-              return setTimeout(function () {
-                _this.$router.push({path: '/orderdetail', query: {serialnumber}})
-              }, 1000)
-            }).catch(err => {
-              console.error(err)
-              _this.showToast({text: '提交失败', type: 'warn'})
-            })
-          },
-          fail: function (res) {
-          },
-          cancle: function () {
-          },
-          complete: function () {
-          }
-        })
-      })
+      try {
+        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        this.$vux.toast.show(wxPayRes)
+        if (wxPayRes.type === 'success') {
+          _this.$router.push({path: '/orderdetail', query: {serialnumber}})
+        }
+      } catch (err) {
+        console.error(err)
+        _this.showToast(err)
+      }
     },
     /**
      * [submitSend 创建订单，成功后调用微信支付接口]
@@ -656,7 +608,6 @@ export default {
     },
     volumeConfirm () {
       if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
-        this.weight = null
         this.$vux.toast.show({
           text: '重量不能大于30kg不能为0',
           width: '18rem',
@@ -672,6 +623,7 @@ export default {
         })
         return
       }
+      this.weight = Number(this.weight)
       this.dialogshow = false
     },
     /**
@@ -762,22 +714,20 @@ export default {
       if (!val) {
         return
       }
-      if (val > 30) {
+      if (Number(val) > 30) {
         _this.$vux.toast.show({
           text: '重量不能大于30kg',
           width: '18rem',
           type: 'warn'
         })
-        _this.weight = null
         return
       }
-      if (val <= 0) {
+      if (Number(val) <= 0) {
         _this.$vux.toast.show({
           text: '重量不能小于等于0kg',
           width: '18rem',
           type: 'warn'
         })
-        _this.weight = null
         return
       }
       this.getPrice()
@@ -882,6 +832,7 @@ export default {
     margin-bottom: 8px;
   }
 }
+
 .package-dialog {
   .package-close {
     position: absolute;
@@ -931,7 +882,6 @@ export default {
 .bgblue {
   background-color: black;
 }
-
 .bgyellow {
   background-color: @dark-yellow;
 }
@@ -1129,7 +1079,7 @@ label {
 
       &__table {
         padding: .5rem 0;
-        border: 1px solid @greyfont;
+        border: 1px solid #dedede;
         border-left-width: 0;
         border-right-width: 0;
         table {

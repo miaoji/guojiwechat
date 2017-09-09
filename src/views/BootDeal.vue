@@ -40,13 +40,10 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import { storage } from '../utils'
 import request from '../utils/request'
-import { wx as wxApi, boot as bootApi } from '@/api'
-
-let instance = axios.create({
-  timeout: 5000
-})
+import * as wxUtil from '@/utils/wx'
+import { boot as bootApi } from '@/api'
 
 export default {
   name: 'bootdetail',
@@ -96,86 +93,44 @@ export default {
     this.reason = bootData.reason || ''
     this.createtime = bootData.createTime || ''
     this.status = bootData.status || ''
-    const wxconfig = await instance({
-      method: 'post',
-      url: wxApi.jssdk,
-      params: {
-        url: 'http://guoji.didalive.net/wechat/'
-      }
-    })
-    const jssdk = JSON.parse(wxconfig.data.obj)
-    window.wx.config({
-      debug: false,
-      appId: 'wxddd3ecf13e8fca82',
-      timestamp: jssdk.timestamp,
-      nonceStr: jssdk.nonceStr,
-      signature: jssdk.signature,
-      jsApiList: [
-        'chooseImage',
-        'chooseWXPay'
-      ]
-    })
-    window.wx.error(function (res) {
-      console.log('wx error res', res)
-    })
+    // 初始化wx jssdk
+    try {
+      const wxIntRes = await wxUtil.init()
+      console.log('wxIntRes', wxIntRes)
+    } catch (e) {
+      console.err(e)
+    }
   },
   mounted () {
     window.document.title = '补价详情'
   },
   methods: {
-    async wxpay ({money, serialnumber}) {
-      const wxpay = await instance({
-        method: 'post',
-        url: wxApi.wxpay,
-        params: {
-          openid: localStorage.getItem('mj_openid'),
-          money,
-          serialnumber,
-          body: '国际快递包裹',
-          payType: 1
-        }
-      })
-      const wxpayCon = wxpay.data
-      const _this = this
-      const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
-      window.wx.ready(function () {
-        console.log('wx jssdk 初始化成功')
-        window.wx.chooseWXPay({
-          'timestamp': wxpayCon.timeStamp,
-          'nonceStr': wxpayCon.nonceStr,
-          'package': wxpayCon.package,
-          'signType': 'MD5',
-          'paySign': wxpayCon.paySign,
-          success: function (res) {
-            _this.status = 2
-            instance({
-              method: 'post',
-              url: wxApi.update,
-              params: {
-                serialnumber,
-                bootId: _this.id,
-                prepayId,
-                isPay: 1,
-                payType: 1
-              }
-            })
-            .then(orderres => {
-              _this.showToast({text: '支付成功'})
-            }).catch(err => {
-              console.error(err)
-            })
-          },
-          fail: function (res) {
-          },
-          cancle: function () {
-          },
-          complete: function () {
-          }
-        })
-      })
-    },
     async submitBoot () {
-      this.wxpay({money: this.boot, serialnumber: this.serialnumber})
+      const money = this.boot
+      const serialnumber = this.serialnumber
+      let intParams = {
+        openid: storage({key: 'openid'}),
+        money,
+        serialnumber,
+        body: '国际快递包裹',
+        payType: 0
+      }
+      let successParams = {
+        serialnumber,
+        bootId: this.id,
+        isPay: 1,
+        payType: 1
+      }
+      try {
+        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        this.$vux.toast.show(wxPayRes)
+        if (wxPayRes.type === 'success') {
+          this.status = 2
+        }
+      } catch (err) {
+        console.error(err)
+        this.$vux.toast.show(err)
+      }
     }
   }
 }

@@ -6,20 +6,15 @@
 </template>
 
 <script>
-import config from 'config'
 import { Loading } from 'vux'
 import { mapState, mapActions, mapGetters } from 'vuex'
-import { storage } from '@/utils'
+import { storage, getConfByEnv } from '@/utils'
 
 // 微信公众号appid等配置
-let appid = config.dev.appid
-let secret = config.dev.appsecret
-let redirectUri = 'http://guoji.didalive.net/redirect/'
-if (process.env.NODE_ENV !== 'development') {
-  appid = config.pro.appid
-  secret = config.pro.appsecret
-  redirectUri = 'http://guoji.didalive.net/redirect/'
-}
+let conf = getConfByEnv()
+let appid = conf.appid
+let secret = conf.appsecret
+let redirectUri = conf.redirectUri
 
 export default {
   name: 'app',

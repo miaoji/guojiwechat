@@ -4,10 +4,28 @@
 // let url = 'http://192.168.0.127:8066/'
 // online app 云端服务 Wechat
 // let url = 'http://api.didalive.net/DHL/'
-let url = 'http://api.mingz-tech.net/DHL/'
+const NODE_ENV = process.env.NODE_ENV
+let url
 
-if (process.env.NODE_ENV !== 'development') {
-  url = 'http://api.didalive.net/DHL/'
+switch (NODE_ENV) {
+  case 'development':
+    // 董浩伟
+    // let url = 'http://192.168.0.225:8080/DHL/'
+    // 仝舟
+    // let url = 'http://192.168.0.127:8066/'
+    // 测试 app 云端服务 Wechat
+    // url = 'http://api.didalive.net/DHL/'
+    // 正式 app 云端服务 Wechat
+    url = 'http://api.mingz-tech.com/DHL/'
+    break
+  case 'production':
+    url = 'http://api.mingz-tech.com/DHL/'
+    break
+  case 'test':
+    url = 'http://api.didalive.net/DHL/'
+    break
+  default:
+    break
 }
 
 export const pic = {
@@ -102,7 +120,9 @@ export const order = {
   update: url + 'wx/OrderInfo/UpdateOrderInfostarte',
   updatenumber: url + 'wx/OrderInfo/Updateserialnumberstarte',
   detail: url + 'wx/OrderInfo/ShowOrderInfoid',
-  detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber'
+  detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber',
+  ztoinfo: url + 'wx/order/getOrderInfo',
+  kd100: url + '/wx/order/queryByCompany'
 }
 
 // 查询补价

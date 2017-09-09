@@ -72,13 +72,6 @@ export default new Router({
     name: 'NoUser',
     component: require('@/views/NoUser')
   }, {
-    path: '/express/route',
-    name: 'ExpressRoute',
-    component: require('@/views/ExpressRoute'),
-    meta: {
-      intro: '快递路由信息'
-    }
-  }, {
     path: '/order/list',
     name: 'OrderList',
     component: require('@/views/OrderList'),
@@ -100,6 +93,14 @@ export default new Router({
     component: require('@/views/BootDeal'),
     meta: {
       intro: '补价处理页面',
+      requiresAuth: false
+    }
+  }, {
+    path: '/bootlist',
+    name: 'BootList',
+    component: require('@/views/BootList'),
+    meta: {
+      intro: '补价记录',
       requiresAuth: false
     }
   }]
