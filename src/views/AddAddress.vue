@@ -130,8 +130,11 @@ export default {
     },
     confirmStepProvince (val) {
       let oldProvincedataShow = this.provincedataShow
-      this.provincedataShow = val.show
-      this.provinceId = val.val.provinceId
+      console.log('valaaa', val)
+      if (val.show) {
+        this.provincedataShow = val.show
+        this.provinceId = val.val.provinceId
+      }
       if (this.provincedataShow !== oldProvincedataShow) {
         this.citydataShow = ''
         this.countydataShow = ''
