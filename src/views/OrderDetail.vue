@@ -9,8 +9,7 @@
           </div>
           <div class="orderdetail-detail-box__detail">
             <p>{{data.listMailingaddress ? data.listMailingaddress[0].linkman : ''}}&nbsp;{{data.listMailingaddress ? data.listMailingaddress[0].iphone : ''}}</p>
-            <p>{{sendAddress}}</p>
-            <p>{{data.listMailingaddress ? data.listMailingaddress[0].detailedinformation : ''}}</p>
+            <p>{{sendAddress['allName']}}&nbsp;{{data.listMailingaddress ? data.listMailingaddress[0].detailedinformation : ''}}</p>
           </div>
         </div>
         <div class="orderdetail-detail-box">
@@ -19,8 +18,7 @@
           </div>
           <div class="orderdetail-detail-box__detail">
             <p>{{data.listConsigneeaddress ? data.listConsigneeaddress[0].recipients : ''}}&nbsp;{{data.listConsigneeaddress ? data.listConsigneeaddress[0].iphone : ''}}</p>
-            <p>{{pickupAddress}}</p>
-            <p>{{data.listConsigneeaddress ? data.listConsigneeaddress[0].detaliedinformation : ''}}</p>
+            <p>{{pickupAddress['allName']}}&nbsp;{{data.listConsigneeaddress ? data.listConsigneeaddress[0].detaliedinformation : ''}}</p>
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@
     <div class="bind-container">
      <div class="logo">
        <img src="../assets/images/logo.png" alt="logo">
-       <h1 v-once>国际快递</h1>
+       <h1 v-once>国际快递服务中心</h1>
      </div>
      <div class="input mobile">
        <div>

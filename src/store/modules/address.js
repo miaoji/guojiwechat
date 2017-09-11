@@ -215,10 +215,10 @@ export const actions = {
         },
         headers: {'token': local.getItem('mj_token')}
       })
-      const countryName = getNameById(country.data.obj, countryid)
-      const provinceName = getNameById(province.data.obj, provinceid)
-      const cityName = getNameById(city.data.obj, cityid)
-      const countyName = getNameById(county.data.obj, countyid)
+      const countryName = getNameById(country.data.obj, countryid) || ''
+      const provinceName = getNameById(province.data.obj, provinceid) || ''
+      const cityName = getNameById(city.data.obj, cityid) || ''
+      const countyName = getNameById(county.data.obj, countyid) || ''
       const allName = countryName + provinceName + cityName + countyName
       const location = {
         allName,

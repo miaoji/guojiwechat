@@ -211,14 +211,6 @@ export default {
   },
   data () {
     return {
-      wx: {},
-      max: 200,
-      businesshall: '',
-      goodslabel: '',
-      describe: '',
-      note: '',
-      label: '',
-      office: '',
       expresstype: undefined,
       loading: false,
       dialogshow: false,
@@ -737,6 +729,7 @@ export default {
     }
   },
   beforeDestroy () {
+    this.$vux.loading.hide()
     // 离开页面时在localStorage中保存产品规格，包裹信息和备注信息
     const sendInfo = {
       weight: this.weight,
@@ -772,6 +765,7 @@ export default {
     border-radius: 5px;
   }
 }
+
 .dialog-demo {
   .weui-dialog{
     padding: 1rem 1rem 8px 1rem;
@@ -879,9 +873,11 @@ export default {
     color: #999;
   }
 }
+
 .bgblue {
   background-color: black;
 }
+
 .bgyellow {
   background-color: @dark-yellow;
 }
@@ -889,7 +885,6 @@ export default {
 .bgred {
   background-color: @red;
 }
-
 .weui-cells {
   margin-top: 12px!important;
 }
