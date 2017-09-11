@@ -260,7 +260,7 @@ export default {
       }
     }
     &-add {
-      margin-top: 10rem;
+      margin-top: 5rem;
       padding: 1rem 1rem;
       p {
         font-size: 1.8rem;

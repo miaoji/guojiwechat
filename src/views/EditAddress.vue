@@ -46,6 +46,7 @@ export default {
     const query = this.$route.query
     const type = query.type
     this.typecn = type
+    this.$vux.loading.show()
     if (type === 'send') {
       this.type = 1
       this.addressid = query.id
@@ -79,6 +80,7 @@ export default {
       this.countyId = Number(query.county)
     }
     let location = await this.getGeography({countryid: this.nationid, provinceid: this.provinceId, cityid: this.cityId, countyid: this.countyId})
+    this.$vux.loading.hide()
     if (location.type !== 'success') {
       this.$vux.toast.show(location)
       return
@@ -285,7 +287,7 @@ export default {
       }
     }
     &-add {
-      margin-top: 10rem;
+      margin-top: 5rem;
       padding: 1rem 1rem;
       p {
         font-size: 1.8rem;
