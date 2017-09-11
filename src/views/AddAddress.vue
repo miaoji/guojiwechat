@@ -6,6 +6,7 @@
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
         <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
         <x-input @click.native="stepprovinceshow = !stepprovinceshow && location !== ''" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
+        <x-input @click.native="getpositionshow = !getpositionshow" disabled title="省份11" placeholder="请选择省份" type="text" v-model="nationData" ></x-input>
         <x-input @click.native="stepcityshow = !stepcityshow && provincedataShow !== ''" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
         <x-input @click.native="stepcountyshow = !stepcountyshow && citydataShow !== ''" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
@@ -15,10 +16,11 @@
       <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
       </group>
-        <step-location :type="typecn" :steppickerShow="steppickershow" @listenClose="closeStepLocation" @listenConfrim="confirmStep"></step-location>
-        <step-province :type="typecn" :stepprovinceshow="stepprovinceshow" :nationId="nationId" @listenProvinceClose="closeStepProvince" @listenProvinceConfrim="confirmStepProvince"></step-province>
-        <step-city :type="typecn" :stepcityshow="stepcityshow" :provinceId="provinceId" @listenCityClose="closeStepCity"  @listenCityConfrim="confirmStepCity"></step-city>
-        <step-county :type="typecn" :stepcountyshow="stepcountyshow" :cityId="cityId" @listenCountyClose="closeStepCounty" @listenCountyConfrim="confirmStepCounty"></step-county>
+        <step-location :steppickerShow="steppickershow" @listenClose="closeStepLocation" @listenConfrim="confirmStep"></step-location>
+        <step-province :stepprovinceshow="stepprovinceshow" :nationId="nationId" @listenProvinceClose="closeStepProvince" @listenProvinceConfrim="confirmStepProvince"></step-province>
+        <step-city :stepcityshow="stepcityshow" :provinceId="provinceId" @listenCityClose="closeStepCity"  @listenCityConfrim="confirmStepCity"></step-city>
+        <step-county :stepcountyshow="stepcountyshow" :cityId="cityId" @listenCountyClose="closeStepCounty" @listenCountyConfrim="confirmStepCounty"></step-county>
+        <get-position :typecn='positionType' :getpositionshow="getpositionshow" :nationId="nationId" @listenPositionClose="toPositionClose" @listenPositionConfrim="toPositionConfrim"></get-position>
         <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
         </div>
@@ -64,8 +66,8 @@ export default {
   },
   data () {
     return {
-      type: 1,
-      typecn: 'send',
+      positionType: 2,
+      type: 2,
       picker: false,
       pagetype: 'add',
       idnumber: '1',
@@ -84,6 +86,7 @@ export default {
       stepcountyshow: false,
       stepprovinceshow: false,
       stepcityshow: false,
+      getpositionshow: false,
       location: '',
       locationid: {},
       nationId: 0,
@@ -93,7 +96,8 @@ export default {
       citydataShow: '',
       cityId: 0,
       countydataShow: '',
-      countyId: 0
+      countyId: 0,
+      nationData: []
     }
   },
   methods: {
@@ -118,6 +122,10 @@ export default {
     closeStepCounty (val) {
       this.stepcountyshow = val
     },
+    toPositionClose (val) {
+      this.getpositionshow = val
+    },
+    // 获取国家
     confirmStep (val) {
       let oldlocation = this.location
       this.location = val.show
@@ -128,6 +136,7 @@ export default {
         this.countydataShow = ''
       }
     },
+    // 获取省份
     confirmStepProvince (val) {
       let oldProvincedataShow = this.provincedataShow
       console.log('valaaa', val)
@@ -140,6 +149,7 @@ export default {
         this.countydataShow = ''
       }
     },
+    // 获取市级
     confirmStepCity (val) {
       let oldCitydataShow = this.citydataShow
       this.citydataShow = val.show
@@ -148,9 +158,31 @@ export default {
         this.countydataShow = ''
       }
     },
+    // 获取县级
     confirmStepCounty (val) {
       this.countydataShow = val.show
       this.countyId = val.val.county
+    },
+    toPositionConfrim (val) {
+      this.nationData = val.show
+      console.log('nationdata', val)
+      switch (val.type) {
+        case 1:
+          this.location = val.show
+          break
+        case 2:
+          let oldProvincedataShow = this.provincedataShow
+          console.log('valaaa', val)
+          if (val.show) {
+            this.provincedataShow = val.show
+            this.provinceId = val.val.provinceId
+          }
+          if (this.provincedataShow !== oldProvincedataShow) {
+            this.citydataShow = ''
+            this.countydataShow = ''
+          }
+          break
+      }
     },
     async saveAddress () {
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
