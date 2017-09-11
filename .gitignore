@@ -4,6 +4,7 @@ dist/
 testdist/
 npm-debug.log
 yarn-error.log
+.project
 
 # Logs
 logs
