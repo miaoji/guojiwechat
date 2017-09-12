@@ -71,6 +71,9 @@ export default {
         })
       }
       let shift = 0
+      if (data.obj.length < 1) {
+        data.obj.push({'name': '暂无城市信息', 'id': '', countryid: ''})
+      }
       this.countryData = data.obj.map(function (elem, index) {
         if (elem.name === '中国') {
           shift = index

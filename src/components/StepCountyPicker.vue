@@ -74,6 +74,10 @@ export default {
             text: data.mess
           })
         }
+        if (data.obj.length < 1) {
+          data.obj.push({'name': '暂无城市信息', 'id': '', countryid: ''})
+          // this.close()
+        }
         this.countyData = data.obj.map(function (elem) {
           return {
             name: elem.name,

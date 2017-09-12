@@ -10,7 +10,7 @@
     </div>
     <div class="getpositioninfo-step">
       <p>选择</p>
-      <picker :data='countryData' v-model='countryVal' :fixed-columns="1" :columns="1"></picker>
+      <picker :data='cityDatas' v-model='cityVals' :fixed-columns="1" :columns="1"></picker>
     </div>
   </div>
 </template>
@@ -31,6 +31,18 @@ export default {
       type: Number,
       default: 0
     },
+    provinceId: {
+      type: Number,
+      default: 0
+    },
+    cityId: {
+      type: Number,
+      default: 0
+    },
+    countyId: {
+      type: Number,
+      default: 0
+    },
     getpositionshow: {
       type: Boolean,
       default: false
@@ -48,18 +60,51 @@ export default {
   },
   data () {
     return {
-      countryData: [],
-      countryVal: [],
-      provinceData: [],
-      provinceVal: [],
-      cityData: [],
-      cityVal: [],
-      countyData: [],
-      countyVal: []
+      cityDatas: [],
+      cityVals: []
     }
   },
   async created () {
-    console.log('this.typepepep', this.typecn)
+    try {
+      const res = await instance({
+        method: 'post',
+        url: geographyApi.showcountry,
+        headers: {'token': window.localStorage.getItem('mj_token')}
+      })
+      if (res.status !== 200) {
+        return this.$vux.toast.show({
+          type: 'warn',
+          text: '获取路由失败'
+        })
+      }
+      const data = res.data
+      if (data.code !== 200) {
+        return this.$vux.toast.show({
+          type: 'warn',
+          text: data.mess
+        })
+      }
+      let shift = 0
+      this.cityDatas = data.obj.map(function (elem, index) {
+        if (elem.name === '中国') {
+          shift = index
+        }
+        return {
+          name: elem.name,
+          value: elem.id
+        }
+      })
+      if (this.type === 'pickup') {
+        this.cityDatas.shift(shift)
+      }
+    } catch (e) {
+      console.error(e)
+      return this.$vux.toast.show({
+        type: 'warn',
+        width: '18rem',
+        text: '网络请求错误'
+      })
+    }
   },
   methods: {
     change (value) {
@@ -78,41 +123,65 @@ export default {
       return newobj['name']
     },
     confirm () {
-      const country = this.getNameById(this.countryData, this.countryVal)
+      const country = this.getNameById(this.cityDatas, this.cityVals)
       const location = {
         show: country,
         val: {
-          nationid: Number(this.countryVal)
-        },
-        type: this.typecn
-      }
-      this.step = 1
-      console.log('location', location)
-      this.$emit('listenPositionConfrim', location)
-      this.$emit('listenPositionClose', false)
-    },
-    callFather (data, val) {
-      const country = this.getNameById(data, val)
-      const location = {
-        show: country,
-        val: {
-          nationid: Number(val)
+          positionId: Number(this.cityVals)
         },
         typePosition: this.typecn
       }
       this.step = 1
-      console.log('location', location)
-      this.$emit('listenPositionConfrim', location)
+      switch (this.typecn) {
+        case 1:
+          this.$emit('confirmStepNation', location)
+          break
+        case 2:
+          this.$emit('confirmStepProvince', location)
+          break
+        case 3:
+          this.$emit('confirmStepCity', location)
+          break
+        case 4:
+          this.$emit('confirmStepCounty', location)
+          break
+      }
       this.$emit('listenPositionClose', false)
+    },
+    callFather () {
+      const country = this.getNameById(this.cityDatas, this.cityVals)
+      const location = {
+        show: country,
+        val: {
+          nationid: Number(this.cityVals)
+        },
+        typePosition: this.typecn
+      }
+      this.step = 1
+      this.$emit('listenPositionClose', false)
+      switch (this.typecn) {
+        case 1:
+          this.$emit('confirmStepNation', location)
+          break
+        case 2:
+          this.$emit('confirmStepProvince', location)
+          break
+        case 3:
+          this.$emit('confirmStepCity', location)
+          break
+        case 4:
+          this.$emit('confirmStepCounty', location)
+          break
+      }
     }
   },
   watch: {
     async getpositionshow () {
-      console.log('this.typecn', this.typecn)
-      switch (this.typecn) {
-        case 1:
-          try {
-            const res = await instance({
+      let res = {}
+      try {
+        switch (this.typecn) {
+          case 1:
+            res = await instance({
               method: 'post',
               url: geographyApi.showcountry,
               headers: {'token': window.localStorage.getItem('mj_token')}
@@ -123,39 +192,9 @@ export default {
                 text: '获取路由失败'
               })
             }
-            const data = res.data
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            let shift = 0
-            this.countryData = data.obj.map(function (elem, index) {
-              if (elem.name === '中国') {
-                shift = index
-              }
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-            if (this.type === 'pickup') {
-              this.countryData.shift(shift)
-            }
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
-          }
-          break
-        case 2:
-          try {
-            console.log('对对对', this.nationId)
-            const res = await instance({
+            break
+          case 2:
+            res = await instance({
               method: 'post',
               url: geographyApi.showprovince,
               params: {
@@ -163,114 +202,52 @@ export default {
               },
               headers: {'token': window.localStorage.getItem('mj_token')}
             })
-            if (res.status !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: '获取路由失败'
-              })
-            }
-            console.log('res', res)
-            const data = res.data
-            console.log('data', data)
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            this.countryData = data.obj.map(function (elem) {
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
-          }
-          break
-        case 3:
-          try {
-            const res = await instance({
+            break
+          case 3:
+            res = await instance({
               method: 'post',
               url: geographyApi.showcity,
               params: {
-                provinceid: Number(this.nationId)
+                provinceid: Number(this.provinceId)
               },
               headers: {'token': window.localStorage.getItem('mj_token')}
             })
-            if (res.status !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: '获取路由失败'
-              })
-            }
-            const data = res.data
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            this.countryData = data.obj.map(function (elem) {
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
-          }
-          break
-        case 4:
-          try {
-            const res = await instance({
+            break
+          case 4:
+            res = await instance({
               method: 'post',
               url: geographyApi.showcounty,
               params: {
-                cityid: Number(this.cityVal)
+                cityid: Number(this.cityId)
               },
               headers: {'token': window.localStorage.getItem('mj_token')}
             })
-            if (res.status !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: '获取路由失败'
-              })
-            }
-            const data = res.data
-            if (data.code !== 200) {
-              return this.$vux.toast.show({
-                type: 'warn',
-                text: data.mess
-              })
-            }
-            this.countyData = data.obj.map(function (elem) {
-              return {
-                name: elem.name,
-                value: elem.id
-              }
-            })
-          } catch (e) {
-            console.error(e)
-            return this.$vux.toast.show({
-              type: 'warn',
-              width: '18rem',
-              text: '网络请求错误'
-            })
+            break
+        }
+        const data = res.data
+        if (data.code !== 200) {
+          return this.$vux.toast.show({
+            type: 'warn',
+            text: data.mess
+          })
+        }
+        if (data.obj.length < 1) {
+          data.obj.push({'name': '暂无城市信息', 'id': '', countryid: ''})
+          // this.close()
+        }
+        this.cityDatas = data.obj.map(function (elem) {
+          return {
+            name: elem.name,
+            value: elem.id
           }
-          break
-        default:
-          break
+        })
+      } catch (e) {
+        console.error(e)
+        return this.$vux.toast.show({
+          type: 'warn',
+          width: '18rem',
+          text: '网络请求错误'
+        })
       }
     }
   }
