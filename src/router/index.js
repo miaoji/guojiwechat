@@ -42,17 +42,9 @@ export default new Router({
   }, {
     path: '/address/add',
     name: 'AddAddress',
-    component: require('@/views/AddAddress'),
+    component: require('@/views/HandleAddress'),
     meta: {
-      intro: '添加地址',
-      requiresAuth: true
-    }
-  }, {
-    path: '/address/edit',
-    name: 'EditAddress',
-    component: require('@/views/EditAddress'),
-    meta: {
-      intro: '编辑地址',
+      intro: '添加/编辑地址',
       requiresAuth: true
     }
   }, {

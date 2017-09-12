@@ -1,22 +1,21 @@
 <template>
-  <div class="editaddress">
-    <div class="editaddress-container">
+  <div class="addaddress">
+    <div class="addaddress-container">
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <x-input title="电话" type="text" :max="20" v-model="iphone" placeholder="请输入手机号" required></x-input>
+        <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
         <x-input @click.native="getPosition(1)" disabled title="国家" placeholder="请选择国家" type="text" required v-model="nationdataShow"></x-input>
         <x-input @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
         <x-input @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
         <x-input @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
-        <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号 (限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
-        <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
-        <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22">
-        </x-textarea>
+        <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
+        <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
+        <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required></x-textarea>
       </group>
       <group>
-       <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
+         <x-switch title="设为默认地址" class="mj-switch" v-model="defaultLocation"></x-switch>
       </group>
-      <get-position 
+        <get-position 
           :typecn='positionType' 
           :getpositionshow="getpositionshow" 
           :nationId="nationId" 
@@ -27,19 +26,20 @@
           @listenPositionConfirm="toPositionConfirm"
         >
       </get-position>
-      <div class="editaddress-container-add">
-       <p class="editaddress-container-add--btn" @click.stop="editAddress">保存修改</p>
-      </div>
+        <div class="addaddress-container-add">
+         <p class="addaddress-container-add--btn" @click.stop="saveAddress" v-show="pagetype === 'add'">创建</p>
+         <p class="addaddress-container-add--btn" @click.stop="editAddress" v-show="pagetype === 'edit'">确认修改</p>
+        </div>
     </div>
   </div>
 </template>
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
-import { reg as regUtil } from '../utils'
+import { reg as regUtil, storage } from '../utils'
 
 export default {
-  name: 'editaddress',
+  name: 'addaddress',
   components: {
     XInput,
     XSwitch,
@@ -48,12 +48,41 @@ export default {
     XTextarea,
     Picker
   },
+  mounted () {
+    if (this.typecn === 'send') {
+      if (this.pagetype === 'add') {
+        window.document.title = '添加寄件地址'
+      } else if (this.pagetype === 'edit') {
+        window.document.title = '添加收件地址'
+      }
+    } else if (this.typecn === 'pickup') {
+      if (this.pagetype === 'add') {
+        window.document.title = '修改寄件地址'
+      } else if (this.pagetype === 'edit') {
+        window.document.title = '修改寄件地址'
+      }
+    }
+  },
   async created () {
     const query = this.$route.query
     const type = query.type
     this.typecn = type
-    this.$vux.loading.show()
-    if (type === 'send') {
+    console.log('query', query)
+    this.pagetype = query.pagetype
+    this.type = type === 'send' ? 1 : 2
+    let localData = storage({
+      key: `add_address_${type}_prop`
+    })
+    localData = JSON.parse(localData)
+    if (localData) {
+      this.linkman = localData.linkman || ''
+      this.iphone = localData.iphone || ''
+      this.postcode = localData.postcode || ''
+      this.detailedinformation = localData.detailedinformation || ''
+      this.remove = localData.remove || ''
+      this.defaultLocation = localData.defaultLocation || false
+    }
+    if (this.typecn === 'send') {
       this.type = 1
       this.addressid = query.id
       this.linkman = query.linkman
@@ -68,7 +97,7 @@ export default {
       this.provinceId = Number(query.provinnce)
       this.cityId = Number(query.city)
       this.countyId = Number(query.county)
-    } else if (type === 'pickup') {
+    } else if (this.typecn === 'pickup') {
       this.type = 2
       this.addressid = query.id
       this.linkman = query.recipients
@@ -99,44 +128,37 @@ export default {
     this.countydataShow = locationName.countyName
     this.value = query.start === 3
   },
-  mounted () {
-    window.document.title = '编辑地址'
-  },
   data () {
     return {
-      positionType: 0,
-      type: 1,
-      typecn: 1,
-      addressid: '',
+      // pagetype: '',
+      positionType: 1,
+      type: 2,
       picker: false,
-      pagetype: 'add',
-      idnumber: '',
+      pagetype: '',
+      idnumber: '1',
       query: {},
       linkman: '',
       company: '',
       postcode: '',
       iphone: '',
       detailedinformation: '',
-      endtime: '',
       remove: '',
-      value: false,
+      // defaultLocation: false,
       addressVal: [],
       ajaxasync: false,
-      steppickershow: false,
-      stepcountyshow: false,
-      stepprovinceshow: false,
-      stepcityshow: false,
-      nationdataShow: '',
+      createRes: false,
       locationid: {},
-      nationId: 0,
       provincedata: [],
+      // 信息
+      getpositionshow: false,
+      nationdataShow: '',
+      nationId: 0,
       provincedataShow: '',
       provinceId: 0,
       citydataShow: '',
       cityId: 0,
       countydataShow: '',
-      countyId: 0,
-      getpositionshow: false
+      countyId: 0
     }
   },
   methods: {
@@ -204,6 +226,68 @@ export default {
           this.countyId = val.val.positionId
           break
       }
+    },
+    async saveAddress () {
+      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
+        this.$vux.toast.show({
+          text: '请将信息填写完整',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (this.nationdataShow === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
+        this.$vux.toast.show({
+          text: '当国家为中国时，省市区为必填',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (!regUtil.checkPostcode(this.postcode)) {
+        this.$vux.toast.show({
+          text: '邮编格式不对，请重新填写',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (!regUtil.checkMobile(this.iphone)) {
+        this.$vux.toast.show({
+          text: '手机号格式不对，请重新填写',
+          type: 'warn',
+          width: '18rem'
+        })
+        return
+      }
+      if (this.ajaxasync) return
+      this.ajaxasync = true
+      const locationId = this.locationid
+      const start = this.defaultLocation ? 3 : 1
+      const res = await this.addAddress({
+        ...locationId,
+        detailedinformation: this.detailedinformation,
+        postcode: this.postcode,
+        iphone: this.iphone,
+        nationid: this.nationId,
+        provinnce: this.provinceId,
+        city: this.cityId,
+        county: this.countyId,
+        linkman: this.linkman,
+        company: this.company,
+        remove: this.remove,
+        type: this.type,
+        idnumber: this.idnumber,
+        start
+      })
+      this.ajaxasync = false
+      if (res.type !== 'success') {
+        this.createRes = false
+        return this.$vux.toast.show(res)
+      }
+      this.$vux.toast.show(res)
+      this.createRes = true
+      this.$router.go(-1)
     },
     async editAddress () {
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
@@ -276,7 +360,23 @@ export default {
     }
   },
   beforeDestroy () {
-    this.$vux.loading.hide()
+    // 如果未新建，保存已设置的值
+    if (!this.createRes) {
+      const type = this.typecn
+      const addressInfo = {
+        linkman: this.linkman,
+        iphone: this.iphone,
+        postcode: this.postcode,
+        detailedinformation: this.detailedinformation,
+        remove: this.remove,
+        defaultLocation: this.defaultLocation
+      }
+      storage({
+        key: `add_address_${type}_prop`,
+        val: JSON.stringify(addressInfo),
+        type: 'set'
+      })
+    }
   }
 }
 </script>
@@ -284,7 +384,7 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
-.editaddress {
+.addaddress {
   min-height: 100vh;
   background-color: @bg-grey;
   &-container {
