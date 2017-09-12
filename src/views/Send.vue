@@ -8,55 +8,55 @@
           </cell>
         </group>
       </div>
-      <div class="send-container-address flex" style="border-bottom: 1px solid #dedede;">
-        <div class="send-container-address__intro">
-          <span class="bgblue">寄</span>
-        </div>
-        <div class="send-container-address__info">
-          <div class="send-container-address__info--line">
-            <div>
-              <span>
-                {{sendAddress['linkman']}}&nbsp;&nbsp;
-              </span>
-              <span class="address-info">
-                {{sendAddress['iphone']}}    
-              </span>
-            </div>
+      <router-link to="/address?type=send&pick=1">
+        <div class="send-container-address flex" style="border-bottom: 1px solid #dedede;">
+          <div class="send-container-address__intro">
+            <span class="bgblue">寄</span>
           </div>
-          <p class="address-detail-info">
-           {{sendAddress['nationname']}}{{sendAddress['provincename']}}{{sendAddress['cityname']}}{{sendAddress['countyname']}}{{sendAddress['detailedinformation']}}
-          </p>
+          <div class="send-container-address__info">
+            <div class="send-container-address__info--line">
+              <div>
+                <span>
+                  {{sendAddress['linkman']}}&nbsp;&nbsp;
+                </span>
+                <span class="address-info">
+                  {{sendAddress['iphone']}}    
+                </span>
+              </div>
+            </div>
+            <p class="address-detail-info">
+             {{sendAddress['nationname']}}{{sendAddress['provincename']}}{{sendAddress['cityname']}}{{sendAddress['countyname']}}{{sendAddress['detailedinformation']}}
+            </p>
+          </div>
+          <div class="send-container-address__link">
+              地址簿
+          </div>
         </div>
-        <div class="send-container-address__link">
-          <router-link to="/address?type=send&pick=1">
-            地址簿
-          </router-link>
-        </div>
-      </div>
+      </router-link>
       
-      <div class="send-container-address flex">
-        <div class="send-container-address__intro">
-          <span class="bgred">收</span>
-        </div>
-        <div class="send-container-address__info">
-          <div class="send-container-address__info--line">
-            <div>
-              <span>{{pickupAddress['recipients']}}&nbsp;&nbsp;</span>
-              <span class="address-info">
-                {{pickupAddress['iphone']}}
-              </span>
-            </div>
+      <router-link to="/address?type=pickup&pick=1">
+        <div class="send-container-address flex">
+          <div class="send-container-address__intro">
+            <span class="bgred">收</span>
           </div>
-          <p class="address-detail-info">
-             {{pickupAddress['nationname']}}{{pickupAddress['provincename']}}{{pickupAddress['cityname']}}{{pickupAddress['countyname']}}{{pickupAddress['detailedinformation']}}
-          </p>
-        </div>
-        <div class="send-container-address__link">
-          <router-link to="/address?type=pickup&pick=1">
+          <div class="send-container-address__info">
+            <div class="send-container-address__info--line">
+              <div>
+                <span>{{pickupAddress['recipients']}}&nbsp;&nbsp;</span>
+                <span class="address-info">
+                  {{pickupAddress['iphone']}}
+                </span>
+              </div>
+            </div>
+            <p class="address-detail-info">
+               {{pickupAddress['nationname']}}{{pickupAddress['provincename']}}{{pickupAddress['cityname']}}{{pickupAddress['countyname']}}{{pickupAddress['detailedinformation']}}
+            </p>
+          </div>
+          <div class="send-container-address__link">
             地址簿
-          </router-link>
+          </div>
         </div>
-      </div>
+      </router-link>
 
       <div class="send-container-select" >
         <group label-width="6rem" label-align="left">
@@ -128,7 +128,7 @@
               <span class="vux-close"></span>
             </div>
           </div>
-          <div class="dialog-content--input">
+          <div class="dialog-content--input send-weight-input">
             <group>
                <x-input title="" type="number" required v-model="weight" placeholder="请填写您的物品的实际重量"></x-input>
             </group>
@@ -581,10 +581,10 @@ export default {
       this.isBack = false
     },
     dialogClose () {
-      if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
+      if (Number(this.weight) > 20 || Number(this.weight) <= 0) {
         this.weight = null
         this.$vux.toast.show({
-          text: '重量不能大于30kg不能为0',
+          text: '重量不能大于20kg不能为0',
           width: '18rem',
           type: 'warn'
         })
@@ -599,9 +599,9 @@ export default {
       this.dialogshow = false
     },
     volumeConfirm () {
-      if (Number(this.weight) > 30 || Number(this.weight) <= 0) {
+      if (Number(this.weight) > 20 || Number(this.weight) <= 0) {
         this.$vux.toast.show({
-          text: '重量不能大于30kg不能为0',
+          text: '重量不能大于20kg不能为0',
           width: '18rem',
           type: 'warn'
         })
@@ -706,9 +706,9 @@ export default {
       if (!val) {
         return
       }
-      if (Number(val) > 30) {
+      if (Number(val) > 20) {
         _this.$vux.toast.show({
-          text: '重量不能大于30kg',
+          text: '重量不能大于20kg',
           width: '18rem',
           type: 'warn'
         })
@@ -780,6 +780,22 @@ export default {
   .dialog-title {
     line-height: 30px;
     color: #666;
+  }
+  .send-weight-input {
+    .weui-cells {
+      &:before {
+        border-top-color: #D9D9D9;
+        border-top-width: 2px;
+      }
+      &:after {
+        border-bottom-color: #D9D9D9;
+        border-bottom-width: 2px;
+      }
+      .weui-cell {
+        border-left: 2px solid #D9D9D9;
+        border-right: 2px solid #D9D9D9;
+      }
+    }
   }
   .dialog-content {
     text-align: left;
@@ -968,6 +984,11 @@ label {
   &-container {
     padding-bottom: 6rem;
     overflow: hidden;
+    a {
+      .send-container-address {
+        color: #333;
+      }
+    }
     &-address {
       font-size: 1.4rem;
       padding: .6rem 0;
@@ -1003,7 +1024,6 @@ label {
           }
         }
       }
-
       &__link {
         white-space: nowrap;
         flex: 2;
@@ -1012,9 +1032,7 @@ label {
         text-align: right;
         height: 5rem;
         line-height: 5rem;
-        a {
-          color: @red;
-        }
+        color: @red;
       }
     }
 
