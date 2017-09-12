@@ -82,51 +82,53 @@ export default {
       this.remove = localData.remove || ''
       this.defaultLocation = localData.defaultLocation || false
     }
-    if (this.typecn === 'send') {
-      this.type = 1
-      this.addressid = query.id
-      this.linkman = query.linkman
-      this.company = query.company
-      this.iphone = query.iphone
-      this.postcode = query.postcode
-      this.endtime = query.endtime
-      this.detailedinformation = query.detailedinformation
-      this.remove = query.remove
-      // 定义国家省市区 id 和展示的名称
-      this.nationId = Number(query.nationid)
-      this.provinceId = Number(query.provinnce)
-      this.cityId = Number(query.city)
-      this.countyId = Number(query.county)
-    } else if (this.typecn === 'pickup') {
-      this.type = 2
-      this.addressid = query.id
-      this.linkman = query.recipients
-      this.company = query.company
-      this.iphone = query.iphone
-      this.postcode = query.postcode
-      this.endtime = query.endtime
-      this.idnumber = query.idnumber
-      this.detailedinformation = query.detaliedinformation
-      this.remove = query.remark
-      // 定义国家省市区 id 和展示的名称
-      this.nationId = Number(query.nation)
-      this.provinceId = Number(query.provinnce)
-      this.cityId = Number(query.city)
-      this.countyId = Number(query.county)
+    if (this.pagetype === 'edit') {
+      if (this.typecn === 'send') {
+        this.type = 1
+        this.addressid = query.id
+        this.linkman = query.linkman
+        this.company = query.company
+        this.iphone = query.iphone
+        this.postcode = query.postcode
+        this.endtime = query.endtime
+        this.detailedinformation = query.detailedinformation
+        this.remove = query.remove
+        // 定义国家省市区 id 和展示的名称
+        this.nationId = Number(query.nationid)
+        this.provinceId = Number(query.provinnce)
+        this.cityId = Number(query.city)
+        this.countyId = Number(query.county)
+      } else if (this.typecn === 'pickup') {
+        this.type = 2
+        this.addressid = query.id
+        this.linkman = query.recipients
+        this.company = query.company
+        this.iphone = query.iphone
+        this.postcode = query.postcode
+        this.endtime = query.endtime
+        this.idnumber = query.idnumber
+        this.detailedinformation = query.detaliedinformation
+        this.remove = query.remark
+        // 定义国家省市区 id 和展示的名称
+        this.nationId = Number(query.nation)
+        this.provinceId = Number(query.provinnce)
+        this.cityId = Number(query.city)
+        this.countyId = Number(query.county)
+      }
+      let location = await this.getGeography({countryid: this.nationId, provinceid: this.provinceId, cityid: this.cityId, countyid: this.countyId})
+      this.$vux.loading.hide()
+      if (location.type !== 'success') {
+        this.$vux.toast.show(location)
+        return
+      }
+      // 将获得的name分配给当前页面data
+      const locationName = location.data
+      this.nationdataShow = locationName.countryName
+      this.provincedataShow = locationName.provinceName
+      this.citydataShow = locationName.cityName
+      this.countydataShow = locationName.countyName
+      this.defaultLocation = query.start === 3
     }
-    let location = await this.getGeography({countryid: this.nationId, provinceid: this.provinceId, cityid: this.cityId, countyid: this.countyId})
-    this.$vux.loading.hide()
-    if (location.type !== 'success') {
-      this.$vux.toast.show(location)
-      return
-    }
-    // 将获得的name分配给当前页面data
-    const locationName = location.data
-    this.nationdataShow = locationName.countryName
-    this.provincedataShow = locationName.provinceName
-    this.citydataShow = locationName.cityName
-    this.countydataShow = locationName.countyName
-    this.value = query.start === 3
   },
   data () {
     return {
@@ -333,7 +335,7 @@ export default {
         this.$vux.loading.hide()
         return
       }
-      const start = this.value ? 3 : 1
+      const start = this.defaultLocation ? 3 : 1
       const res = await this.addAddress({
         nationid: this.nationId,
         provinnce: this.provinceId,
