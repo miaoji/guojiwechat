@@ -28,7 +28,7 @@
           @confirmStepCity="confirmStepCity"
           @confirmStepCounty="confirmStepCounty"
         >
-      </get-position>
+        </get-position>
         <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
         </div>
