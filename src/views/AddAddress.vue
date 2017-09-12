@@ -4,21 +4,31 @@
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
-        <x-input @click.native="stepprovinceshow = !stepprovinceshow && location !== ''" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
-        <x-input @click.native="stepcityshow = !stepcityshow && provincedataShow !== ''" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
-        <x-input @click.native="stepcountyshow = !stepcountyshow && citydataShow !== ''" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
+        <x-input @click.native="getNation" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
+        <x-input @click.native="getProvince" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
+        <x-input @click.native="getCity" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
+        <x-input @click.native="getCounty" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
         <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required></x-textarea>
       </group>
       <group>
-         <x-switch title="设为默认地址" class="mj-switch" v-model="value"></x-switch>
+         <x-switch title="设为默认地址" class="mj-switch" v-model="defaultLocation"></x-switch>
       </group>
-        <step-location :type="typecn" :steppickerShow="steppickershow" @listenClose="closeStepLocation" @listenConfrim="confirmStep"></step-location>
-        <step-province :type="typecn" :stepprovinceshow="stepprovinceshow" :nationId="nationId" @listenProvinceClose="closeStepProvince" @listenProvinceConfrim="confirmStepProvince"></step-province>
-        <step-city :type="typecn" :stepcityshow="stepcityshow" :provinceId="provinceId" @listenCityClose="closeStepCity"  @listenCityConfrim="confirmStepCity"></step-city>
-        <step-county :type="typecn" :stepcountyshow="stepcountyshow" :cityId="cityId" @listenCountyClose="closeStepCounty" @listenCountyConfrim="confirmStepCounty"></step-county>
+        <get-position 
+          :typecn='positionType' 
+          :getpositionshow="getpositionshow" 
+          :nationId="nationId" 
+          :provinceId="provinceId"
+          :cityId="cityId"
+          :countyId="countyId"
+          @listenPositionClose="toPositionClose" 
+          @confirmStepNation="confirmStepNation"
+          @confirmStepProvince="confirmStepProvince"
+          @confirmStepCity="confirmStepCity"
+          @confirmStepCounty="confirmStepCounty"
+        >
+      </get-position>
         <div class="addaddress-container-add">
          <p class="addaddress-container-add--btn" @click.stop="saveAddress">创建</p>
         </div>
@@ -59,13 +69,13 @@ export default {
       this.postcode = localData.postcode || ''
       this.detailedinformation = localData.detailedinformation || ''
       this.remove = localData.remove || ''
-      this.value = localData.value || ''
+      this.defaultLocation = localData.defaultLocation || false
     }
   },
   data () {
     return {
-      type: 1,
-      typecn: 'send',
+      positionType: 1,
+      type: 2,
       picker: false,
       pagetype: 'add',
       idnumber: '1',
@@ -76,7 +86,7 @@ export default {
       iphone: '',
       detailedinformation: '',
       remove: '',
-      value: false,
+      // defaultLocation: false,
       addressVal: [],
       ajaxasync: false,
       createRes: false,
@@ -84,6 +94,7 @@ export default {
       stepcountyshow: false,
       stepprovinceshow: false,
       stepcityshow: false,
+      getpositionshow: false,
       location: '',
       locationid: {},
       nationId: 0,
@@ -93,7 +104,8 @@ export default {
       citydataShow: '',
       cityId: 0,
       countydataShow: '',
-      countyId: 0
+      countyId: 0,
+      nationData: []
     }
   },
   methods: {
@@ -101,53 +113,61 @@ export default {
       'addAddress',
       'eidtAddress'
     ]),
-    getProvincedata (val) {
-      this.provincedata = val
+    getNation () {
+      this.getpositionshow = !this.getpositionshow
+      this.positionType = 1
     },
-    pickerChange () {
+    getProvince () {
+      this.getpositionshow = !this.getpositionshow && location !== ''
+      this.positionType = 2
     },
-    closeStepLocation (val) {
-      this.steppickershow = val
+    getCity () {
+      this.getpositionshow = !this.getpositionshow && this.provincedataShow !== ''
+      this.positionType = 3
     },
-    closeStepProvince (val) {
-      this.stepprovinceshow = val
+    getCounty () {
+      this.getpositionshow = !this.getpositionshow && this.citydataShow !== ''
+      this.positionType = 4
     },
-    closeStepCity (val) {
-      this.stepcityshow = val
+    toPositionClose (val) {
+      this.getpositionshow = val
     },
-    closeStepCounty (val) {
-      this.stepcountyshow = val
-    },
-    confirmStep (val) {
+    // 获取国家
+    confirmStepNation (val) {
       let oldlocation = this.location
       this.location = val.show
-      this.nationId = val.val.nationid
+      this.nationId = val.val.positionId
       if (this.location !== oldlocation) {
         this.provincedataShow = ''
         this.citydataShow = ''
         this.countydataShow = ''
       }
     },
+    // 获取省份
     confirmStepProvince (val) {
       let oldProvincedataShow = this.provincedataShow
-      this.provincedataShow = val.show
-      this.provinceId = val.val.provinceId
+      if (val.show) {
+        this.provincedataShow = val.show
+        this.provinceId = val.val.positionId
+      }
       if (this.provincedataShow !== oldProvincedataShow) {
         this.citydataShow = ''
         this.countydataShow = ''
       }
     },
+    // 获取市级
     confirmStepCity (val) {
       let oldCitydataShow = this.citydataShow
       this.citydataShow = val.show
       if (this.citydataShow !== oldCitydataShow) {
-        this.cityId = val.val.city
+        this.cityId = val.val.positionId
         this.countydataShow = ''
       }
     },
+    // 获取县级
     confirmStepCounty (val) {
       this.countydataShow = val.show
-      this.countyId = val.val.county
+      this.countyId = val.val.positionId
     },
     async saveAddress () {
       if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
@@ -185,7 +205,7 @@ export default {
       if (this.ajaxasync) return
       this.ajaxasync = true
       const locationId = this.locationid
-      const start = this.value ? 3 : 1
+      const start = this.defaultLocation ? 3 : 1
       const res = await this.addAddress({
         ...locationId,
         detailedinformation: this.detailedinformation,
@@ -222,18 +242,13 @@ export default {
         postcode: this.postcode,
         detailedinformation: this.detailedinformation,
         remove: this.remove,
-        value: this.value
+        defaultLocation: this.defaultLocation
       }
       storage({
         key: `add_address_${type}_prop`,
         val: JSON.stringify(addressInfo),
         type: 'set'
       })
-    }
-  },
-  watch: {
-    location (val) {
-      console.log('val', val)
     }
   }
 }

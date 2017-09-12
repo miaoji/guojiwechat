@@ -42,7 +42,8 @@ export default {
   data () {
     return {
       provinceData: [],
-      provinceVal: []
+      provinceVal: [],
+      hide: true
     }
   },
   methods: {
@@ -69,6 +70,9 @@ export default {
             text: data.mess
           })
         }
+        if (data.obj.length < 1) {
+          data.obj.push({'name': '暂无城市信息', 'id': '', countryid: ''})
+        }
         this.provinceData = data.obj.map(function (elem) {
           return {
             name: elem.name,
@@ -88,6 +92,9 @@ export default {
     close () {
       this.$emit('listenProvinceClose', false)
     },
+    open () {
+      this.$emit('listenProvinceClose', true)
+    },
     getNameById (obj, id) {
       let newobj = ''
       Object.keys(obj).forEach((elem, index) => {
@@ -106,7 +113,6 @@ export default {
         }
       }
       this.$emit('listenProvinceConfrim', provincedata)
-      console.log('provincedata', provincedata)
       this.$emit('listenProvinceClose', false)
     }
   },
@@ -124,7 +130,9 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
-
+.hide {
+  display: none;
+}
 .stepprovincepicker {
   position: fixed;
   bottom: 0;

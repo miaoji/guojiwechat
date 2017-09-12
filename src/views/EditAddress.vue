@@ -6,9 +6,9 @@
         <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-input title="电话" type="text" :max="20" v-model="iphone" placeholder="请输入手机号" required></x-input>
         <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
-        <x-input @click.native="stepprovinceshow = !stepprovinceshow && location" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
-        <x-input @click.native="stepcityshow = !stepcityshow && provincedataShow" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
-        <x-input @click.native="stepcountyshow = !stepcountyshow && citydataShow" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
+        <x-input @click.native="stepprovinceshow = !stepprovinceshow && location !== ''" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
+        <x-input @click.native="stepcityshow = !stepcityshow && provincedataShow != ''" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
+        <x-input @click.native="stepcountyshow = !stepcountyshow && citydataShow != ''" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号 (限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
         </x-textarea>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22">
@@ -58,7 +58,7 @@ export default {
       this.detailedinformation = query.detailedinformation
       this.remove = query.remove
       // 定义国家省市区 id 和展示的名称
-      this.nationid = Number(query.nationid)
+      this.nationId = Number(query.nationid)
       this.provinceId = Number(query.provinnce)
       this.cityId = Number(query.city)
       this.countyId = Number(query.county)
@@ -74,12 +74,12 @@ export default {
       this.detailedinformation = query.detaliedinformation
       this.remove = query.remark
       // 定义国家省市区 id 和展示的名称
-      this.nationid = Number(query.nation)
+      this.nationId = Number(query.nation)
       this.provinceId = Number(query.provinnce)
       this.cityId = Number(query.city)
       this.countyId = Number(query.county)
     }
-    let location = await this.getGeography({countryid: this.nationid, provinceid: this.provinceId, cityid: this.cityId, countyid: this.countyId})
+    let location = await this.getGeography({countryid: this.nationId, provinceid: this.provinceId, cityid: this.cityId, countyid: this.countyId})
     this.$vux.loading.hide()
     if (location.type !== 'success') {
       this.$vux.toast.show(location)
