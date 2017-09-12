@@ -175,6 +175,16 @@ const getConfByEnv = function () {
   return conf
 }
 
+/**
+ * [快速打印一个五分制的评分情况]
+ * @param  {[type]} rating [description]
+ * @return {[type]}        [description]
+ */
+function getRating (rating) {
+  if (rating > 5 || rating < 0) throw new Error('数字不在范围内')
+  return '★★★★★☆☆☆☆☆'.substring(5 - rating, 10 - rating)
+}
+
 export {
   queryURL,
   queryArray,
@@ -183,5 +193,6 @@ export {
   getConfByEnv,
   storage,
   time,
-  reg
+  reg,
+  getRating
 }
