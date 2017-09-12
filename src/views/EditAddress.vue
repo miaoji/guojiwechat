@@ -5,8 +5,8 @@
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input type="text" title="邮编" v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-input title="电话" type="text" :max="20" v-model="iphone" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
-        <x-input @click.native="stepprovinceshow = !stepprovinceshow && location !== ''" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
+        <x-input @click.native="steppickershow = !steppickershow" disabled title="国家" placeholder="请选择国家" type="text" required v-model="nationdataShow"></x-input>
+        <x-input @click.native="stepprovinceshow = !stepprovinceshow && nationdataShow !== ''" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
         <x-input @click.native="stepcityshow = !stepcityshow && provincedataShow != ''" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
         <x-input @click.native="stepcountyshow = !stepcountyshow && citydataShow != ''" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号 (限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required>
@@ -87,7 +87,7 @@ export default {
     }
     // 将获得的name分配给当前页面data
     const locationName = location.data
-    this.location = locationName.countryName
+    this.nationdataShow = locationName.countryName
     this.provincedataShow = locationName.provinceName
     this.citydataShow = locationName.cityName
     this.countydataShow = locationName.countyName
@@ -119,7 +119,7 @@ export default {
       stepcountyshow: false,
       stepprovinceshow: false,
       stepcityshow: false,
-      location: '',
+      nationdataShow: '',
       locationid: {},
       nationId: 0,
       provincedata: [],
@@ -155,10 +155,10 @@ export default {
       this.stepcountyshow = val
     },
     confirmStep (val) {
-      let oldlocation = this.location
-      this.location = val.show
+      let oldlocation = this.nationdataShow
+      this.nationdataShow = val.show
       this.nationId = val.val.nationid
-      if (this.location !== oldlocation) {
+      if (this.nationdataShow !== oldlocation) {
         this.provincedataShow = ''
         this.citydataShow = ''
         this.countydataShow = ''
@@ -186,7 +186,7 @@ export default {
       this.countyId = val.val.county
     },
     async editAddress () {
-      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
+      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -194,7 +194,7 @@ export default {
         })
         return
       }
-      if (this.location === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
+      if (this.nationdataShow === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
         this.$vux.toast.show({
           text: '当国家为中国时，省市区为必填',
           type: 'warn',

@@ -4,10 +4,10 @@
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="getNation" disabled title="国家" placeholder="请选择国家" type="text" required v-model="location"></x-input>
-        <x-input @click.native="getProvince" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
-        <x-input @click.native="getCity" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
-        <x-input @click.native="getCounty" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
+        <x-input @click.native="getPosition(1)" disabled title="国家" placeholder="请选择国家" type="text" required v-model="nationdataShow"></x-input>
+        <x-input @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
+        <x-input @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
+        <x-input @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
         <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
         <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required></x-textarea>
@@ -23,10 +23,7 @@
           :cityId="cityId"
           :countyId="countyId"
           @listenPositionClose="toPositionClose" 
-          @confirmStepNation="confirmStepNation"
-          @confirmStepProvince="confirmStepProvince"
-          @confirmStepCity="confirmStepCity"
-          @confirmStepCounty="confirmStepCounty"
+          @listenPositionConfirm="toPositionConfirm"
         >
       </get-position>
         <div class="addaddress-container-add">
@@ -90,22 +87,18 @@ export default {
       addressVal: [],
       ajaxasync: false,
       createRes: false,
-      steppickershow: false,
-      stepcountyshow: false,
-      stepprovinceshow: false,
-      stepcityshow: false,
-      getpositionshow: false,
-      location: '',
       locationid: {},
-      nationId: 0,
       provincedata: [],
+      // 信息
+      getpositionshow: false,
+      nationdataShow: '',
+      nationId: 0,
       provincedataShow: '',
       provinceId: 0,
       citydataShow: '',
       cityId: 0,
       countydataShow: '',
-      countyId: 0,
-      nationData: []
+      countyId: 0
     }
   },
   methods: {
@@ -113,64 +106,68 @@ export default {
       'addAddress',
       'eidtAddress'
     ]),
-    getNation () {
-      this.getpositionshow = !this.getpositionshow
-      this.positionType = 1
-    },
-    getProvince () {
-      this.getpositionshow = !this.getpositionshow && location !== ''
-      this.positionType = 2
-    },
-    getCity () {
-      this.getpositionshow = !this.getpositionshow && this.provincedataShow !== ''
-      this.positionType = 3
-    },
-    getCounty () {
-      this.getpositionshow = !this.getpositionshow && this.citydataShow !== ''
-      this.positionType = 4
+    getPosition (val) {
+      switch (val) {
+        case 1:
+          this.getpositionshow = !this.getpositionshow
+          this.positionType = 1
+          break
+        case 2:
+          this.getpositionshow = !this.getpositionshow && this.nationdataShow !== ''
+          this.positionType = 2
+          break
+        case 3:
+          this.getpositionshow = !this.getpositionshow && this.provincedataShow !== ''
+          this.positionType = 3
+          break
+        case 4:
+          this.getpositionshow = !this.getpositionshow && this.citydataShow !== ''
+          this.positionType = 4
+          break
+      }
     },
     toPositionClose (val) {
       this.getpositionshow = val
     },
-    // 获取国家
-    confirmStepNation (val) {
-      let oldlocation = this.location
-      this.location = val.show
-      this.nationId = val.val.positionId
-      if (this.location !== oldlocation) {
-        this.provincedataShow = ''
-        this.citydataShow = ''
-        this.countydataShow = ''
+    toPositionConfirm (val) {
+      switch (val.typePosition) {
+        case 1: // 获取国家信息
+          let oldlocation = this.nationdataShow
+          this.nationdataShow = val.show
+          this.nationId = val.val.positionId
+          if (this.nationdataShow !== oldlocation) {
+            this.provincedataShow = ''
+            this.citydataShow = ''
+            this.countydataShow = ''
+          }
+          break
+        case 2: // 获取省份信息
+          let oldProvincedataShow = this.provincedataShow
+          if (val.show) {
+            this.provincedataShow = val.show
+            this.provinceId = val.val.positionId
+          }
+          if (this.provincedataShow !== oldProvincedataShow) {
+            this.citydataShow = ''
+            this.countydataShow = ''
+          }
+          break
+        case 3: // 获取市级信息
+          let oldCitydataShow = this.citydataShow
+          this.citydataShow = val.show
+          if (this.citydataShow !== oldCitydataShow) {
+            this.cityId = val.val.positionId
+            this.countydataShow = ''
+          }
+          break
+        case 4: // 获取县级信息
+          this.countydataShow = val.show
+          this.countyId = val.val.positionId
+          break
       }
-    },
-    // 获取省份
-    confirmStepProvince (val) {
-      let oldProvincedataShow = this.provincedataShow
-      if (val.show) {
-        this.provincedataShow = val.show
-        this.provinceId = val.val.positionId
-      }
-      if (this.provincedataShow !== oldProvincedataShow) {
-        this.citydataShow = ''
-        this.countydataShow = ''
-      }
-    },
-    // 获取市级
-    confirmStepCity (val) {
-      let oldCitydataShow = this.citydataShow
-      this.citydataShow = val.show
-      if (this.citydataShow !== oldCitydataShow) {
-        this.cityId = val.val.positionId
-        this.countydataShow = ''
-      }
-    },
-    // 获取县级
-    confirmStepCounty (val) {
-      this.countydataShow = val.show
-      this.countyId = val.val.positionId
     },
     async saveAddress () {
-      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.location) {
+      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -178,7 +175,7 @@ export default {
         })
         return
       }
-      if (this.location === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
+      if (this.nationdataShow === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
         this.$vux.toast.show({
           text: '当国家为中国时，省市区为必填',
           type: 'warn',
