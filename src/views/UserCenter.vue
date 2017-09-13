@@ -17,7 +17,7 @@
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service flex">
           <p>客服热线:&nbsp;&nbsp;</p>
-          <p><a href="tel:021-60314051">021-60314051</a></p>
+          <p><a href="tel:021-60314051">{{hotline}}</a></p>
         </div>
         <div @click="dialogshow = false">
           <span class="vux-close"></span>
@@ -43,11 +43,13 @@
 <script>
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters } from 'vuex'
+import { hotline } from '../utils/config'
 
 export default {
   name: 'usercenter',
   async created () {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
+    this.hotline = hotline
   },
   directives: {
     TransferDom
