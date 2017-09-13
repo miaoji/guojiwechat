@@ -32,7 +32,7 @@
                   <span>设为默认</span>
                 </span>
                 <div>
-                  <span class="edit" @click.stop="goPath('/address/edit', item, {type: addressType})">
+                  <span class="edit" @click.stop="goPath('/address/handle', item, {type: addressType, pagetype: 'edit'})">
                     <img src="../assets/images/add_ico_cha.png" alt="">
                     <span>编辑</span>
                   </span>
@@ -46,7 +46,7 @@
         </scroller>
       </div>
     </div>
-    <div class="address-add" @click="goPath('/address/add', {type: addressType})">
+    <div class="address-add" @click="goPath('/address/handle', {type: addressType, pagetype: 'add'})">
       <p>新增地址</p>
     </div>
   </div>

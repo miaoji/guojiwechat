@@ -77,7 +77,7 @@ export default {
       'setOpenid',
       'setUserInfo'
     ]),
-    getDate (val = 3000) {
+    getDate (val = 20) {
       let time = new Date()
       const expireNew = {
         'now': new Date().getTime(),
@@ -93,8 +93,8 @@ export default {
         return
       } else if (userinfo.type === 'success') {
         // 获取用户信息成功, 根据page跳转页面
-        // 获取当前时间3000分钟后时间戳, 并保存
-        this.getDate(3000)
+        // 获取当前时间20分钟后时间戳, 并保存
+        this.getDate(20)
         this.$vux.toast.show({
           type: 'success',
           text: '登录成功',

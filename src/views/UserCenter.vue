@@ -31,7 +31,7 @@
         </div>
         <div class="user-info">
           <p>微信昵称: {{user.nickname}}</p>
-          <p>手机号: {{user.mobile}}</p>
+          <p>手机号: {{user.mobile || '未绑定手机号'}}</p>
         </div>
         <div @click="usershow = false">
           <span class="vux-close user-close"></span>

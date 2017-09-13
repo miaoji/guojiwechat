@@ -40,19 +40,11 @@ export default new Router({
       requiresAuth: true
     }
   }, {
-    path: '/address/add',
-    name: 'AddAddress',
-    component: require('@/views/AddAddress'),
+    path: '/address/handle',
+    name: 'HandleAddress',
+    component: require('@/views/HandleAddress'),
     meta: {
-      intro: '添加地址',
-      requiresAuth: true
-    }
-  }, {
-    path: '/address/edit',
-    name: 'EditAddress',
-    component: require('@/views/EditAddress'),
-    meta: {
-      intro: '编辑地址',
+      intro: '添加/编辑地址',
       requiresAuth: true
     }
   }, {

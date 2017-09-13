@@ -262,7 +262,7 @@ export default {
     // 2. 初始化wx jssdk
     try {
       const wxIntRes = await wxUtil.init()
-      console.log('wxIntRes', wxIntRes)
+      console.log('微信jssdk初始化', wxIntRes)
     } catch (e) {
       console.error(e)
     }
@@ -784,16 +784,14 @@ export default {
   .send-weight-input {
     .weui-cells {
       &:before {
-        border-top-color: #D9D9D9;
-        border-top-width: 2px;
+        border-top: 2px solid #666 !important;
       }
       &:after {
-        border-bottom-color: #D9D9D9;
-        border-bottom-width: 2px;
+        border-top: 2px solid #666 !important;
       }
       .weui-cell {
-        border-left: 2px solid #D9D9D9;
-        border-right: 2px solid #D9D9D9;
+        border-left: 1px solid #666;
+        border-right: 1px solid #666;
       }
     }
   }
@@ -818,13 +816,13 @@ export default {
         flex: 1;
         padding: .7rem .2rem;
         max-width: 50px;
+        border: 1px solid #666;
       }
       span {
         flex: 1;
         font-size: 1.8rem;
         text-align: center;
       }
-
     }
   }
   p.dialog-tips {

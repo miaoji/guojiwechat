@@ -11,10 +11,6 @@ import App from './App'
 import * as filters from './filters'
 import OrderItem from './components/OrderItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
-import StepLocationPicker from './components/StepLocationPicker.vue'
-import StepProvincePicker from './components/StepProvincePicker.vue'
-import StepCityPicker from './components/StepCityPicker.vue'
-import StepCountyPicker from './components/StepCountyPicker.vue'
 import GetPositionMsg from './components/GetPositionMsg.vue'
 
 FastClick.attach(document.body)
@@ -33,10 +29,6 @@ Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-orderitem', OrderItem)
-Vue.component('step-location', StepLocationPicker)
-Vue.component('step-province', StepProvincePicker)
-Vue.component('step-city', StepCityPicker)
-Vue.component('step-county', StepCountyPicker)
 Vue.component('get-position', GetPositionMsg)
 
 function SwitchfullPath (fullPath) {
