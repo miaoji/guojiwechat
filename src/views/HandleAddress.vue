@@ -200,8 +200,11 @@ export default {
           this.nationId = val.val.positionId
           if (this.nationdataShow !== oldlocation) {
             this.provincedataShow = ''
+            this.provinceId = 0
             this.citydataShow = ''
+            this.cityId = 0
             this.countydataShow = ''
+            this.countyId = 0
           }
           break
         case 2: // 获取省份信息
@@ -212,20 +215,27 @@ export default {
           }
           if (this.provincedataShow !== oldProvincedataShow) {
             this.citydataShow = ''
+            this.cityId = 0
             this.countydataShow = ''
+            this.countyId = 0
           }
           break
         case 3: // 获取市级信息
           let oldCitydataShow = this.citydataShow
-          this.citydataShow = val.show
-          if (this.citydataShow !== oldCitydataShow) {
+          if (val.show) {
+            this.citydataShow = val.show
             this.cityId = val.val.positionId
+          }
+          if (this.citydataShow !== oldCitydataShow) {
             this.countydataShow = ''
+            this.countyId = 0
           }
           break
         case 4: // 获取县级信息
-          this.countydataShow = val.show
-          this.countyId = val.val.positionId
+          if (val.show) {
+            this.countydataShow = val.show
+            this.countyId = val.val.positionId
+          }
           break
       }
     },
