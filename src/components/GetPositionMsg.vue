@@ -18,11 +18,7 @@
 <script>
 import { XInput, Picker } from 'vux'
 import { geography as geographyApi } from '@/api'
-import axios from 'axios'
-
-let instance = axios.create({
-  timeout: 5000
-})
+import request from '../utils/request'
 
 export default {
   name: 'getpositioninfo',
@@ -66,18 +62,19 @@ export default {
   },
   async created () {
     try {
-      const res = await instance({
+      const res = await request({
         method: 'post',
         url: geographyApi.showcountry,
-        headers: {'token': window.localStorage.getItem('mj_token')}
+        headers: {'token': window.localStorage.getItem('mj_token')},
+        auth: true
       })
-      if (res.status !== 200) {
+      if (res.statusCode !== 200) {
         return this.$vux.toast.show({
           type: 'warn',
           text: '获取路由失败'
         })
       }
-      const data = res.data
+      const data = res
       if (data.code !== 200) {
         return this.$vux.toast.show({
           type: 'warn',
@@ -143,50 +140,54 @@ export default {
         try {
           switch (this.typecn) {
             case 1:
-              res = await instance({
+              res = await request({
                 method: 'post',
                 url: geographyApi.showcountry,
+                auth: true,
                 headers: {'token': window.localStorage.getItem('mj_token')}
               })
-              if (res.status !== 200) {
-                return this.$vux.toast.show({
-                  type: 'warn',
-                  text: '获取路由失败'
-                })
-              }
               break
             case 2:
-              res = await instance({
+              res = await request({
                 method: 'post',
                 url: geographyApi.showprovince,
                 params: {
                   countryid: Number(this.nationId)
                 },
+                auth: true,
                 headers: {'token': window.localStorage.getItem('mj_token')}
               })
               break
             case 3:
-              res = await instance({
+              res = await request({
                 method: 'post',
                 url: geographyApi.showcity,
                 params: {
                   provinceid: Number(this.provinceId)
                 },
+                auth: true,
                 headers: {'token': window.localStorage.getItem('mj_token')}
               })
               break
             case 4:
-              res = await instance({
+              res = await request({
                 method: 'post',
                 url: geographyApi.showcounty,
                 params: {
                   cityid: Number(this.cityId)
                 },
+                auth: true,
                 headers: {'token': window.localStorage.getItem('mj_token')}
               })
               break
           }
-          const data = res.data
+          if (res.statusCode !== 200) {
+            return this.$vux.toast.show({
+              type: 'warn',
+              text: '获取路由失败'
+            })
+          }
+          const data = res
           if (data.code !== 200) {
             return this.$vux.toast.show({
               type: 'warn',
@@ -195,7 +196,6 @@ export default {
           }
           if (data.obj.length < 1) {
             data.obj.push({'name': '暂无城市信息', 'id': '', countryid: ''})
-            // this.close()
           }
           this.cityDatas = data.obj.map(function (elem) {
             return {
