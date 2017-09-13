@@ -1,22 +1,22 @@
 <template>
   <div class="address">
     <div class="address-container">
-      <div class="address-container-tab">
+      <div class="address-container-tab" v-show="tabshow === 1">
         <tab active-color='#eb1d21'>
           <tab-item :selected="addressType === 'send'" @on-item-click="changeShow('send')">寄件地址</tab-item>
           <tab-item :selected="addressType === 'pickup'" @on-item-click="changeShow('pickup')">收件地址</tab-item>
         </tab>
       </div>
-      <p v-if="pick" style="text-align: left;font-size: 1.4rem;padding: 0.5rem;padding-bottom: 0;">点击手机号或姓名处选择地址</p>
       <div class="address-container-list">
         <scroller 
           :on-refresh="refresh"
           :on-infinite="infinite"
           ref="my_scroller_address"
-          class="address-scroller">
+          :noDataText="scrollerNoDataText"
+          :class="{'address-scroller': tabshow === 0, 'address-scroller--tabshow': tabshow === 1}">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id" v-show="item.start !== 2&&item.start!==0">
-              <div class="flex address-container-list__item--info" @click="selectAddress(item)">
+              <div class="flex address-container-list__item--info" @click.stop="selectAddress(item)">
                 <div>
                   <p>{{item.linkman}}{{item.recipients}} {{item.iphone}}</p>
                   <p class="location"><span class="location-remark">{{item.remove}} {{item.remark}}</span> {{item.detailedinformation}} {{item.detaliedinformation}} </p>
@@ -53,23 +53,36 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { storage } from '../utils'
 
 export default {
   name: 'address',
   created () {
     window.scrollTo(0, 0)
-    const {type, pick} = this.$route.query
-    const localtype = window.localStorage.getItem('mj_address_page_switch_type')
+    const {type, pick, tabshow} = this.$route.query
+    const localtype = storage({key: 'address_page_switch_type'})
     this.addressType = type || localtype || 'send'
     this.pick = pick === '1'
+    this.tabshow = Number(tabshow) === 0 ? 0 : 1
+    this.scrollerNoDataText = pick === '1' ? '点击手机号或姓名处确定' : '没有更多数据'
   },
   mounted () {
-    window.document.title = '地址管理'
+    let title = ''
+    if (this.pick && this.addressType === 'send') {
+      title = '选择寄件地址'
+    } else if (this.pick && this.addressType === 'pickup') {
+      title = '选择收件地址'
+    } else {
+      title = '地址管理'
+    }
+    window.document.title = title
   },
   data () {
     return {
       addressType: 'send',
-      pick: false
+      pick: false,
+      tabshow: 1,
+      scrollerNoDataText: '没有更多数据'
     }
   },
   computed: {
@@ -188,7 +201,6 @@ export default {
       width: 100%;
       z-index: 1000;
     }
-
     &-list {
       &__intro {
         padding: 1rem;
@@ -283,6 +295,9 @@ export default {
     }
   }
   &-scroller {
+    padding-top: 10px;
+  }
+  &-scroller--tabshow {
     padding-top: 52px;
   }
 }

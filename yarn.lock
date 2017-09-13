@@ -5051,10 +5051,6 @@ vue-hot-reload-api@^2.0.11:
   version "2.1.0"
   resolved "http://registry.npm.taobao.org/vue-hot-reload-api/download/vue-hot-reload-api-2.1.0.tgz#9ca58a6e0df9078554ce1708688b6578754d86de"
 
-vue-infinite-scroll@^2.0.1:
-  version "2.0.1"
-  resolved "http://registry.npm.taobao.org/vue-infinite-scroll/download/vue-infinite-scroll-2.0.1.tgz#f418bd5cdca5e16837ce3b78333832288729e660"
-
 vue-loader@^11.1.4:
   version "11.3.4"
   resolved "http://registry.npm.taobao.org/vue-loader/download/vue-loader-11.3.4.tgz#65e10a44ce092d906e14bbc72981dec99eb090d2"

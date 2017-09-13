@@ -54,7 +54,18 @@ router.beforeEach(function (to, from, next) {
       // 生产环境验证登录码是否过期
       const expire = storage({key: 'expire'}) || JSON.stringify({'expire': '0'})
       if (!expire || JSON.parse(expire)['expire'] <= (new Date().getTime())) {
-        storage({type: 'clear'})
+        storage({
+          type: 'remove',
+          key: [
+            'init',
+            'token',
+            'nickname',
+            'mobile',
+            'userId',
+            'headimgurl',
+            'openid'
+          ]
+        })
         const fullPath = to.fullPath
         const page = SwitchfullPath(fullPath)
         return next({

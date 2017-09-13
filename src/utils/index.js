@@ -4,8 +4,6 @@ import * as time from './time'
 import * as reg from './reg'
 import { localPrefix } from './config'
 
-const localStorage = window.localStorage
-
 // 连字符转驼峰
 String.hyphenToHump = function () {
   return this.replace(/-(\w)/g, (...args) => {
@@ -109,9 +107,11 @@ const arrayToTree = (array, id = 'id', pid = 'pid', children = 'children') => {
  * @return {String} res     [localStorage.getItem(key)时返回的值]
  */
 const storage = function ({key = '', val = '', prefix = true, type = 'get'}) {
-  if (prefix) {
+  // type为remove时候，允许key为数组
+  if (prefix && !Array.isArray(key)) {
     key = localPrefix + key
   }
+  const localStorage = window.localStorage
   let res = ''
   switch (type) {
     case 'get':
@@ -121,7 +121,14 @@ const storage = function ({key = '', val = '', prefix = true, type = 'get'}) {
       localStorage.setItem(key, val)
       break
     case 'remove':
-      localStorage.removeItem(key)
+      if (Array.isArray(key)) {
+        for (let i, len = key.length; i < len; i++) {
+          let removeKey = localPrefix + key[i]
+          localStorage.removeItem(removeKey)
+        }
+      } else {
+        localStorage.removeItem(key)
+      }
       break
     case 'clear':
       localStorage.clear()

@@ -8,7 +8,7 @@
           </cell>
         </group>
       </div>
-      <router-link to="/address?type=send&pick=1">
+      <router-link to="/address?type=send&pick=1&tabshow=0">
         <div class="send-container-address flex" style="border-bottom: 1px solid #dedede;">
           <div class="send-container-address__intro">
             <span class="bgblue">寄</span>
@@ -34,7 +34,7 @@
         </div>
       </router-link>
       
-      <router-link to="/address?type=pickup&pick=1">
+      <router-link to="/address?type=pickup&pick=1&tabshow=0">
         <div class="send-container-address flex">
           <div class="send-container-address__intro">
             <span class="bgred">收</span>
@@ -300,14 +300,16 @@ export default {
     this.packageTable = sendInfo['packageTable']
     // 5. 设置 serial number
     this.serialnumber = 'MZ' + new Date().getTime()
-    // 6. 获取价格集合
+    // 6. 如果,目的地还未选择, 到此结束
+    if (!this.pickupAddress['nationid']) return
+    // 7. 获取价格集合
     const priceList = await request({
       method: 'post',
       url: priceApi.pricelist,
       auth: true
     })
     this.priceList = priceList.obj
-    // 7. 根据id获取国家名
+    // 8. 根据id获取国家名
     const pickupId = this.pickupAddress['nationid']
     const country = await request({
       method: 'post',
@@ -319,7 +321,7 @@ export default {
     })
     const countryName = country['obj'][0]['name']
     this.DestCtry = countryName
-    // 8. 根据国家名过滤价格集合并赋值给this.productionTypeOption
+    // 9. 根据国家名过滤价格集合并赋值给this.productionTypeOption
     let newpriceList = []
     this.priceList.forEach(function (elem, index) {
       if (elem['destCtry'] === countryName) {
@@ -730,6 +732,7 @@ export default {
   },
   beforeDestroy () {
     this.$vux.loading.hide()
+    this.$vux.toast.hide()
     // 离开页面时在localStorage中保存产品规格，包裹信息和备注信息
     const sendInfo = {
       weight: this.weight,
