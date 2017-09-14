@@ -386,8 +386,8 @@ export default {
   },
   beforeDestroy () {
     this.$vux.loading.hide()
-    // 如果未新建，保存已设置的值
-    if (!this.createRes) {
+    // 页面为新增时, 如果未新建，保存已设置的值
+    if (!this.createRes && this.pagetype === 'add') {
       const type = this.typecn
       const addressInfo = {
         linkman: this.linkman,

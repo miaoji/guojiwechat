@@ -9,7 +9,12 @@
       </div>
 
       <div class="selectcountry-container-input">
-        <input type="" name="" placeholder="美国">
+        <input type="" name="" placeholder="输入文字查询">
+        <div class="input-search">
+          <p>中国</p>
+          <p>美国</p>
+          <p>德国</p>
+        </div>
       </div>
 
       <div class="selectcountry-container-city city-history">
@@ -34,7 +39,7 @@
         </ul>
       </div>
 
-      <div class="city-word selectcountry-container-city">
+      <div class="city-word selectcountry-container-city" v-show="false">
         <div class="country-title">试试国家首字母检索</div>
         <ul class="city-list">
           <li v-for="item in alphabet">
@@ -137,6 +142,7 @@ export default {
       }
     }
     &-input {
+      padding: 0 .2rem;
       input {
         font-size: 2rem;
         padding-left: .5rem;
@@ -145,6 +151,9 @@ export default {
         margin: 3rem auto;
         margin-bottom: 1rem;
         border-radius: 5px;
+        background: #fff;
+      }
+      .input-search {
         background: #fff;
       }
     }

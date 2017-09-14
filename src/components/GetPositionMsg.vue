@@ -65,7 +65,6 @@ export default {
       const res = await request({
         method: 'post',
         url: geographyApi.showcountry,
-        headers: {'token': window.localStorage.getItem('mj_token')},
         auth: true
       })
       if (res.statusCode !== 200) {
@@ -143,8 +142,7 @@ export default {
               res = await request({
                 method: 'post',
                 url: geographyApi.showcountry,
-                auth: true,
-                headers: {'token': window.localStorage.getItem('mj_token')}
+                auth: true
               })
               break
             case 2:
@@ -154,8 +152,7 @@ export default {
                 params: {
                   countryid: Number(this.nationId)
                 },
-                auth: true,
-                headers: {'token': window.localStorage.getItem('mj_token')}
+                auth: true
               })
               break
             case 3:
@@ -165,8 +162,7 @@ export default {
                 params: {
                   provinceid: Number(this.provinceId)
                 },
-                auth: true,
-                headers: {'token': window.localStorage.getItem('mj_token')}
+                auth: true
               })
               break
             case 4:
@@ -176,8 +172,7 @@ export default {
                 params: {
                   cityid: Number(this.cityId)
                 },
-                auth: true,
-                headers: {'token': window.localStorage.getItem('mj_token')}
+                auth: true
               })
               break
           }
