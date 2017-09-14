@@ -9,14 +9,14 @@ import request from '../utils/request'
 
 export default {
   name: 'template',
-  async mounted () {
+  mounted () {
     window.document.title = 'Template'
   },
   data () {
     return {
     }
   },
-  async created () {
+  created () {
   },
   computed: {
   },

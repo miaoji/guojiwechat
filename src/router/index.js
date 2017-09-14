@@ -95,5 +95,13 @@ export default new Router({
       intro: '补价记录',
       requiresAuth: false
     }
+  }, {
+    path: '/contry/select',
+    name: 'SelectCountry',
+    component: require('@/views/SelectCountry'),
+    meta: {
+      intro: '选择国家',
+      requiresAuth: false
+    }
   }]
 })

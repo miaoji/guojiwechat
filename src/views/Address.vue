@@ -225,6 +225,7 @@ export default {
             overflow: hidden;
             text-overflow: ellipsis;
             text-align: left;
+            white-space: nowrap;
             @media (max-width:320px) {
               width: 21rem;
             }
