@@ -8,7 +8,7 @@
         <x-input @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
         <x-input @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
         <x-input @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
-        <x-textarea type="text" title="地址" :max="60" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
+        <x-textarea type="text" title="地址" :max="200" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
         <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required></x-textarea>
       </group>

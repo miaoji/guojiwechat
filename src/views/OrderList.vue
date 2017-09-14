@@ -28,12 +28,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import { order as orderApi } from '@/api'
-
-let instance = axios.create({
-  timeout: 15000
-})
+import request from '../utils/request'
 
 const localStorage = window.localStorage
 
@@ -57,30 +53,50 @@ export default {
   methods: {
     async getOrderList (starte = 1) {
       try {
-        const orderlist = await instance({
+        const orderlist = await request({
           method: 'post',
           url: orderApi.list,
           params: {
             userid: localStorage.getItem('mj_userId'),
             starte
           },
-          headers: {'token': localStorage.getItem('mj_token')}
+          auth: true
         })
-        if (orderlist.status !== 200) {
+        if (orderlist.code !== 200) {
           return this.$vux.toast.show({
-            text: '获取寄件列表失败',
+            text: orderlist.mess || '获取寄件列表失败',
             type: 'warn',
             width: '18rem'
           })
         }
-        if (orderlist.data.code !== 200) {
-          return this.$vux.toast.show({
-            text: orderlist.data.mess,
-            type: 'warn',
-            width: '18rem'
-          })
+        let data = orderlist.obj
+        if (Number(starte) === 2) {
+          // starte为2时要查询order为0（fx完成）0和3 中通完成
+          try {
+            const ZTOList = await request({
+              method: 'post',
+              url: orderApi.list,
+              params: {
+                userid: localStorage.getItem('mj_userId'),
+                starte: 3
+              },
+              auth: true
+            })
+            const FXList = await request({
+              method: 'post',
+              url: orderApi.list,
+              params: {
+                userid: localStorage.getItem('mj_userId'),
+                starte: 0
+              },
+              auth: true
+            })
+            let dataMerge = ZTOList.obj.concat(FXList.obj)
+            data = data.concat(dataMerge)
+          } catch (e) {
+            console.error(e)
+          }
         }
-        let data = orderlist.data.obj
         if (data.length > 0) {
           data.sort(function (a, b) {
             return a.id < b.id
@@ -145,7 +161,7 @@ export default {
     },
     refresh (done) {
       const _this = this
-      const starte = localStorage.getItem('mj_order_type') ? localStorage.getItem('mj_order_type') : 6
+      const starte = localStorage.getItem('mj_order_type') || 6
       setTimeout(async function () {
         _this.getOrderList(starte)
         done(true)
@@ -153,7 +169,7 @@ export default {
     },
     infinite (done) {
       const _this = this
-      const starte = localStorage.getItem('mj_order_type') ? localStorage.getItem('mj_order_type') : 6
+      const starte = localStorage.getItem('mj_order_type') || 6
       setTimeout(async function () {
         _this.getOrderList(starte)
         done(true)

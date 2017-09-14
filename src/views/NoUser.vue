@@ -12,16 +12,18 @@
       </div>
       <div class="customservice-num flex">
         <p>客服热线</p>
-        <p>021-60314051</p>
+        <p>{{hotline}}</p>
       </div>
     </div>
   </div>
 </template>
 <script>
+import {hotline} from '../utils/config'
 
 export default {
   name: 'customservice',
   created () {
+    this.hotline = hotline
   },
   mounted () {
     window.document.title = '客服中心'
