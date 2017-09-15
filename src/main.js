@@ -12,6 +12,7 @@ import * as filters from './filters'
 import OrderItem from './components/OrderItem.vue'
 import MJSpinner from './components/MJSpinner.vue'
 import GetPositionMsg from './components/GetPositionMsg.vue'
+import SelectCountry from './components/SelectCountry.vue'
 
 FastClick.attach(document.body)
 
@@ -30,6 +31,7 @@ Vue.component('tabItem', TabItem)
 Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-orderitem', OrderItem)
 Vue.component('get-position', GetPositionMsg)
+Vue.component('select-country', SelectCountry)
 
 function SwitchfullPath (fullPath) {
   let page = ''
@@ -98,7 +100,7 @@ Object.keys(filters).forEach(key => {
 })
 
 /* eslint-disable no-new */
-new Vue({
+window.wxvue = new Vue({
   router,
   store,
   render: h => h(App)

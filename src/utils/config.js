@@ -1,3 +1,3 @@
 export const localPrefix = 'mj_'
 
-export const hotline = '021-60314051'
+export const hotline = '021-34120053'

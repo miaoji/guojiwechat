@@ -1,10 +1,10 @@
 <template>
   <div class="addaddress">
-    <div class="addaddress-container">
+    <div class="addaddress-container" v-show="mainContainerShow">
       <group>
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="getPosition(1)" disabled title="国家" placeholder="请选择国家" type="text" required v-model="nationdataShow"></x-input>
+        <x-input @click.native="onClickCountry" disabled title="国家" placeholder="请选择国家" type="text" required v-model="nationdataShow"></x-input>
         <x-input @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
         <x-input @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
         <x-input @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
@@ -15,22 +15,29 @@
       <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="defaultLocation"></x-switch>
       </group>
-        <get-position 
-          :typecn='positionType' 
-          :getpositionshow="getpositionshow" 
-          :nationId="nationId" 
-          :provinceId="provinceId"
-          :cityId="cityId"
-          :countyId="countyId"
-          @listenPositionClose="toPositionClose" 
-          @listenPositionConfirm="toPositionConfirm"
-        >
+      <get-position 
+        :typecn='positionType' 
+        :getpositionshow="getpositionshow" 
+        :nationId="nationId" 
+        :provinceId="provinceId"
+        :cityId="cityId"
+        :countyId="countyId"
+        @listenPositionClose="toPositionClose" 
+        @listenPositionConfirm="toPositionConfirm"
+      >
       </get-position>
-        <div class="addaddress-container-add">
-         <p class="addaddress-container-add--btn" @click.stop="saveAddress" v-show="pagetype === 'add'">创建</p>
-         <p class="addaddress-container-add--btn" @click.stop="editAddress" v-show="pagetype === 'edit'">确认修改</p>
-        </div>
+      <div class="addaddress-container-add">
+        <p class="addaddress-container-add--btn" @click.stop="saveAddress" v-show="pagetype === 'add'">创建</p>
+        <p class="addaddress-container-add--btn" @click.stop="editAddress" v-show="pagetype === 'edit'">确认修改</p>
+      </div>
     </div>
+    <select-country
+      :show="selectCountryShow"
+      :countryName="nationdataShow"
+      @listenCountryClose="onCountryClose"
+      @listenCountryConfirm="onCountryConfirm"
+    >
+    </select-country>
   </div>
 </template>
 <script>
@@ -173,7 +180,9 @@ export default {
       citydataShow: '',
       cityId: 0,
       countydataShow: '',
-      countyId: 0
+      countyId: 0,
+      mainContainerShow: true,
+      selectCountryShow: false
     }
   },
   methods: {
@@ -250,6 +259,28 @@ export default {
             this.countyId = val.val.positionId
           }
           break
+      }
+    },
+    onClickCountry () {
+      this.mainContainerShow = false
+      this.selectCountryShow = true
+    },
+    onCountryClose () {
+      this.mainContainerShow = true
+      this.selectCountryShow = false
+    },
+    onCountryConfirm (val) {
+      console.log('val', val)
+      let oldlocation = this.nationdataShow
+      this.nationdataShow = val.show
+      this.nationId = val.nationId
+      if (this.nationdataShow !== oldlocation) {
+        this.provincedataShow = ''
+        this.provinceId = 0
+        this.citydataShow = ''
+        this.cityId = 0
+        this.countydataShow = ''
+        this.countyId = 0
       }
     },
     async saveAddress () {
