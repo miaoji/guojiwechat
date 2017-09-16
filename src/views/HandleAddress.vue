@@ -270,7 +270,6 @@ export default {
       this.selectCountryShow = false
     },
     onCountryConfirm (val) {
-      console.log('val', val)
       let oldlocation = this.nationdataShow
       this.nationdataShow = val.show
       this.nationId = val.nationId

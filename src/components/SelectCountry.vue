@@ -17,9 +17,14 @@
             </div>
           </div>
           <div v-show="inputLen" class="input-search">
-            <div class="input-search-container">
+            <div class="input-search-container" v-show="searchResult.length !== 0">
               <p v-for="item in searchResult" v-show="item.hide === 1" @click.stop="onClickSearchRes(item)">
                 {{item.name}}&nbsp;{{item.englishname}}
+              </p>
+            </div>
+            <div class="input-search-container" v-show="searchResult.length === 0">
+              <p>
+                搜索结果为空
               </p>
             </div>
           </div>
@@ -93,7 +98,8 @@ export default {
         '英国'
       ],
       alphabet: [ 'A', 'B', 'C', 'D', 'E', 'F' ],
-      searchResult: []
+      searchResult: [],
+      recentSearch: []
     }
   },
   async created () {
@@ -122,8 +128,14 @@ export default {
     },
     inputPlaceHolder () {
       return this.countryName
-    },
-    recentSearch () {
+    }
+  },
+  methods: {
+    /**
+     * [getRecentSearch 获取近期查询的字段]
+     * @return {[type]} [description]
+     */
+    getRecentSearch () {
       let recent = storage({
         key: 'select_country_recent'
       })
@@ -131,38 +143,73 @@ export default {
       recent = _.compact(recent)
       recent = _.uniq(recent)
       return recent
-    }
-  },
-  methods: {
-    confirmNation () {
+    },
+    /**
+     * [将搜索的值插入最近查询集合中]
+     * @return {[type]} [description]
+     */
+    changeRecentSearch () {
       const confrimVal = this.inputCountryName
       let recentSearch = this.recentSearch
       recentSearch.push(confrimVal)
       recentSearch = _.compact(recentSearch)
       recentSearch = _.uniq(recentSearch)
-      recentSearch = _.take(recentSearch, 16)
+      recentSearch = _.takeRight(recentSearch, 12)
       storage({
         key: 'select_country_recent',
         val: JSON.stringify(recentSearch),
         type: 'set'
       })
     },
+    /**
+     * [用户点击完成按钮时事件，返回新增地址页面，如果此时搜索结果只有一个值，那个将改值传递给父组件]
+     * @return {[type]} [description]
+     */
+    confirmNation () {
+      const searchResult = this.searchResult
+      if (searchResult.length === 1) {
+        const item = searchResult[0]
+        const nation = {
+          show: item.name,
+          nationId: item.id
+        }
+        this.$emit('listenCountryConfirm', nation)
+      }
+      this.$router.go(-1)
+    },
+    /**
+     * [用户点击所有国家时事件，跳转到搜索结果UI]
+     * @param  {String} options.name [description]
+     * @return {[type]}              [description]
+     */
     onClickCity ({name = ''}) {
       this.inputCountryName = name
     },
+    /**
+     * [用户点击搜索结果的事件，返回新增页面]
+     * @param  {[type]} item [description]
+     * @return {[type]}      [description]
+     */
     onClickSearchRes (item) {
-      console.log('item', item)
       const nation = {
         show: item.name,
         nationId: item.id
       }
-      console.log('nation', nation)
       this.$emit('listenCountryConfirm', nation)
       this.$router.go(-1)
     },
+    /**
+     * [清空搜索框，此时搜索结果需要清空，最近搜索也要改变]
+     * @return {[type]} [description]
+     */
     clearInput () {
       this.inputCountryName = ''
+      this.searchResult = []
+      this.recentSearch = this.getRecentSearch()
     },
+    /**
+     * [在window history中压入一个新的state]
+     */
     pushHistory () {
       const url = '#' + this.$route.fullPath
       const title = 'selectcountry'
@@ -175,19 +222,19 @@ export default {
   },
   watch: {
     async show (val) {
-      if (val) {
-        // 输入框值清空
-        this.inputCountryName = ''
-        // 压入一个新的history
-        this.pushHistory()
-        const _this = this
-        window.addEventListener('popstate', function (e) {
-          // 此时的this指的是window, 所以要将_this传入进来
-          // const vue = this.wxvue
-          const vue = _this
-          vue.$emit('listenCountryClose', false)
-        }, false)
-      }
+      if (!val) return
+      // 输入框值清空
+      this.inputCountryName = ''
+      // 压入一个新的history
+      this.pushHistory()
+      const _this = this
+      window.addEventListener('popstate', function (e) {
+        // 此时的this指的是window, 所以要将_this传入进来
+        const vue = _this
+        vue.$emit('listenCountryClose', false)
+      }, false)
+      // 获取最近查询
+      this.recentSearch = this.getRecentSearch()
     },
     /**
      * [监听输入框值，变动时获取搜索结果, 并将输入值存入用户习惯中]
@@ -199,29 +246,24 @@ export default {
       if (this.inSearching) return
       this.inSearching = true
       this.$vux.loading.show()
-      const res = await request({
-        url: geographyApi.showcountry,
-        method: 'post',
-        auth: true,
-        params: {
-          name: val
-        }
-      })
-      this.inSearching = false
-      this.$vux.loading.hide()
-      if (res.code === 200) {
-        this.searchResult = res.obj
-        const confrimVal = this.inputCountryName
-        let recentSearch = this.recentSearch
-        recentSearch.push(confrimVal)
-        recentSearch = _.compact(recentSearch)
-        recentSearch = _.uniq(recentSearch)
-        recentSearch = _.take(recentSearch, 16)
-        storage({
-          key: 'select_country_recent',
-          val: JSON.stringify(recentSearch),
-          type: 'set'
+      try {
+        const res = await request({
+          url: geographyApi.showcountry,
+          method: 'post',
+          auth: true,
+          params: {
+            name: val
+          }
         })
+        if (res.code === 200) {
+          this.searchResult = res.obj
+          this.changeRecentSearch()
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.inSearching = false
+        this.$vux.loading.hide()
       }
     }
   },
