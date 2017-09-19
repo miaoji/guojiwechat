@@ -15,6 +15,9 @@
           :noDataText="scrollerNoDataText"
           :class="{'address-scroller': tabshow === 0, 'address-scroller--tabshow': tabshow === 1}">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div v-show="data[addressType] ? data[addressType].length === 0 : false">
+            <h2>暂未添加地址</h2>
+          </div>
           <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id" v-show="item.start !== 2&&item.start!==0">
               <div class="flex address-container-list__item--info" @click.stop="selectAddress(item)">
                 <div>
@@ -64,7 +67,7 @@ export default {
     this.addressType = type || localtype || 'send'
     this.pick = pick === '1'
     this.tabshow = Number(tabshow) === 0 ? 0 : 1
-    this.scrollerNoDataText = pick === '1' ? '点击手机号或姓名处确定' : '没有更多数据'
+    // this.scrollerNoDataText = pick === '1' ? '点击手机号或姓名处确定' : '没有更多数据'
   },
   mounted () {
     let title = ''
@@ -82,7 +85,7 @@ export default {
       addressType: 'send',
       pick: false,
       tabshow: 1,
-      scrollerNoDataText: '没有更多数据'
+      scrollerNoDataText: ''
     }
   },
   computed: {

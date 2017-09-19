@@ -31,7 +31,13 @@
         </div>
         <div class="user-info">
           <p>微信昵称: {{user.nickname}}</p>
-          <p>手机号: {{user.mobile || '未绑定手机号'}}</p>
+          <p>手机号: {{user.mobile || '未绑定手机号'}} 
+            <span v-show="!user.mobile">
+              <router-link to="/bindphone">
+                点击此处绑定
+              </router-link>
+            </span>
+          </p>
         </div>
         <div @click="usershow = false">
           <span class="vux-close user-close"></span>

@@ -4,7 +4,7 @@
       <div class="fix-box">
         <div class="head-box">
           <div class="header">
-            <p>选择国家</p> 
+            <p>选择国家/地区</p> 
             <div class="header-right" @click.stop="confirmNation">完成</div>
           </div>
         </div>
@@ -44,7 +44,7 @@
         </div>
 
         <div class="selectcountry-container-city city-hot">
-          <div class="country-title">所有国家</div>
+          <div class="country-title">所有国家/地区</div>
           <ul class="city-list">
             <li v-for="item in allNation">
               <span class="city" @click.stop="onClickCity({name: item.name})">
