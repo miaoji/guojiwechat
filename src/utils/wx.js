@@ -81,6 +81,18 @@ export const pay = function ({intParams, successParams}) {
               type: 'warn'
             })
           }
+        },
+        cancel: function () {
+          reject({
+            text: '支付失败, 用户取消',
+            type: 'warn'
+          })
+        },
+        fail: function () {
+          reject({
+            text: '支付失败',
+            type: 'warn'
+          })
         }
       })
     })
