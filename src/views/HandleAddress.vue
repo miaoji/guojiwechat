@@ -2,7 +2,7 @@
   <div class="addaddress">
     <div class="addaddress-container" v-show="mainContainerShow">
       <group label-width="8rem" label-align="left">
-        <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
+        <x-input type="text" title="联系人" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input title="电话" v-model="mobile" type="text" placeholder="请输入手机号" required></x-input>
         <x-input @click.native="onClickCountry" disabled title="国家/地区" placeholder="请选择国家/地区" type="text" required v-model="nationdataShow"></x-input>
         <x-input v-show="type === 1" @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
@@ -46,7 +46,7 @@ import { mapActions } from 'vuex'
 import { reg as regUtil, storage } from '../utils'
 
 export default {
-  name: 'addaddress',
+  name: 'handleaddress',
   components: {
     XInput,
     XSwitch,
@@ -85,17 +85,17 @@ export default {
       })
       if (!localData) return
       localData = JSON.parse(localData)
-      this.linkman = localData.linkman || ''
+      this.name = localData.name || ''
       this.mobile = localData.mobile || ''
       this.postcode = localData.postcode || ''
       this.address = localData.address || ''
       this.remark = localData.remark || ''
       this.isDefault = localData.isDefault || false
       // 定义国家省市区 id 和展示的名称
-      this.nationId = localData.nationId
-      this.provinceId = localData.provinceId
-      this.cityId = localData.cityId
-      this.countyId = localData.countyId
+      this.nationId = Number(localData.nationId)
+      this.provinceId = Number(localData.provinceId)
+      this.cityId = Number(localData.cityId)
+      this.countyId = Number(localData.countyId)
       this.nationdataShow = localData.nationdataShow
       this.provincedataShow = localData.provincedataShow
       this.citydataShow = localData.citydataShow
@@ -103,52 +103,34 @@ export default {
       return
     }
     // 编辑地址时，从url参数中获取所有信息
-    if (pagetype === 'edit' && type === 'send') {
-      this.type = 1
-      this.addressid = query.id
-      this.linkman = query.linkman
-      this.company = query.company
-      this.iphone = query.iphone
+    if (pagetype === 'edit') {
+      this.addressId = query.id
+      this.name = query.name
+      this.mobile = query.mobile
       this.postcode = query.postcode
-      this.endtime = query.endtime
-      this.detailedinformation = query.detailedinformation
-      this.remove = query.remove
+      this.address = query.address
+      this.remark = query.remark
+      this.isDefault = query.is_default === 1
       // 定义国家省市区 id 和展示的名称
-      this.nationId = Number(query.nationid)
-      this.provinceId = Number(query.provinnce)
+      this.nationId = Number(query.country)
+      this.provinceId = Number(query.prov)
       this.cityId = Number(query.city)
       this.countyId = Number(query.county)
-    } else if (pagetype === 'edit' && type === 'pickup') {
-      this.type = 2
-      this.addressid = query.id
-      this.linkman = query.recipients
-      this.company = query.company
-      this.iphone = query.iphone
-      this.postcode = query.postcode
-      this.endtime = query.endtime
-      this.idnumber = query.idnumber
-      this.detailedinformation = query.detaliedinformation
-      this.remove = query.remark
-      // 定义国家省市区 id 和展示的名称
-      this.nationId = Number(query.nation)
-      this.provinceId = Number(query.provinnce)
-      this.cityId = Number(query.city)
-      this.countyId = Number(query.county)
+      this.$vux.loading.show()
+      // 根据国家、省、市、区的id获取名称
+      let location = await this.getGeography({countryId: this.nationId, provinceId: this.provinceId, cityId: this.cityId, countyId: this.countyId})
+      this.$vux.loading.hide()
+      if (location.type !== 'success') {
+        this.$vux.toast.show(location)
+        return
+      }
+      // 将获得的name分配给当前页面data
+      const locationName = location.data
+      this.nationdataShow = locationName.countryName
+      this.provincedataShow = locationName.provinceName
+      this.citydataShow = locationName.cityName
+      this.countydataShow = locationName.countyName
     }
-    this.$vux.loading.show()
-    let location = await this.getGeography({countryid: this.nationId, provinceid: this.provinceId, cityid: this.cityId, countyid: this.countyId})
-    this.$vux.loading.hide()
-    if (location.type !== 'success') {
-      this.$vux.toast.show(location)
-      return
-    }
-    // 将获得的name分配给当前页面data
-    const locationName = location.data
-    this.nationdataShow = locationName.countryName
-    this.provincedataShow = locationName.provinceName
-    this.citydataShow = locationName.cityName
-    this.countydataShow = locationName.countyName
-    this.defaultLocation = query.start === 3
   },
   data () {
     return {
@@ -283,7 +265,7 @@ export default {
       }
     },
     async saveAddress () {
-      if (!this.name || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
+      if (!this.name || !this.mobile || !this.address || !this.nationdataShow) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -307,7 +289,7 @@ export default {
         })
         return
       }
-      if (!regUtil.checkMobile(this.iphone)) {
+      if (!regUtil.checkMobile(this.mobile)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
           type: 'warn',
@@ -317,23 +299,21 @@ export default {
       }
       if (this.ajaxasync) return
       this.ajaxasync = true
-      const locationId = this.locationid
-      const start = this.defaultLocation ? 3 : 1
-      const res = await this.addAddress({
-        ...locationId,
-        detailedinformation: this.detailedinformation,
+      let data = {
+        name: this.name,
         postcode: this.postcode,
-        iphone: this.iphone,
-        nationid: this.nationId,
-        provinnce: this.provinceId,
+        mobile: this.mobile,
+        country: this.nationId,
+        prov: this.provinceId,
         city: this.cityId,
         county: this.countyId,
-        linkman: this.linkman,
-        company: this.company,
-        remove: this.remove,
-        type: this.type,
-        idnumber: this.idnumber,
-        start
+        address: this.address,
+        isDefault: this.isDefault ? 1 : 0,
+        remark: this.remark
+      }
+      const res = await this.addAddress({
+        data,
+        type: this.type
       })
       this.ajaxasync = false
       if (res.type !== 'success') {
@@ -341,11 +321,17 @@ export default {
         return this.$vux.toast.show(res)
       }
       this.$vux.toast.show(res)
+      // 创建成功，则清空缓存中以往新增地址记录
+      const typecn = this.typecn
+      storage({
+        key: `handle_address_${typecn}_prop`,
+        type: 'remove'
+      })
       this.createRes = true
       this.$router.go(-1)
     },
     async editAddress () {
-      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
+      if (!this.name || !this.mobile || !this.detailedinformation || !this.nationdataShow) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -382,65 +368,55 @@ export default {
       this.$vux.loading.show({
         text: '正在提交'
       })
-      const editres = await this.eidtAddress({id: this.addressid, type: this.typecn})
-      if (editres.type !== 'success') {
-        this.$vux.toast.show(res)
-        this.$vux.loading.hide()
-        return
-      }
-      const start = this.defaultLocation ? 3 : 1
-      const res = await this.addAddress({
-        nationid: this.nationId,
-        provinnce: this.provinceId,
+      let data = {
+        name: this.name,
+        postcode: this.postcode,
+        mobile: this.mobile,
+        country: this.nationId,
+        prov: this.provinceId,
         city: this.cityId,
         county: this.countyId,
-        start,
-        detailedinformation: this.detailedinformation,
-        postcode: this.postcode,
-        iphone: this.iphone,
-        linkman: this.linkman,
-        company: this.company,
-        remove: this.remove,
-        type: this.type,
-        idnumber: this.idnumber
+        address: this.address,
+        isDefault: this.isDefault ? 1 : 0,
+        remark: this.remark
+      }
+      const res = await this.editAddress({
+        data,
+        type: this.type
       })
       this.ajaxasync = false
-      if (res.type !== 'success') {
-        this.$vux.loading.hide()
-        return this.$vux.toast.show(res)
-      }
-      this.$vux.toast.show(res)
       this.$vux.loading.hide()
+      this.$vux.toast.show(res)
+      if (res.type !== 'success') return
       this.$router.go(-1)
     }
   },
   beforeDestroy () {
     this.$vux.loading.hide()
     // 页面为新增时, 如果未新建，保存已设置的值
-    if (!this.createRes && this.pagetype === 'add') {
-      const type = this.typecn
-      const addressInfo = {
-        name: this.name,
-        mobile: this.mobile,
-        postcode: this.postcode,
-        address: this.address,
-        remark: this.remark,
-        isDefault: this.isDefault,
-        nationId: this.nationId,
-        provinceId: this.provinceId,
-        cityId: this.cityId,
-        countyId: this.countyId,
-        nationdataShow: this.nationdataShow,
-        provincedataShow: this.provincedataShow,
-        citydataShow: this.citydataShow,
-        countydataShow: this.countydataShow
-      }
-      storage({
-        key: `handle_address_${type}_prop`,
-        val: JSON.stringify(addressInfo),
-        type: 'set'
-      })
+    if (this.createRes || this.pagetype !== 'add') return
+    const type = this.typecn
+    const addressInfo = {
+      name: this.name,
+      mobile: this.mobile,
+      postcode: this.postcode,
+      address: this.address,
+      remark: this.remark,
+      isDefault: this.isDefault,
+      nationId: this.nationId,
+      provinceId: this.provinceId,
+      cityId: this.cityId,
+      countyId: this.countyId,
+      nationdataShow: this.nationdataShow,
+      provincedataShow: this.provincedataShow,
+      citydataShow: this.citydataShow,
+      countydataShow: this.countydataShow
     }
+    storage({
+      key: `handle_address_${type}_prop`,
+      val: JSON.stringify(addressInfo),
+      type: 'set'
+    })
   }
 }
 </script>

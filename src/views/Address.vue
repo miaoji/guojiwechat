@@ -21,16 +21,16 @@
           <div class="address-container-list__item" v-for="item in data[addressType]" :key="item.id" v-show="item.start !== 2&&item.start!==0">
               <div class="flex address-container-list__item--info" @click.stop="selectAddress(item)">
                 <div>
-                  <p>{{item.linkman}}{{item.recipients}} {{item.iphone}}</p>
-                  <p class="location"><span class="location-remark">{{item.remove}} {{item.remark}}</span> {{item.detailedinformation}} {{item.detaliedinformation}} </p>
+                  <p>{{item.name}} {{item.mobile}}</p>
+                  <p class="location"><span class="location-remark">{{item.remark}}</span> {{item.address}} </p>
                 </div>
               </div>
               <div class="flex address-container-list__item--func flex">
-                <span class="is-default" v-show="item.start == 3">
+                <span class="is-default" v-show="item.is_default === 1">
                   <img src="../assets/images/add_ico_che.png" alt="默认地址">
                   <span>默认地址</span>
                 </span>
-                <span class="not-default" v-show="item.start == 1" @click.stop="changeChecked(item.id, item.start, item.userid)">
+                <span class="not-default" v-show="item.is_default === 0 || !item.is_default" @click.stop="changeChecked(item.id, item.start, item.userid)">
                   <img src="../assets/images/add_ico_nor.png" alt="">
                   <span>设为默认</span>
                 </span>
@@ -67,7 +67,6 @@ export default {
     this.addressType = type || localtype || 'send'
     this.pick = pick === '1'
     this.tabshow = Number(tabshow) === 0 ? 0 : 1
-    // this.scrollerNoDataText = pick === '1' ? '点击手机号或姓名处确定' : '没有更多数据'
   },
   mounted () {
     let title = ''
@@ -128,12 +127,13 @@ export default {
     ...mapActions([
       'changeAddress',
       'eidtAddress',
+      'delAddress',
       'checkedAddress',
       'setSendAddress',
       'setPickupAddress',
       'setDefaultAddress'
     ]),
-    deleteItem (id, addressType) {
+    deleteItem (ids, addressType) {
       // 显示
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
       this.$vux.confirm.show({
@@ -141,17 +141,14 @@ export default {
         title: '确定删除这一地址吗?',
         onCancel () {
         },
-        onConfirm () {
+        async onConfirm () {
           _this.$vux.loading.show({
             text: '正在提交'
           })
-          _this.eidtAddress({id, type: addressType})
+          const delRes = await _this.delAddress({ids, type: addressType})
           _this.$vux.loading.hide()
-          // 显示
-          _this.$vux.toast.show({
-            text: '删除成功',
-            width: '18rem'
-          })
+          console.log('dsa', delRes)
+          _this.$vux.toast.show(delRes)
         }
       })
     },
@@ -177,12 +174,18 @@ export default {
     async refresh (done) {
       const _this = this
       setTimeout(async function () {
-        await _this.changeAddress()
+        const res = await _this.changeAddress()
+        if (res.type !== 'success') {
+          _this.$vux.toast.show(res)
+        }
         done()
       }, 1200)
     },
     async infinite (done) {
-      await this.changeAddress()
+      const res = await this.changeAddress()
+      if (res.type !== 'success') {
+        this.$vux.toast.show(res)
+      }
       done(true)
     }
   },

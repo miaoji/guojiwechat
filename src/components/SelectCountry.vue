@@ -16,18 +16,19 @@
               <icon type="clear"></icon>
             </div>
           </div>
-          <div v-show="inputLen" class="input-search">
-            <div class="input-search-container" v-show="searchResult.length !== 0">
-              <p v-for="item in searchResult" v-show="item.hidden_status === 1" @click.stop="onClickSearchRes(item)">
-                {{item.country_cn}}&nbsp;{{item.country_en}}
-              </p>
-            </div>
-            <div class="input-search-container" v-show="searchResult.length === 0">
-              <p>
-                搜索结果为空
-              </p>
-            </div>
-          </div>
+        </div>
+      </div>
+
+      <div v-show="inputLen" class="input-search">
+        <div class="input-search-container" v-show="searchResult.length !== 0">
+          <p v-for="item in searchResult" v-show="item.hidden_status === 1" @click.stop="onClickSearchRes(item)">
+            {{item.country_cn}}&nbsp;{{item.country_en}}
+          </p>
+        </div>
+        <div class="input-search-container" v-show="searchResult.length === 0">
+          <p>
+            搜索结果为空
+          </p>
         </div>
       </div>
 
@@ -60,8 +61,7 @@
 
 <script>
 import { storage } from '../utils'
-import request from '../utils/request'
-import { geography as geographyApi } from '@/api'
+import * as geographyService from '@/services/geography'
 import { XInput, Icon } from 'vux'
 import _ from 'lodash'
 
@@ -105,15 +105,7 @@ export default {
   async created () {
     // 获取所有国家
     this.$vux.loading.show()
-    const res = await request({
-      url: geographyApi.showcountry,
-      method: 'get',
-      auth: true,
-      data: {
-        page: 1,
-        rows: 500
-      }
-    })
+    const res = await geographyService.queryCountry()
     this.$vux.loading.hide()
     if (res.code === 200) {
       this.allNation = res.obj
@@ -251,16 +243,13 @@ export default {
       this.inSearching = true
       this.$vux.loading.show()
       try {
-        const res = await request({
-          url: geographyApi.showcountry,
-          method: 'get',
-          auth: true,
-          params: {
-            name: val
-          }
+        const res = await geographyService.queryCountry({
+          name: val,
+          page: 1,
+          rows: 20
         })
         if (res.code === 200) {
-          this.searchResult = res.obj
+          this.searchResult = res.obj || []
           this.changeRecentSearch()
         }
       } catch (e) {
@@ -345,19 +334,27 @@ export default {
           }
         }
       }
-      .input-search {
-        padding: 0 1rem;
-        &-container {
-          p {
-            text-align: left;
-            font-size: 1.6rem;
-            color: #fff;
-            padding: .5rem .5rem 1rem 1rem;
-            border-bottom: 1px solid #97C1EA;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
+    }
+    .input-search {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      margin-top: 10rem;
+      padding: 0 1rem;
+      overflow: auto;
+      &-container {
+        p {
+          text-align: left;
+          font-size: 1.6rem;
+          color: #fff;
+          padding: .5rem .5rem 1rem 1rem;
+          border-bottom: 1px solid #97C1EA;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }

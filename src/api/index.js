@@ -20,18 +20,71 @@ switch (NODE_ENV) {
     break
 }
 
-export const pic = {
-  qr: url + 'wx/pic',
-  pickupqr: url + 'wx/signpic'
+// 寄件地址
+export const mailingAddr = {
+  query: url + 'api/mailingAddr/index',
+  save: url + 'api/mailingAddr/add',
+  show: url + 'api/mailingAddr/getMailingAddressById',
+  update: url + 'api/mailingAddr/modMailingAddressById',
+  delete: url + 'api/mailingAddr/delMailingAddressById'
 }
 
 // 收件地址
 export const receiveAddr = {
-  index: url + 'api/receiveAddr/index',
-  add: url + 'api/receiveAddr/add',
+  query: url + 'api/receiveAddr/index',
+  save: url + 'api/receiveAddr/add',
   show: url + 'api/receiveAddr/getReceiveAddressById',
   update: url + 'api/receiveAddr/modReceiveAddressById',
   delete: url + 'api/receiveAddr/delReceiveAddressById'
+}
+
+// 国家
+export const country = {
+  query: url + 'api/country/index',
+  save: url + 'api/country/add',
+  show: url + 'api/country/getCountryById',
+  update: url + 'api/country/modCountryById',
+  delete: url + 'api/country/delCountryById'
+}
+
+// 省份
+export const province = {
+  query: url + 'api/provinces/index',
+  save: url + 'api/provinces/add',
+  show: url + 'api/provinces/getProvincesById',
+  update: url + 'api/provinces/modProvincesById',
+  delete: url + 'api/provinces/delProvincesById'
+}
+
+// 市、区
+export const city = {
+  query: url + 'api/cities/index',
+  save: url + 'api/cities/add',
+  show: url + 'api/cities/getProvincesById',
+  update: url + 'api/cities/modCitiesById',
+  delete: url + 'api/cities/delCitiesById'
+}
+
+// 县级
+export const county = {
+  query: url + 'api/districts/index',
+  save: url + 'api/districts/add',
+  show: url + 'api/districts/getProvincesById',
+  update: url + 'api/districts/modDistrictsById',
+  delete: url + 'api/districts/delDistrictsById'
+}
+
+export const geography = {
+  queryCountry: url + 'api/country/index',
+  showCountry: url + 'wx/Country/ShowCountryid',
+  showProvince: url + 'wx/Province/ShowProvinceid',
+  showCity: url + 'wx/City/ShowCityid',
+  showCounty: url + 'wx/County/ShowCountyid'
+}
+
+export const pic = {
+  qr: url + 'wx/pic',
+  pickupqr: url + 'wx/signpic'
 }
 
 export const address = {
@@ -51,22 +104,10 @@ export const address = {
   pickupdetail: url + 'wx/Consigneeaddress/ShowConsigneeaddressid'
 }
 
-export const geography = {
-  showcountry: url + 'api/country/index',
-  showcountrybyid: url + 'wx/Country/ShowCountryid',
-  showprovince: url + 'wx/Province/ShowProvinceid',
-  showcity: url + 'wx/City/ShowCityid',
-  showcounty: url + 'wx/County/ShowCountyid'
-}
-
 export const send = {
   index: url + 'wx/findSend',
   create: url + 'wx/OrderInfo/InsertOrderInfo',
   cancle: url + 'wx/end_send'
-}
-
-export const brand = {
-  index: url + 'wx/allbrand'
 }
 
 export const site = {

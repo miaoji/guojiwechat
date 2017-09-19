@@ -20,8 +20,13 @@ const fetch = (options) => {
         headers: auth ? {'token': token} : {}
       })
     case 'delete':
-      return axios.delete(url, {
-        data
+      return axios({
+        url,
+        method: 'delete',
+        data,
+        params,
+        timeout: 5000,
+        headers: auth ? {'token': token} : {}
       })
     case 'post':
       return axios({
