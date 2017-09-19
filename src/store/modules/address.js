@@ -208,7 +208,7 @@ export const actions = {
         headers: {'token': local.getItem('mj_token')}
       })
       const county = await instance({
-        method: 'post',
+        method: 'get',
         url: geographyApi.showcounty,
         params: {
           cityid
@@ -238,7 +238,7 @@ export const actions = {
       return {
         type: 'warn',
         info: '获取失败',
-        width: '18rem'
+        width: '20rem'
       }
     }
   },

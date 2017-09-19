@@ -47,8 +47,8 @@
           <div class="country-title">所有国家/地区</div>
           <ul class="city-list">
             <li v-for="item in allNation">
-              <span class="city" @click.stop="onClickCity({name: item.name})">
-                {{item.name}}
+              <span class="city" @click.stop="onClickCity({name: item.coutry_cn})">
+                {{item.coutry_cn}}
               </span>
             </li>
           </ul>
@@ -107,8 +107,12 @@ export default {
     this.$vux.loading.show()
     const res = await request({
       url: geographyApi.showcountry,
-      method: 'post',
-      auth: true
+      method: 'get',
+      auth: true,
+      data: {
+        page: 1,
+        rows: 500
+      }
     })
     this.$vux.loading.hide()
     if (res.code === 200) {
@@ -249,7 +253,7 @@ export default {
       try {
         const res = await request({
           url: geographyApi.showcountry,
-          method: 'post',
+          method: 'get',
           auth: true,
           params: {
             name: val

@@ -1,22 +1,14 @@
-// 董浩伟
-// let url = 'http://192.168.0.225:8080/DHL/'
-// 仝舟
-// let url = 'http://192.168.0.127:8066/'
-// online app 云端服务 Wechat
-// let url = 'http://api.didalive.net/DHL/'
 const NODE_ENV = process.env.NODE_ENV
 let url
 
 switch (NODE_ENV) {
   case 'development':
-    // 董浩伟
-    // let url = 'http://192.168.0.225:8080/DHL/'
     // 仝舟
-    // let url = 'http://192.168.0.127:8066/'
+    url = 'http://192.168.1.111:8080/'
     // 测试 app 云端服务 Wechat
-    // url = 'http://api.didalive.net/DHL/'
+    // url = 'http://api.didalive.net/'
     // 正式 app 云端服务 Wechat
-    url = 'http://api.mingz-tech.com/DHL/'
+    // url = 'http://api.mingz-tech.com/DHL/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/DHL/'
@@ -51,7 +43,7 @@ export const address = {
 }
 
 export const geography = {
-  showcountry: url + 'wx/Country/ShowCountry',
+  showcountry: url + 'api/country/index',
   showcountrybyid: url + 'wx/Country/ShowCountryid',
   showprovince: url + 'wx/Province/ShowProvinceid',
   showcity: url + 'wx/City/ShowCityid',

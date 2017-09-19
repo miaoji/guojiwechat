@@ -63,14 +63,15 @@ export default {
   async created () {
     try {
       const res = await request({
-        method: 'post',
+        method: 'get',
         url: geographyApi.showcountry,
         auth: true
       })
       if (res.statusCode !== 200) {
         return this.$vux.toast.show({
           type: 'warn',
-          text: '获取路由失败'
+          text: '获取路由失败',
+          width: '15rem'
         })
       }
       const data = res
