@@ -25,6 +25,15 @@ export const pic = {
   pickupqr: url + 'wx/signpic'
 }
 
+// 收件地址
+export const receiveAddr = {
+  index: url + 'api/receiveAddr/index',
+  add: url + 'api/receiveAddr/add',
+  show: url + 'api/receiveAddr/getReceiveAddressById',
+  update: url + 'api/receiveAddr/modReceiveAddressById',
+  delete: url + 'api/receiveAddr/delReceiveAddressById'
+}
+
 export const address = {
   index: url + 'wx/Mailingaddress/ShowMailingaddressuserid',
   send: url + 'wx/Mailingaddress/ShowMailingaddressuserid',

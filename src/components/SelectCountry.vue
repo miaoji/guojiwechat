@@ -18,8 +18,8 @@
           </div>
           <div v-show="inputLen" class="input-search">
             <div class="input-search-container" v-show="searchResult.length !== 0">
-              <p v-for="item in searchResult" v-show="item.hide === 1" @click.stop="onClickSearchRes(item)">
-                {{item.name}}&nbsp;{{item.englishname}}
+              <p v-for="item in searchResult" v-show="item.hidden_status === 1" @click.stop="onClickSearchRes(item)">
+                {{item.country_cn}}&nbsp;{{item.country_en}}
               </p>
             </div>
             <div class="input-search-container" v-show="searchResult.length === 0">
@@ -47,8 +47,8 @@
           <div class="country-title">所有国家/地区</div>
           <ul class="city-list">
             <li v-for="item in allNation">
-              <span class="city" @click.stop="onClickCity({name: item.coutry_cn})">
-                {{item.coutry_cn}}
+              <span class="city" @click.stop="onClickCity({name: item.country_cn})">
+                {{item.country_cn}}
               </span>
             </li>
           </ul>
@@ -158,7 +158,7 @@ export default {
       recentSearch.push(confrimVal)
       recentSearch = _.compact(recentSearch)
       recentSearch = _.uniq(recentSearch)
-      recentSearch = _.takeRight(recentSearch, 12)
+      recentSearch = _.takeRight(recentSearch, 4)
       storage({
         key: 'select_country_recent',
         val: JSON.stringify(recentSearch),
@@ -174,7 +174,7 @@ export default {
       if (searchResult.length === 1) {
         const item = searchResult[0]
         const nation = {
-          show: item.name,
+          show: item.country_cn,
           nationId: item.id
         }
         this.$emit('listenCountryConfirm', nation)
@@ -196,7 +196,7 @@ export default {
      */
     onClickSearchRes (item) {
       const nation = {
-        show: item.name,
+        show: item.country_cn,
         nationId: item.id
       }
       this.$emit('listenCountryConfirm', nation)

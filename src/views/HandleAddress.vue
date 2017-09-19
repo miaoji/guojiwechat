@@ -3,17 +3,17 @@
     <div class="addaddress-container" v-show="mainContainerShow">
       <group label-width="8rem" label-align="left">
         <x-input type="text" title="联系人" v-model="linkman" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <x-input title="电话" v-model="iphone" type="text" placeholder="请输入手机号" required></x-input>
+        <x-input title="电话" v-model="mobile" type="text" placeholder="请输入手机号" required></x-input>
         <x-input @click.native="onClickCountry" disabled title="国家/地区" placeholder="请选择国家/地区" type="text" required v-model="nationdataShow"></x-input>
         <x-input v-show="type === 1" @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
         <x-input v-show="type === 1" @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
         <x-input v-show="type === 1" @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
-        <x-textarea type="text" title="地址" :max="200" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="detailedinformation" :rows="1" :height="detailedinformation.length + 22" required></x-textarea>
+        <x-textarea type="text" title="地址" :max="200" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required></x-textarea>
         <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
-        <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remove" :rows="1" :height="22" required></x-textarea>
+        <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remark" :rows="1" :height="22" required></x-textarea>
       </group>
       <group>
-         <x-switch title="设为默认地址" class="mj-switch" v-model="defaultLocation"></x-switch>
+         <x-switch title="设为默认地址" class="mj-switch" v-model="isDefault"></x-switch>
       </group>
       <get-position 
         :typecn='positionType' 
@@ -86,11 +86,11 @@ export default {
       if (!localData) return
       localData = JSON.parse(localData)
       this.linkman = localData.linkman || ''
-      this.iphone = localData.iphone || ''
+      this.mobile = localData.mobile || ''
       this.postcode = localData.postcode || ''
-      this.detailedinformation = localData.detailedinformation || ''
-      this.remove = localData.remove || ''
-      this.defaultLocation = localData.defaultLocation || false
+      this.address = localData.address || ''
+      this.remark = localData.remark || ''
+      this.isDefault = localData.isDefault || false
       // 定义国家省市区 id 和展示的名称
       this.nationId = localData.nationId
       this.provinceId = localData.provinceId
@@ -159,13 +159,13 @@ export default {
       pagetype: '',
       idnumber: '1',
       query: {},
-      linkman: '',
+      name: '',
       company: '',
       postcode: '',
-      iphone: '',
-      detailedinformation: '',
-      remove: '',
-      defaultLocation: false,
+      mobile: '',
+      address: '',
+      remark: '',
+      isDefault: false,
       addressVal: [],
       ajaxasync: false,
       createRes: false,
@@ -283,7 +283,7 @@ export default {
       }
     },
     async saveAddress () {
-      if (!this.linkman || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
+      if (!this.name || !this.iphone || !this.detailedinformation || !this.nationdataShow) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -420,12 +420,12 @@ export default {
     if (!this.createRes && this.pagetype === 'add') {
       const type = this.typecn
       const addressInfo = {
-        linkman: this.linkman,
-        iphone: this.iphone,
+        name: this.name,
+        mobile: this.mobile,
         postcode: this.postcode,
-        detailedinformation: this.detailedinformation,
-        remove: this.remove,
-        defaultLocation: this.defaultLocation,
+        address: this.address,
+        remark: this.remark,
+        isDefault: this.isDefault,
         nationId: this.nationId,
         provinceId: this.provinceId,
         cityId: this.cityId,
