@@ -576,6 +576,8 @@ export default {
       this.packageTable = []
       this.remove = ''
       this.productionType = undefined
+      this.producttypeid = null
+      this.cargotype = null
       this.weight = null
       this.len = null
       this.height = null
@@ -640,7 +642,15 @@ export default {
           this.advance = '请先选择产品类型'
           return
         }
+        if (!this.DestCtry) {
+          this.advance = '请先选择收件地址'
+          return
+        }
         let bearload = this.volume > this.weight ? this.volume : this.weight
+        if (!bearload) {
+          this.advance = '请先输入重量'
+          return
+        }
         const price = await request({
           method: 'post',
           url: priceApi.order,

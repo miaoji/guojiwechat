@@ -235,8 +235,6 @@ export default {
       }
     },
     async wxpay () {
-      if (this.payloading) return
-      this.payloading = true
       const serialnumber = this.serialnumber
       let intParams = {
         openid: storage({key: 'openid'}),
@@ -252,10 +250,11 @@ export default {
       }
       const wxPayRes = await wxUtil.pay({intParams, successParams})
       this.showToast(wxPayRes)
-      if (wxPayRes.success) {
+      if (wxPayRes.type === 'success') {
         this.data.starte = 2
+      } else {
+        window.location.reload()
       }
-      this.payloading = false
     },
     goBootDetail ({id}) {
       this.$router.push({path: 'bootdeal', query: {id}})
