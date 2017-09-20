@@ -46,6 +46,8 @@
                 </div>
               </div>
           </div>
+          <div class="scroller-fixed">
+          </div>
         </scroller>
       </div>
     </div>
@@ -307,5 +309,8 @@ export default {
   &-scroller--tabshow {
     padding-top: 52px;
   }
+}
+.scroller-fixed {
+  height: 7rem;
 }
 </style>

@@ -1,5 +1,4 @@
-import request from './request'
-import { wx as wxApi } from '@/api'
+import * as wxService from '@/services/wx'
 import { getConfByEnv } from '@/utils'
 
 /**
@@ -9,12 +8,8 @@ import { getConfByEnv } from '@/utils'
 export const init = function () {
   return new Promise(async (resolve, reject) => {
     const conf = getConfByEnv()
-    const wxconfig = await request({
-      method: 'post',
-      url: wxApi.jssdk,
-      params: {
-        url: conf.jssdk.initUrl
-      }
+    const wxconfig = await wxService.getJssdkConfig({
+      url: conf.jssdk.initUrl
     })
     if (!wxconfig.success) {
       return reject({
@@ -43,10 +38,8 @@ export const init = function () {
 
 export const pay = function ({intParams, successParams}) {
   return new Promise(async (resolve, reject) => {
-    const wxpayCon = await request({
-      method: 'post',
-      url: wxApi.wxpay,
-      params: intParams
+    const wxpayCon = await wxService.getWxPayConfig({
+      ...intParams
     })
     if (!wxpayCon.success) {
       return reject({
@@ -65,10 +58,8 @@ export const pay = function ({intParams, successParams}) {
         'signType': 'MD5',
         'paySign': wxpayCon.paySign,
         success: async function (res) {
-          const successRes = await request({
-            method: 'post',
-            url: wxApi.update,
-            params: successParams
+          const successRes = await wxService.updateWxPay({
+            ...successParams
           })
           if (successRes.success) {
             resolve({

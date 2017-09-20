@@ -10,40 +10,35 @@
     </div>
     <div class="getpositioninfo-step">
       <p>选择</p>
-      <picker :data='cityDatas' v-model='cityVals' :fixed-columns="1" :columns="1"></picker>
+      <picker :data='geoData' v-model='geoVal' :fixed-columns="1" :columns="1"></picker>
     </div>
   </div>
 </template>
 
 <script>
 import { XInput, Picker } from 'vux'
-import { geography as geographyApi } from '@/api'
-import request from '../utils/request'
+import * as geographyService from '@/services/geography'
 
 export default {
   name: 'getpositioninfo',
   props: {
-    nationId: {
-      type: Number,
-      default: 0
+    countryCode: {
+      type: String,
+      default: ''
     },
-    provinceId: {
-      type: Number,
-      default: 0
+    provinceCode: {
+      type: String,
+      default: ''
     },
-    cityId: {
-      type: Number,
-      default: 0
-    },
-    countyId: {
-      type: Number,
-      default: 0
+    cityCode: {
+      type: String,
+      default: ''
     },
     getpositionshow: {
       type: Boolean,
       default: false
     },
-    typecn: {
+    type: {
       type: Number,
       default: 0
     }
@@ -53,61 +48,35 @@ export default {
     XInput
   },
   computed: {
+    typeList () {
+      return {
+        1: 'country',
+        2: 'province',
+        3: 'city',
+        4: 'county'
+      }
+    },
+    typeListCn () {
+      return {
+        1: '国家',
+        2: '省份',
+        3: '城市',
+        4: '县/区'
+      }
+    }
   },
   data () {
     return {
-      cityDatas: [],
-      cityVals: []
+      geoData: [],
+      geoVal: []
     }
   },
   async created () {
-    try {
-      const res = await request({
-        method: 'get',
-        url: geographyApi.showcountry,
-        auth: true
-      })
-      if (res.statusCode !== 200) {
-        return this.$vux.toast.show({
-          type: 'warn',
-          text: '获取路由失败',
-          width: '15rem'
-        })
-      }
-      const data = res
-      if (data.code !== 200) {
-        return this.$vux.toast.show({
-          type: 'warn',
-          text: data.mess
-        })
-      }
-      let shift = 0
-      this.cityDatas = data.obj.map(function (elem, index) {
-        if (elem.name === '中国') {
-          shift = index
-        }
-        return {
-          name: elem.name,
-          value: elem.id
-        }
-      })
-      if (this.type === 'pickup') {
-        this.cityDatas.shift(shift)
-      }
-    } catch (e) {
-      console.error(e)
-      return this.$vux.toast.show({
-        type: 'warn',
-        width: '18rem',
-        text: '网络请求错误'
-      })
-    }
   },
   methods: {
     change (value) {
     },
     close () {
-      this.step = 1
       this.$emit('listenPositionClose', false)
     },
     getNameById (obj, id) {
@@ -120,17 +89,18 @@ export default {
       return newobj['name']
     },
     confirm () {
-      const country = this.getNameById(this.cityDatas, this.cityVals)
-      const location = {
-        show: country,
-        val: {
-          positionId: Number(this.cityVals)
-        },
-        typePosition: this.typecn
+      try {
+        let val = JSON.parse(this.geoVal)
+        const geo = {
+          ...val,
+          typePosition: this.type
+        }
+        this.$emit('listenPositionConfirm', geo)
+        this.$emit('listenPositionClose', false)
+      } catch (e) {
+        this.$emit('listenPositionConfirm', null)
+        this.$emit('listenPositionClose', false)
       }
-      this.step = 1
-      this.$emit('listenPositionConfirm', location)
-      this.$emit('listenPositionClose', false)
     }
   },
   watch: {
@@ -138,42 +108,23 @@ export default {
       if (val) {
         let res = {}
         try {
-          switch (this.typecn) {
+          switch (this.type) {
             case 1:
-              res = await request({
-                method: 'post',
-                url: geographyApi.showcountry,
-                auth: true
-              })
+              res = await geographyService.queryCountry()
               break
             case 2:
-              res = await request({
-                method: 'post',
-                url: geographyApi.showprovince,
-                params: {
-                  countryid: Number(this.nationId)
-                },
-                auth: true
+              res = await geographyService.queryProvince({
+                countryCode: this.countryCode
               })
               break
             case 3:
-              res = await request({
-                method: 'post',
-                url: geographyApi.showcity,
-                params: {
-                  provinceid: Number(this.provinceId)
-                },
-                auth: true
+              res = await geographyService.queryCity({
+                provinceCode: this.provinceCode
               })
               break
             case 4:
-              res = await request({
-                method: 'post',
-                url: geographyApi.showcounty,
-                params: {
-                  cityid: Number(this.cityId)
-                },
-                auth: true
+              res = await geographyService.queryCounty({
+                cityCode: this.cityCode
               })
               break
           }
@@ -183,20 +134,58 @@ export default {
               text: '获取路由失败'
             })
           }
-          const data = res
-          if (data.code !== 200) {
+          if (res.code !== 200) {
             return this.$vux.toast.show({
               type: 'warn',
-              text: data.mess
+              text: res.mess
             })
           }
-          if (data.obj.length < 1) {
-            data.obj.push({'name': '暂无城市信息', 'id': '', countryid: ''})
+          if (!res.obj) {
+            let name = this.typeListCn[this.type]
+            name = `暂无${name}信息`
+            this.geoData = [{name, 'id': '', value: ''}]
+            return
           }
-          this.cityDatas = data.obj.map(function (elem) {
+          const type = this.type
+          this.geoData = res.obj.map(function (elem) {
+            let val, name
+            switch (type) {
+              case 1:
+                name = elem.country_cn
+                val = {
+                  id: elem.id,
+                  name: elem.country_cn,
+                  code: elem.country_code
+                }
+                break
+              case 2:
+                name = elem.province
+                val = {
+                  id: elem.id,
+                  name: elem.province,
+                  code: elem.province_code
+                }
+                break
+              case 3:
+                name = elem.city
+                val = {
+                  id: elem.id,
+                  name: elem.city,
+                  code: elem.city_code
+                }
+                break
+              case 4:
+                name = elem.district
+                val = {
+                  id: elem.id,
+                  name: elem.district,
+                  code: elem.district_code
+                }
+                break
+            }
             return {
-              name: elem.name,
-              value: elem.id
+              name,
+              value: JSON.stringify(val)
             }
           })
         } catch (e) {

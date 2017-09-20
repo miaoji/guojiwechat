@@ -19,6 +19,15 @@ export async function showCountry (data) {
   })
 }
 
+export async function queryProvince (data) {
+  return request({
+    url: provinceApi.query,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
 export async function showProvince (data) {
   return request({
     url: provinceApi.show,
@@ -28,9 +37,27 @@ export async function showProvince (data) {
   })
 }
 
+export async function queryCity (data) {
+  return request({
+    url: cityApi.query,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
 export async function showCity (data) {
   return request({
     url: cityApi.show,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
+export async function queryCounty (data) {
+  return request({
+    url: countyApi.query,
     method: 'get',
     auth: true,
     data

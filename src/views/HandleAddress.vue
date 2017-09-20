@@ -4,10 +4,10 @@
       <group label-width="8rem" label-align="left">
         <x-input type="text" title="联系人" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
         <x-input title="电话" v-model="mobile" type="text" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="onClickCountry" disabled title="国家/地区" placeholder="请选择国家/地区" type="text" required v-model="nationdataShow"></x-input>
-        <x-input v-show="type === 1" @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="provincedataShow" ></x-input>
-        <x-input v-show="type === 1" @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="citydataShow"></x-input>
-        <x-input v-show="type === 1" @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="countydataShow"></x-input>
+        <x-input @click.native="onClickCountry" disabled title="国家/地区" placeholder="请选择国家/地区" type="text" required v-model="country['name']"></x-input>
+        <x-input v-show="type === 1" @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="province['name']" ></x-input>
+        <x-input v-show="type === 1" @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="city['name']"></x-input>
+        <x-input v-show="type === 1" @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="county['name']"></x-input>
         <x-textarea type="text" title="地址" :max="200" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required></x-textarea>
         <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
         <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remark" :rows="1" :height="22" required></x-textarea>
@@ -15,13 +15,13 @@
       <group>
          <x-switch title="设为默认地址" class="mj-switch" v-model="isDefault"></x-switch>
       </group>
-      <get-position 
-        :typecn='positionType' 
+      <get-position
+        :type='positionType'
         :getpositionshow="getpositionshow" 
-        :nationId="nationId" 
-        :provinceId="provinceId"
-        :cityId="cityId"
-        :countyId="countyId"
+        :countryCode="country['code']"
+        :provinceCode="province['code']"
+        :cityCode="city['code']"
+        :countyCode="county['code']"
         @listenPositionClose="toPositionClose" 
         @listenPositionConfirm="toPositionConfirm"
       >
@@ -33,7 +33,8 @@
     </div>
     <select-country
       :show="selectCountryShow"
-      :countryName="nationdataShow"
+      :type="typecn"
+      :countryName="country['name']"
       @listenCountryClose="onCountryClose"
       @listenCountryConfirm="onCountryConfirm"
     >
@@ -43,6 +44,8 @@
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
 import { mapActions } from 'vuex'
+import * as mailingAddrService from '@/services/mailingAddr'
+import * as receiveAddrService from '@/services/receiveAddr'
 import { reg as regUtil, storage } from '../utils'
 
 export default {
@@ -55,22 +58,49 @@ export default {
     XTextarea,
     Picker
   },
-  mounted () {
-    let title = ''
-    if (this.typecn === 'send') {
-      if (this.pagetype === 'add') {
-        title = '添加寄件地址'
-      } else if (this.pagetype === 'edit') {
-        title = '编辑寄件地址'
-      }
-    } else if (this.typecn === 'pickup') {
-      if (this.pagetype === 'add') {
-        title = '添加收件地址'
-      } else if (this.pagetype === 'edit') {
-        title = '编辑收件地址'
-      }
+  data () {
+    return {
+      userId: '',
+      positionType: 1,
+      type: 2,
+      typecn: 'send',
+      picker: false,
+      pagetype: '',
+      query: {},
+      name: '',
+      company: '',
+      postcode: '',
+      mobile: '',
+      address: '',
+      remark: '',
+      isDefault: false,
+      ajaxasync: false,
+      createRes: false,
+      // 信息
+      getpositionshow: false,
+      country: {
+        id: 0,
+        name: '',
+        code: ''
+      },
+      province: {
+        id: 0,
+        name: '',
+        code: ''
+      },
+      city: {
+        id: 0,
+        name: '',
+        code: ''
+      },
+      county: {
+        id: 0,
+        name: '',
+        code: ''
+      },
+      mainContainerShow: true,
+      selectCountryShow: false
     }
-    window.document.title = title
   },
   async created () {
     const query = this.$route.query
@@ -92,85 +122,98 @@ export default {
       this.remark = localData.remark || ''
       this.isDefault = localData.isDefault || false
       // 定义国家省市区 id 和展示的名称
-      this.nationId = Number(localData.nationId)
-      this.provinceId = Number(localData.provinceId)
-      this.cityId = Number(localData.cityId)
-      this.countyId = Number(localData.countyId)
-      this.nationdataShow = localData.nationdataShow
-      this.provincedataShow = localData.provincedataShow
-      this.citydataShow = localData.citydataShow
-      this.countydataShow = localData.countydataShow
+      this.country = localData.country || {
+        id: 0,
+        name: '',
+        code: ''
+      }
+      this.province = localData.province || {
+        id: 0,
+        name: '',
+        code: ''
+      }
+      this.city = localData.city || {
+        id: 0,
+        name: '',
+        code: ''
+      }
+      this.county = localData.county || {
+        id: 0,
+        name: '',
+        code: ''
+      }
       return
     }
     // 编辑地址时，从url参数中获取所有信息
     if (pagetype === 'edit') {
-      this.addressId = query.id
+      const addrFunc = type === 'send' ? mailingAddrService.show : receiveAddrService.show
       this.name = query.name
-      this.mobile = query.mobile
-      this.postcode = query.postcode
-      this.address = query.address
-      this.remark = query.remark
-      this.isDefault = query.is_default === 1
-      // 定义国家省市区 id 和展示的名称
-      this.nationId = Number(query.country)
-      this.provinceId = Number(query.prov)
-      this.cityId = Number(query.city)
-      this.countyId = Number(query.county)
       this.$vux.loading.show()
-      // 根据国家、省、市、区的id获取名称
-      let location = await this.getGeography({countryId: this.nationId, provinceId: this.provinceId, cityId: this.cityId, countyId: this.countyId})
+      const resquestRes = await addrFunc({
+        id: query.id
+      })
       this.$vux.loading.hide()
-      if (location.type !== 'success') {
-        this.$vux.toast.show(location)
+      if (resquestRes.code === '200') {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: resquestRes.mess || '获取地址失败',
+          width: '18rem'
+        })
         return
       }
-      // 将获得的name分配给当前页面data
-      const locationName = location.data
-      this.nationdataShow = locationName.countryName
-      this.provincedataShow = locationName.provinceName
-      this.citydataShow = locationName.cityName
-      this.countydataShow = locationName.countyName
+      const addrRes = resquestRes.obj
+      this.addressId = query.id
+      this.userId = addrRes.WX_USER_ID
+      this.name = addrRes.NAME
+      this.mobile = addrRes.MOBILE
+      this.postcode = addrRes.POSTCODE
+      this.address = addrRes.ADDRESS
+      this.remark = addrRes.REMARK
+      this.isDefault = addrRes.IS_DEFAULT === 1
+      // 定义国家省市区id、code和name
+      this.country = {
+        id: Number(addrRes.COUNTRY) || 0,
+        name: addrRes.COUNTRY_CN || '',
+        code: addrRes.COUNTRY_CODE || ''
+      }
+      this.province = {
+        id: Number(addrRes.PROV) || 0,
+        name: addrRes.PROVINCE || '',
+        code: addrRes.PROVINCE_CODE || ''
+      }
+      this.city = {
+        id: Number(addrRes.CITY) || 0,
+        name: addrRes.cityName || '',
+        code: addrRes.city_code || ''
+      }
+      this.county = {
+        id: Number(addrRes.COUNTY) || 0,
+        name: addrRes.DISTRICT || '',
+        code: addrRes.DISTRICT_CODE || ''
+      }
     }
   },
-  data () {
-    return {
-      positionType: 1,
-      type: 2,
-      typecn: 'send',
-      picker: false,
-      pagetype: '',
-      idnumber: '1',
-      query: {},
-      name: '',
-      company: '',
-      postcode: '',
-      mobile: '',
-      address: '',
-      remark: '',
-      isDefault: false,
-      addressVal: [],
-      ajaxasync: false,
-      createRes: false,
-      locationid: {},
-      provincedata: [],
-      // 信息
-      getpositionshow: false,
-      nationdataShow: '',
-      nationId: 0,
-      provincedataShow: '',
-      provinceId: 0,
-      citydataShow: '',
-      cityId: 0,
-      countydataShow: '',
-      countyId: 0,
-      mainContainerShow: true,
-      selectCountryShow: false
+  mounted () {
+    let title = ''
+    if (this.typecn === 'send') {
+      if (this.pagetype === 'add') {
+        title = '添加寄件地址'
+      } else if (this.pagetype === 'edit') {
+        title = '编辑寄件地址'
+      }
+    } else if (this.typecn === 'pickup') {
+      if (this.pagetype === 'add') {
+        title = '添加收件地址'
+      } else if (this.pagetype === 'edit') {
+        title = '编辑收件地址'
+      }
     }
+    window.document.title = title
   },
   methods: {
     ...mapActions([
       'addAddress',
-      'eidtAddress',
+      'updateAddress',
       'getGeography'
     ]),
     getPosition (val) {
@@ -180,15 +223,15 @@ export default {
           this.positionType = 1
           break
         case 2:
-          this.getpositionshow = !this.getpositionshow && this.nationdataShow !== ''
+          this.getpositionshow = !this.getpositionshow && this.country['name'] !== ''
           this.positionType = 2
           break
         case 3:
-          this.getpositionshow = !this.getpositionshow && this.provincedataShow !== ''
+          this.getpositionshow = !this.getpositionshow && this.province['name'] !== ''
           this.positionType = 3
           break
         case 4:
-          this.getpositionshow = !this.getpositionshow && this.citydataShow !== ''
+          this.getpositionshow = !this.getpositionshow && this.city['name'] !== ''
           this.positionType = 4
           break
       }
@@ -197,48 +240,65 @@ export default {
       this.getpositionshow = val
     },
     toPositionConfirm (val) {
+      if (!val) return
+      console.log('val', val)
+      let oldName = ''
       switch (val.typePosition) {
         case 1: // 获取国家信息
-          let oldlocation = this.nationdataShow
-          this.nationdataShow = val.show
-          this.nationId = val.val.positionId
-          if (this.nationdataShow !== oldlocation) {
-            this.provincedataShow = ''
-            this.provinceId = 0
-            this.citydataShow = ''
-            this.cityId = 0
-            this.countydataShow = ''
-            this.countyId = 0
+          oldName = this.country['name']
+          this.country = val
+          if (val['name'] !== oldName) {
+            this.province = {
+              id: 0,
+              name: '',
+              code: ''
+            }
+            this.city = {
+              id: 0,
+              name: '',
+              code: ''
+            }
+            this.county = {
+              id: 0,
+              name: '',
+              code: ''
+            }
           }
           break
         case 2: // 获取省份信息
-          let oldProvincedataShow = this.provincedataShow
-          if (val.show) {
-            this.provincedataShow = val.show
-            this.provinceId = val.val.positionId
+          oldName = this.province['name']
+          if (val.name) {
+            this.province = val
           }
-          if (this.provincedataShow !== oldProvincedataShow) {
-            this.citydataShow = ''
-            this.cityId = 0
-            this.countydataShow = ''
-            this.countyId = 0
+          if (val['name'] !== oldName) {
+            this.city = {
+              id: 0,
+              name: '',
+              code: ''
+            }
+            this.county = {
+              id: 0,
+              name: '',
+              code: ''
+            }
           }
           break
         case 3: // 获取市级信息
-          let oldCitydataShow = this.citydataShow
-          if (val.show) {
-            this.citydataShow = val.show
-            this.cityId = val.val.positionId
+          oldName = this.city['name']
+          if (val.name) {
+            this.city = val
           }
-          if (this.citydataShow !== oldCitydataShow) {
-            this.countydataShow = ''
-            this.countyId = 0
+          if (oldName !== val['name']) {
+            this.county = {
+              id: 0,
+              name: '',
+              code: ''
+            }
           }
           break
         case 4: // 获取县级信息
-          if (val.show) {
-            this.countydataShow = val.show
-            this.countyId = val.val.positionId
+          if (val.name) {
+            this.county = val
           }
           break
       }
@@ -252,10 +312,9 @@ export default {
       this.selectCountryShow = false
     },
     onCountryConfirm (val) {
-      let oldlocation = this.nationdataShow
-      this.nationdataShow = val.show
-      this.nationId = val.nationId
-      if (this.nationdataShow !== oldlocation) {
+      let oldName = this.country['name']
+      if (val['name'] !== oldName) {
+        this.country = val
         this.provincedataShow = ''
         this.provinceId = 0
         this.citydataShow = ''
@@ -265,7 +324,7 @@ export default {
       }
     },
     async saveAddress () {
-      if (!this.name || !this.mobile || !this.address || !this.nationdataShow) {
+      if (!this.name || !this.mobile || !this.address || !this.country['name']) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -273,7 +332,7 @@ export default {
         })
         return
       }
-      if (this.nationdataShow === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
+      if (this.country['name'] === '中国' && (!this.province['name'] || !this.city['name'] || !this.county['name'])) {
         this.$vux.toast.show({
           text: '当国家为中国时，省市区为必填',
           type: 'warn',
@@ -303,10 +362,10 @@ export default {
         name: this.name,
         postcode: this.postcode,
         mobile: this.mobile,
-        country: this.nationId,
-        prov: this.provinceId,
-        city: this.cityId,
-        county: this.countyId,
+        country: this.country['id'],
+        prov: this.province['id'],
+        city: this.city['id'],
+        county: this.county['id'],
         address: this.address,
         isDefault: this.isDefault ? 1 : 0,
         remark: this.remark
@@ -331,7 +390,7 @@ export default {
       this.$router.go(-1)
     },
     async editAddress () {
-      if (!this.name || !this.mobile || !this.detailedinformation || !this.nationdataShow) {
+      if (!this.name || !this.mobile || !this.address || !this.country['name']) {
         this.$vux.toast.show({
           text: '请将信息填写完整',
           type: 'warn',
@@ -339,7 +398,7 @@ export default {
         })
         return
       }
-      if (this.nationdataShow === '中国' && (!this.provincedataShow || !this.provincedataShow || !this.countydataShow)) {
+      if (this.country['name'] === '中国' && (!this.province['name'] || !this.city['name'] || !this.county['name'])) {
         this.$vux.toast.show({
           text: '当国家为中国时，省市区为必填',
           type: 'warn',
@@ -355,7 +414,7 @@ export default {
         })
         return
       }
-      if (!regUtil.checkMobile(this.iphone)) {
+      if (!regUtil.checkMobile(this.mobile)) {
         this.$vux.toast.show({
           text: '手机号格式不对，请重新填写',
           type: 'warn',
@@ -369,26 +428,30 @@ export default {
         text: '正在提交'
       })
       let data = {
+        id: this.addressId,
+        wx_user_id: this.userId,
         name: this.name,
         postcode: this.postcode,
         mobile: this.mobile,
-        country: this.nationId,
-        prov: this.provinceId,
-        city: this.cityId,
-        county: this.countyId,
+        country: this.country['id'],
+        prov: this.province['id'],
+        city: this.city['id'],
+        county: this.county['id'],
         address: this.address,
         isDefault: this.isDefault ? 1 : 0,
         remark: this.remark
       }
-      const res = await this.editAddress({
+      const type = this.type
+      console.log('tyoe', type)
+      const res = await this.updateAddress({
         data,
-        type: this.type
+        type
       })
+      console.log('res', res)
       this.ajaxasync = false
       this.$vux.loading.hide()
       this.$vux.toast.show(res)
       if (res.type !== 'success') return
-      this.$router.go(-1)
     }
   },
   beforeDestroy () {
@@ -403,14 +466,10 @@ export default {
       address: this.address,
       remark: this.remark,
       isDefault: this.isDefault,
-      nationId: this.nationId,
-      provinceId: this.provinceId,
-      cityId: this.cityId,
-      countyId: this.countyId,
-      nationdataShow: this.nationdataShow,
-      provincedataShow: this.provincedataShow,
-      citydataShow: this.citydataShow,
-      countydataShow: this.countydataShow
+      country: this.country,
+      province: this.province,
+      city: this.city,
+      county: this.county
     }
     storage({
       key: `handle_address_${type}_prop`,
@@ -425,7 +484,7 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 .addaddress {
-  min-height: 100vh;
+  min-height: 95vh;
   background-color: @bg-grey;
   &-container {
     .weui-cell__bd.weui-cell__primary {

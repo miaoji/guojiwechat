@@ -74,6 +74,18 @@ export const county = {
   delete: url + 'api/districts/delDistrictsById'
 }
 
+// 微信配置参数，微信支付参数
+export const wx = {
+  webtokenFunc: function (AppId, secret, code) {
+    const url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + AppId + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code'
+    return url
+  },
+  webtoken: 'https://api.weixin.qq.com/sns/oauth2/access_token',
+  jssdk: url + 'getWxConfig/',
+  wxpayInit: url + 'api/pay/pay',
+  wxpayUpdate: url + 'api/pay/dealPay'
+}
+
 export const geography = {
   queryCountry: url + 'api/country/index',
   showCountry: url + 'wx/Country/ShowCountryid',
@@ -128,17 +140,6 @@ export const user = {
   bindphone: url + 'wx/User/AddUserPhone',
   getuserinfo: url + 'login/wxLogin',
   getwebopenid: 'http://app.quandikeji.com/WeChatService/UserOpenId'
-}
-
-export const wx = {
-  webtoken1: function (AppId, secret, code) {
-    const url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + AppId + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code'
-    return url
-  },
-  webtoken: 'https://api.weixin.qq.com/sns/oauth2/access_token',
-  jssdk: url + 'getWxConfig/',
-  wxpay: url + 'pay',
-  update: url + 'dealPay'
 }
 
 export const express = {

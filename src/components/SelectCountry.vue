@@ -76,6 +76,10 @@ export default {
       type: Boolean,
       default: true
     },
+    type: {
+      type: String,
+      default: 'send'
+    },
     countryName: {
       type: String,
       default: ''
@@ -92,10 +96,7 @@ export default {
       inSearching: false,
       hotcity: [
         '中国',
-        '美国',
-        '日本',
-        '澳大利亚',
-        '英国'
+        '美国'
       ],
       alphabet: [ 'A', 'B', 'C', 'D', 'E', 'F' ],
       searchResult: [],
@@ -103,13 +104,6 @@ export default {
     }
   },
   async created () {
-    // 获取所有国家
-    this.$vux.loading.show()
-    const res = await geographyService.queryCountry()
-    this.$vux.loading.hide()
-    if (res.code === 200) {
-      this.allNation = res.obj
-    }
   },
   mounted () {
     window.document.title = '选择国家'
@@ -127,6 +121,27 @@ export default {
     }
   },
   methods: {
+    /**
+     * [获取所有国家]
+     * @return {[type]} [description]
+     */
+    async getAllNation () {
+      this.$vux.loading.show()
+      try {
+        const res = await geographyService.queryCountry()
+        this.$vux.loading.hide()
+        if (res.code === 200) {
+          let nations = res.obj
+          // 当type为pickup时，过滤中国这一选项
+          if (this.type === 'pickup') {
+            nations = this.fliterChina(nations)
+          }
+          this.allNation = nations
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    },
     /**
      * [getRecentSearch 获取近期查询的字段]
      * @return {[type]} [description]
@@ -165,11 +180,12 @@ export default {
       const searchResult = this.searchResult
       if (searchResult.length === 1) {
         const item = searchResult[0]
-        const nation = {
-          show: item.country_cn,
-          nationId: item.id
+        const country = {
+          id: item.id,
+          name: item.country_cn,
+          code: item.country_code
         }
-        this.$emit('listenCountryConfirm', nation)
+        this.$emit('listenCountryConfirm', country)
       }
       this.$router.go(-1)
     },
@@ -187,11 +203,12 @@ export default {
      * @return {[type]}      [description]
      */
     onClickSearchRes (item) {
-      const nation = {
-        show: item.country_cn,
-        nationId: item.id
+      const country = {
+        id: item.id,
+        name: item.country_cn,
+        code: item.country_code
       }
-      this.$emit('listenCountryConfirm', nation)
+      this.$emit('listenCountryConfirm', country)
       this.$router.go(-1)
     },
     /**
@@ -214,11 +231,27 @@ export default {
         url
       }
       window.history.pushState(state, title, url)
+    },
+    fliterChina (arr) {
+      let shift
+      arr = arr.map(function (elem, index) {
+        if (elem.country_cn === '中国') {
+          shift = index
+        }
+        return elem
+      })
+      if (shift || shift === 0) {
+        arr.shift(shift)
+      }
+      return arr
     }
   },
   watch: {
     async show (val) {
       if (!val) return
+      if (this.allNation.length === 0) {
+        this.getAllNation()
+      }
       // 输入框值清空
       this.inputCountryName = ''
       // 压入一个新的history
@@ -249,7 +282,12 @@ export default {
           rows: 20
         })
         if (res.code === 200) {
-          this.searchResult = res.obj || []
+          let searchResult = res.obj
+          // 当type为pickup时，过滤中国这一选项
+          if (this.type === 'pickup') {
+            searchResult = this.fliterChina(searchResult)
+          }
+          this.searchResult = searchResult || []
           this.changeRecentSearch()
         }
       } catch (e) {

@@ -10,9 +10,27 @@ export async function query (data) {
   })
 }
 
+export async function show (data) {
+  return request({
+    url: receiveAddrApi.show,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
 export async function save (params) {
   return request({
     url: receiveAddrApi.save,
+    method: 'post',
+    auth: true,
+    params
+  })
+}
+
+export async function update (params) {
+  return request({
+    url: receiveAddrApi.update,
     method: 'post',
     auth: true,
     params

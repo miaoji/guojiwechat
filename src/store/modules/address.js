@@ -93,20 +93,26 @@ export const actions = {
       console.error(e)
       return {
         type: 'warn',
-        info: '添加地址失败',
+        text: '添加地址失败',
         width: '18rem'
       }
     }
   },
-  async eidtAddress ({dispatch}, {id, type = 'send', status = 2}) {
+  async updateAddress ({dispatch}, {data, type = 1}) {
     try {
-      let service = type === 'send' ? mailingAddrService.save : receiveAddrService.save
-      const res = await service()
+      let service = type === 1 ? mailingAddrService.update : receiveAddrService.update
+      const res = await service(data)
       if (res.code === 200) {
         dispatch('changeAddress')
         return {
           type: 'success',
-          info: '添加地址成功',
+          text: '更新地址成功',
+          width: '18rem'
+        }
+      } else {
+        return {
+          type: 'warn',
+          text: res.msg || '更新地址失败',
           width: '18rem'
         }
       }
@@ -114,7 +120,7 @@ export const actions = {
       console.error(e)
       return {
         type: 'warn',
-        info: '添加地址失败',
+        text: '更新地址失败',
         width: '18rem'
       }
     }

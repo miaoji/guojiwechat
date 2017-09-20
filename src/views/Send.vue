@@ -17,15 +17,15 @@
             <div class="send-container-address__info--line">
               <div>
                 <span>
-                  {{sendAddress['linkman']}}&nbsp;&nbsp;
+                  {{sendAddress['name']}}&nbsp;&nbsp;
                 </span>
                 <span class="address-info">
-                  {{sendAddress['iphone']}}    
+                  {{sendAddress['mobile']}}    
                 </span>
               </div>
             </div>
             <p class="address-detail-info">
-             {{sendAddress['nationname']}}{{sendAddress['provincename']}}{{sendAddress['cityname']}}{{sendAddress['countyname']}}{{sendAddress['detailedinformation']}}
+             {{sendAddress['country']}}{{sendAddress['province']}}{{sendAddress['city']}}{{sendAddress['county']}}{{sendAddress['address']}}
             </p>
           </div>
           <div class="send-container-address__link">
@@ -42,14 +42,14 @@
           <div class="send-container-address__info">
             <div class="send-container-address__info--line">
               <div>
-                <span>{{pickupAddress['recipients']}}&nbsp;&nbsp;</span>
+                <span>{{pickupAddress['name']}}&nbsp;&nbsp;</span>
                 <span class="address-info">
-                  {{pickupAddress['iphone']}}
+                  {{pickupAddress['mobile']}}
                 </span>
               </div>
             </div>
             <p class="address-detail-info">
-               {{pickupAddress['nationname']}}{{pickupAddress['provincename']}}{{pickupAddress['cityname']}}{{pickupAddress['countyname']}}{{pickupAddress['detailedinformation']}}
+               {{pickupAddress['country']}}{{pickupAddress['province']}}{{pickupAddress['city']}}{{pickupAddress['county']}}{{pickupAddress['address']}}
             </p>
           </div>
           <div class="send-container-address__link">
@@ -186,7 +186,8 @@
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
 import { send as sendApi, price as priceApi, geography as geographyApi } from '@/api'
-import * as addressService from '@/services/address'
+import * as mailingAddrService from '@/services/mailingAddr'
+import * as receiveAddrService from '@/services/receiveAddr'
 import { storage, time } from '../utils'
 import request from '../utils/request'
 import * as wxUtil from '@/utils/wx'
@@ -250,8 +251,24 @@ export default {
       },
       packageTable: [],
       advance: 0,
-      sendAddress: {},
-      pickupAddress: {},
+      sendAddress: {
+        name: '',
+        mobile: '',
+        address: '',
+        country: '',
+        province: '',
+        city: '',
+        county: ''
+      },
+      pickupAddress: {
+        name: '',
+        mobile: '',
+        address: '',
+        country: '',
+        province: '',
+        city: '',
+        county: ''
+      },
       priceList: [],
       DestCtry: '加拿大'
     }
@@ -269,20 +286,46 @@ export default {
     // 3. 获取地址
     const sendLocal = JSON.parse(storage({key: 'send_sendaddress'}))
     if (sendLocal) {
-      const SendAddress = await addressService.sendquery({Mailingaddressid: sendLocal.id})
-      this.sendAddress = SendAddress.obj[0] || {
-        linkman: '',
-        iphone: '',
-        detailedinformation: ''
+      try {
+        const SendAddress = await mailingAddrService.show({id: sendLocal.id})
+        if (SendAddress.success && SendAddress.obj) {
+          const sendAddress = SendAddress.obj
+          if (Number(sendAddress.HIDDEN_STATUS) === 1) {
+            this.sendAddress = {
+              name: sendAddress.NAME,
+              mobile: sendAddress.MOBILE,
+              address: sendAddress.ADDRESS || '',
+              country: sendAddress.COUNTRY_CN || '',
+              province: sendAddress.PROVINCE || '',
+              city: sendAddress.cityName || '',
+              county: sendAddress.DISTRICT || ''
+            }
+          }
+        }
+      } catch (e) {
+        console.error(e)
       }
     }
     const pickupLocal = JSON.parse(storage({key: 'send_pickupaddress'}))
     if (pickupLocal) {
-      const PickupAddress = await addressService.pickupquery({id: pickupLocal.id})
-      this.pickupAddress = PickupAddress.obj[0] || {
-        recipients: '',
-        iphone: '',
-        detaliedinformation: ''
+      try {
+        const PickupAddress = await receiveAddrService.show({id: pickupLocal.id})
+        if (PickupAddress.success && PickupAddress.obj) {
+          const pickupAddress = PickupAddress.obj
+          if (Number(pickupAddress.HIDDEN_STATUS) === 1) {
+            this.pickupAddress = {
+              name: pickupAddress.NAME,
+              mobile: pickupAddress.MOBILE,
+              address: pickupAddress.ADDRESS,
+              country: pickupAddress.COUNTRY_CN || '',
+              province: pickupAddress.PROVINCE || '',
+              city: pickupAddress.cityName || '',
+              county: pickupAddress.DISTRICT || ''
+            }
+          }
+        }
+      } catch (e) {
+        console.error(e)
       }
     }
     // 4. 从localStorage中获取存储的用户习惯信息
@@ -372,6 +415,12 @@ export default {
       'createSend',
       'setAllBrand'
     ]),
+    /**
+     * [长按删除]
+     * @param  {[type]} index  [description]
+     * @param  {[type]} $event [description]
+     * @return {[type]}        [description]
+     */
     longTap (index, $event) {
       const _this = this
       function longPress () {
@@ -572,6 +621,10 @@ export default {
         return
       }
     },
+    /**
+     * [下单成功后清空表单信息]
+     * @return {[type]} [description]
+     */
     clearForm () {
       this.packageTable = []
       this.remove = ''
@@ -602,6 +655,10 @@ export default {
       }
       this.dialogshow = false
     },
+    /**
+     * [重量确定方法]
+     * @return {[type]} [description]
+     */
     volumeConfirm () {
       if (Number(this.weight) > 20 || Number(this.weight) <= 0) {
         this.$vux.toast.show({
@@ -729,7 +786,7 @@ export default {
       if (Number(val) <= 0) {
         _this.$vux.toast.show({
           text: '重量不能小于等于0kg',
-          width: '18rem',
+          width: '19rem',
           type: 'warn'
         })
         return
