@@ -1,3 +1,6 @@
+/**
+ * 寄件地址
+ */
 import request from '../utils/request'
 import { mailingAddr as mailingAddrApi } from '@/api'
 

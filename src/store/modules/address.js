@@ -1,9 +1,7 @@
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as geographyService from '@/services/geography'
-import {address as addressApi} from '@/api'
 import { storage } from '../../utils'
-import request from '../../utils/request'
 
 import * as types from '../mutation-types'
 
@@ -59,7 +57,6 @@ export const actions = {
       }
     }
   },
-
   /**
    * [addAddress 添加地址]
    * @param {[type]} options.commit    [description]
@@ -161,25 +158,8 @@ export const actions = {
       }
     }
   },
-  async checkedAddress ({commit, dispatch}, {id, status, userid, addressType}) {
-    let url = ''
-    if (addressType === 1) {
-      url = addressApi.sendchecked
-    } else {
-      url = addressApi.pickupchecked
-    }
-    const res = await request({
-      url,
-      method: 'post',
-      auth: true,
-      params: {
-        id,
-        status,
-        userid
-      }
-    })
+  async checkedAddress ({commit, dispatch}, {id, status, addressType}) {
     dispatch('changeAddress')
-    return res
   },
   /**
    * [getGeography 根据国家省市区的id获取名称]

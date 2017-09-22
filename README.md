@@ -26,3 +26,7 @@ vux
 https://github.com/airyland/vux
 
 https://vux.li/#/zh-CN/README
+
+### Git
+
+git log remotes/origin/master

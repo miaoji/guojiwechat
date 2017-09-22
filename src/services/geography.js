@@ -1,3 +1,6 @@
+/**
+ * 国家，省，市，县区
+ */
 import request from '../utils/request'
 import { country as countryApi, province as provinceApi, city as cityApi, county as countyApi } from '@/api'
 

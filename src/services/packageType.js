@@ -1,12 +1,12 @@
 /**
- * 收件地址
+ * 包裹类型
  */
 import request from '../utils/request'
-import { receiveAddr as receiveAddrApi } from '@/api'
+import { packageType as packageTypeApi } from '@/api'
 
 export async function query (data) {
   return request({
-    url: receiveAddrApi.query,
+    url: packageTypeApi.query,
     method: 'get',
     auth: true,
     data
@@ -15,7 +15,16 @@ export async function query (data) {
 
 export async function show (data) {
   return request({
-    url: receiveAddrApi.show,
+    url: packageTypeApi.show,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
+export async function showByCountry (data) {
+  return request({
+    url: packageTypeApi.showByCountry,
     method: 'get',
     auth: true,
     data
@@ -24,7 +33,7 @@ export async function show (data) {
 
 export async function save (params) {
   return request({
-    url: receiveAddrApi.save,
+    url: packageTypeApi.save,
     method: 'post',
     auth: true,
     params
@@ -33,7 +42,7 @@ export async function save (params) {
 
 export async function update (params) {
   return request({
-    url: receiveAddrApi.update,
+    url: packageTypeApi.update,
     method: 'post',
     auth: true,
     params
@@ -42,7 +51,7 @@ export async function update (params) {
 
 export async function remove (params) {
   return request({
-    url: receiveAddrApi.delete,
+    url: packageTypeApi.delete,
     method: 'delete',
     auth: true,
     params

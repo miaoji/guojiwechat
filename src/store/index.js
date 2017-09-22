@@ -1,11 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import * as user from './modules/user'
-import * as send from './modules/send'
-import * as pickup from './modules/pickup'
 import * as address from './modules/address'
-import * as userpackage from './modules/package'
-import * as express from './modules/express'
 import * as boot from './modules/boot'
 
 Vue.use(Vuex)
@@ -13,11 +9,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
     user,
-    send,
-    pickup,
     address,
-    userpackage,
-    express,
     boot
   },
   state: {

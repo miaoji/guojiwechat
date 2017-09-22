@@ -1,3 +1,6 @@
+/**
+ * 微信配置，微信pay
+ */
 import request from '../utils/request'
 import { wx as wxApi } from '@/api'
 

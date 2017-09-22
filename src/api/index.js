@@ -69,7 +69,7 @@ export const city = {
 export const county = {
   query: url + 'api/districts/index',
   save: url + 'api/districts/add',
-  show: url + 'api/districts/getProvincesById',
+  show: url + 'api/districts/getDistrictsById',
   update: url + 'api/districts/modDistrictsById',
   delete: url + 'api/districts/delDistrictsById'
 }
@@ -86,76 +86,40 @@ export const wx = {
   wxpayUpdate: url + 'api/pay/dealPay'
 }
 
-export const geography = {
-  queryCountry: url + 'api/country/index',
-  showCountry: url + 'wx/Country/ShowCountryid',
-  showProvince: url + 'wx/Province/ShowProvinceid',
-  showCity: url + 'wx/City/ShowCityid',
-  showCounty: url + 'wx/County/ShowCountyid'
+// 包裹类型
+export const packageType = {
+  query: url + 'api/packageType/index',
+  save: url + 'api/packageType/add',
+  show: url + 'api/packageType/getPackageTypeById',
+  showByCountry: url + 'api/packageType/getPackageTypeByCountry',
+  update: url + 'api/packageType/modPackageTypeById',
+  delete: url + 'api/packageType/delPackageTypeById'
 }
 
-export const pic = {
-  qr: url + 'wx/pic',
-  pickupqr: url + 'wx/signpic'
-}
-
-export const address = {
-  index: url + 'wx/Mailingaddress/ShowMailingaddressuserid',
-  send: url + 'wx/Mailingaddress/ShowMailingaddressuserid',
-  pickup: url + 'wx/Consigneeaddress/ShowConsigneeaddressuserid',
-  addsend: url + 'wx/Mailingaddress/InsertMailingaddress',
-  addpickup: url + 'wx/Consigneeaddress/InsertConsigneeaddress',
-  updatesend: url + 'wx/Mailingaddress/UpdateMailingaddress',
-  updatepickup: url + 'wx/Consigneeaddress/UpdateConsigneeaddress',
-  delete: url + 'wx/deleteAddress',
-  sendchecked: url + 'wx/Mailingaddress/updateMailingaddressstart',
-  pickupchecked: url + 'wx/Consigneeaddress/updateConsigneeaddressdefault',
-  default: url + 'wx/GETADDRESSDEFAULT',
-  officelocation: url + 'wx/FindStationInfo',
-  senddetail: url + 'wx/Mailingaddress/ShowMailingaddressid',
-  pickupdetail: url + 'wx/Consigneeaddress/ShowConsigneeaddressid'
-}
-
-export const send = {
-  index: url + 'wx/findSend',
-  create: url + 'wx/OrderInfo/InsertOrderInfo',
-  cancle: url + 'wx/end_send'
-}
-
-export const site = {
-  location: url + 'wx/COORDINATES'
-}
-
-export const pickup = {
-  sign: url + 'wx/TAKECOURIERSIGN',
-  wait: url + 'wx/TAKECOURIER',
-  all: url + 'wx/ALLDELIVERY'
-}
-
-export const user = {
-  gettoken: function (code, params) {
-    return url + 'wx/GetAccessToken?code=' + code + '&params=' + params
-  },
-  sendsms: url + 'wx/User/ShowranCode',
-  bindphone: url + 'wx/User/AddUserPhone',
-  getuserinfo: url + 'login/wxLogin',
-  getwebopenid: 'http://app.quandikeji.com/WeChatService/UserOpenId'
-}
-
-export const express = {
-  route: 'http://app.quandikeji.com:8088/quandiExpressSite1.4.0/Logistics/queryLogisticsInfoForJson'
-}
-
-// 杂项
-export const sundry = {
-  cargotype: url + 'wx/InternationalProductType/ShowInternationalProductType',
-  goods: url + 'wx/Cargotype/ShowCargotype'
+// 产品类型
+export const productType = {
+  query: url + 'api/productType/index',
+  save: url + 'api/productType/add',
+  show: url + 'api/productType/getProductTypeById',
+  showByPackage: url + 'api/productType/getProductByPackage',
+  update: url + 'api/productType/modProductTypeById',
+  delete: url + 'api/productType/delProductTypeById'
 }
 
 // 价格查询
 export const price = {
+  showAdvanced: url + 'api/intlPrice/getIntlPrice',
   order: url + 'wx/Price/ShowPrice',
   pricelist: url + 'wx/Internationalprice/ShowInternationalprice'
+}
+
+// 订单 创建，查询
+export const orderInfo = {
+  query: url + 'api/orderInfo/index',
+  save: url + 'api/orderInfo/add',
+  show: url + 'api/orderInfo/getOrderInfoById',
+  update: url + 'api/orderInfo/modOrderInfoById',
+  delete: url + 'api/orderInfo/delOrderInfoById'
 }
 
 export const order = {
@@ -166,6 +130,20 @@ export const order = {
   detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber',
   ztoinfo: url + 'wx/order/getOrderInfo',
   kd100: url + '/wx/order/queryByCompany'
+}
+
+export const send = {
+  create: url + 'wx/pic'
+}
+
+export const user = {
+  gettoken: function (code, params) {
+    return url + 'wx/GetAccessToken?code=' + code + '&params=' + params
+  },
+  sendsms: url + 'wx/User/ShowranCode',
+  bindphone: url + 'wx/User/AddUserPhone',
+  getuserinfo: url + 'login/wxLogin',
+  getwebopenid: 'http://app.quandikeji.com/WeChatService/UserOpenId'
 }
 
 // 查询补价
