@@ -1,24 +1,22 @@
 <template>
-  <div class="senddetail">
-    <div class="senddetail-container">
-      <div class="senddetail-container-tab">
-        <tab active-color='#eb1d21'>
+  <div class="orderlist">
+    <div class="orderlist-container">
+      <div class="orderlist-container-tab">
+        <tab active-color='#ffa414'>
           <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
           <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
           <tab-item :selected="show ==='waitdelivery '" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
           <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
-          <tab-item :selected="show ==='cancle'" @on-item-click="changeShow('cancle')">已取消</tab-item>
-          <tab-item :selected="show ==='unusual'" @on-item-click="changeShow('unusual')">异常</tab-item>
         </tab>
       </div>
-      <div class="senddetail-cell">
-        <scroller 
+      <div class="orderlist-cell">
+        <scroller
           :on-refresh="refresh"
           :on-infinite="infinite"
-          ref="my_scroller_senddetail"
-          class="senddetail-scroller">
+          ref="my_scroller_orderlist"
+          class="orderlist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="senddetail-cell-detail" v-for="item in data" :key="item.id">
+          <div class="orderlist-cell-detail" v-for="item in data" :key="item.id">
             <mj-orderitem :item="item"></mj-orderitem>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
@@ -28,8 +26,8 @@
   </div>
 </template>
 <script>
-import { order as orderApi } from '@/api'
-import request from '../utils/request'
+import { query } from '../services/orderInfo'
+import { storage } from '../utils'
 
 const localStorage = window.localStorage
 
@@ -37,8 +35,10 @@ export default {
   name: 'senddetail',
   async created () {
     window.scrollTo(0, 0)
-    const {type} = this.$route.query
-    const localtype = localStorage.getItem('mj_senddetail_switch_type')
+    const { type } = this.$route.query
+    const localtype = storage({
+      key: 'senddetail_switch_type'
+    })
     this.show = type || localtype || 'all'
   },
   mounted () {
@@ -51,16 +51,10 @@ export default {
     }
   },
   methods: {
-    async getOrderList (starte = 1) {
+    async getOrderList (status) {
       try {
-        const orderlist = await request({
-          method: 'post',
-          url: orderApi.list,
-          params: {
-            userid: localStorage.getItem('mj_userId'),
-            starte
-          },
-          auth: true
+        const orderlist = await query({
+          status
         })
         if (orderlist.code !== 200) {
           return this.$vux.toast.show({
@@ -70,37 +64,20 @@ export default {
           })
         }
         let data = orderlist.obj
-        if (Number(starte) === 2) {
-          // starte为2时要查询order为0（fx完成）0和3 中通完成
+        if (Number(status) === 2) {
+          // status为2时要查询order为3:中通完成和4:fx完成
           try {
-            const ZTOList = await request({
-              method: 'post',
-              url: orderApi.list,
-              params: {
-                userid: localStorage.getItem('mj_userId'),
-                starte: 3
-              },
-              auth: true
+            const ZTOList = await query({
+              status: 3
             })
-            const FXList = await request({
-              method: 'post',
-              url: orderApi.list,
-              params: {
-                userid: localStorage.getItem('mj_userId'),
-                starte: 0
-              },
-              auth: true
+            const FXList = await await query({
+              status: 4
             })
             let dataMerge = ZTOList.obj.concat(FXList.obj)
             data = data.concat(dataMerge)
           } catch (e) {
             console.error(e)
           }
-        }
-        if (data.length > 0) {
-          data.sort(function (a, b) {
-            return a.id < b.id
-          })
         }
         this.data = data
         return
@@ -124,11 +101,8 @@ export default {
         width: '20rem'
       })
     },
-    goPath (item, type) {
-      this.$router.push({path: 'qr', query: item})
-    },
     async cancle (item) {
-      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
+      const _this = this
       this.$vux.confirm.show({
         title: '确定取消这一订单吗?',
         onCancel () {
@@ -161,7 +135,7 @@ export default {
     },
     refresh (done) {
       const _this = this
-      const starte = localStorage.getItem('mj_order_type') || 6
+      const starte = localStorage.getItem('mj_order_type')
       setTimeout(async function () {
         _this.getOrderList(starte)
         done(true)
@@ -169,7 +143,7 @@ export default {
     },
     infinite (done) {
       const _this = this
-      const starte = localStorage.getItem('mj_order_type') || 6
+      const starte = localStorage.getItem('mj_order_type')
       setTimeout(async function () {
         _this.getOrderList(starte)
         done(true)
@@ -180,8 +154,8 @@ export default {
     show (val, oldval) {
       switch (val) {
         case 'all':
-          localStorage.setItem('mj_order_type', 6)
-          this.getOrderList(6)
+          localStorage.setItem('mj_order_type', '')
+          this.getOrderList()
           break
         case 'waitpay':
           localStorage.setItem('mj_order_type', 1)
@@ -215,67 +189,8 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
-.scroll-container {
-  padding: 0 1rem;
-}
 
-.office-info {
-  font-size: 1.5rem;
-  width: 15rem;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  vertical-align: bottom;
-}
-
-.border-bottom-grey {
-  border-bottom: 1px solid @borderbt;
-}
-.send-icon {
-  border-radius: 50%;
-  background: #BEB9B9;
-  color: white;
-  margin-right: 1rem;
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.3rem;
-  line-height: 3rem;
-  text-align: center;
-}
-
-.sum-money {
- font-size: 1.4rem;
- color: @dark-yellow;
-}
-
-.normal-btn {
-  width: 6.6rem;
-  font-size: 1.4rem;
-  text-align: center;
-  padding: .5rem .4rem;
-  border-radius: 5px;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-
-.cancle-btn {
-  .normal-btn;
-  color: #999;
-  margin-right: .3rem;
-  border: 1px solid #999;
-  background: transparent;
-}
-
-.gosend-btn {
-  .normal-btn;
-  color: white;
-  border: none;
-  background: @dark-yellow;
-  border: 1px solid @dark-yellow;
-}
-
-.senddetail {
+.orderlist {
   &-container {
     &-tab {
       position: fixed;
@@ -291,10 +206,10 @@ export default {
       padding-bottom: 0;
     }
     &-detail {
-      background: white;
+      background: transparent;
       text-align: justify;
-      padding: 0 15px;
-      margin: 1rem 0;
+      padding: 10px;
+      padding-bottom: 0;
       &--box {
         padding: .5rem 0;
       }
@@ -330,6 +245,8 @@ export default {
     }
   }
   &-scroller {
+    .purple-bg;
+    padding: 0 0;
     padding-top: 44px;
   }
 }

@@ -1,26 +1,6 @@
 @import './colors.less';
 @normal-size: 1.6rem;
 @second-size: 2.1rem;
-.article {
-	background-color: white;
-	padding: 2rem;
-	&-title {
-		text-align: center;
-    padding: 1rem;
-    font-size: @second-size;
-	}
-	&-content {
-		padding-bottom: 1rem;
-		text-align: justify;
-		font-size: @normal-size;
-		&:last-child {
-			padding-bottom: 0;
-		}
-		a {
-			color: @text-color;
-		}
-	}
-}
 
 .hide {
 	display: none;
@@ -28,10 +8,6 @@
 
 .show {
 	display: block;
-}
-
-.show-important {
-	display: block!important;
 }
 
 .clearfixed {
@@ -55,70 +31,21 @@
 	border-top: 1px solid @borderbt;
 }
 
-.officeimg {
-	text-align: center;
-	font-size: 0;
-	padding: 0.4rem 0.6rem;
-	img {
-	  width: 100%;
-	  max-width: 305px;
-	  height: auto;
-	  border: 1px solid @borderbt;
-	  box-sizing: border-box;
-	  border-radius: 2px;
-	}
-}
-
-.office-detail {
+.purple-bg {
 	padding: 0 0.6rem;
-	p {
-		font-size: 1.4rem;
-	}
+	background: url('../images/bg/bj.png');
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-position: 0 0;
 }
 
-.vux-tab {
-	.vux-tab-item {
-		font-size: 1.4rem;
-	}
+.bor-top {
+	width: 100%;
+	height: 22px;
+	margin-top: -8px;
 }
 
-.fixed-fill {
-	position: fixed;
-	bottom: 0;
-	width: 94%;
-}
-
-.mj-switch {
-  padding: 10px 15px!important;
-  .weui-cell__ft {
-    .weui-switch {
-      width: 40px!important;
-      height: 20px!important;
-      &:checked {
-        border-color: @red;
-        background-color: @red;
-      }
-      &:before {
-        width: 40px;
-        height: 20px;
-      }
-      &:after {
-        width: 20px;
-        height: 18px;
-      }
-    }
-  }
-}
-
-.express-router__link {
-	position: absolute;
-	top: 1.8rem;
-	right: 1.8rem;
-	text-align: center;
-	border: 1px solid #ff6d40;
-	color: @dark-yellow;
-	background: white;
-	padding: 0.2rem 0.8rem;
-	font-size: 1.3rem;
-	border-radius: 5px;
+.bor-bottom {
+	width: 100%;
+	height: 22px;
 }

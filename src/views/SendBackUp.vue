@@ -2,73 +2,60 @@
   <div class="send">
     <div class="send-container">
       <!-- 顶部寄件列表点击跳转 -->
-      <div class="send-container-list">
-        <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
-        <router-link to="/order/list">
-          <div class="send-list">
-            <div class="send-list--intro">
-              <img slot="icon" class="send-icon" src="../assets/images/send_list_icon.png" />
-              <span>寄件列表</span>
-            </div>
-            <div>
-              <img slot="icon" class="send-icon" src="../assets/images/sen_ico_lis.png" />
-            </div>
-          </div>
-        </router-link>
-        <div class="purple-border">
-        </div>
+      <div class="send-container-select go-sendlist">
+        <group>
+          <cell title="寄件列表" link="/order/list" is-link style="padding:1.2rem 11px;">
+            <img slot="icon" class="send-icon" style="display:block;margin-right:.8rem;" src="../assets/images/nav_ivo_che.png" />
+          </cell>
+        </group>
       </div>
       <!-- 寄件地址选择 -->
       <router-link to="/address?type=send&pick=1&tabshow=0">
-        <div class="send-container-address">
-          <div class="common-padding">
-            <div class="send-container-address__intro">
-              <span class="bgblack">寄</span>
-            </div>
-            <div class="send-container-address__info">
-              <div class="send-container-address__info--line">
-                <div>
-                  <span>
-                    {{sendAddress['name']}}&nbsp;&nbsp;
-                  </span>
-                  <span class="address-info">
-                    {{sendAddress['mobile']}}    
-                  </span>
-                </div>
+        <div class="send-container-address" style="border-bottom: 1px solid #dedede;">
+          <div class="send-container-address__intro">
+            <span class="bgblue">寄</span>
+          </div>
+          <div class="send-container-address__info">
+            <div class="send-container-address__info--line">
+              <div>
+                <span>
+                  {{sendAddress['name']}}&nbsp;&nbsp;
+                </span>
+                <span class="address-info">
+                  {{sendAddress['mobile']}}    
+                </span>
               </div>
-              <p class="address-detail-info">
-               {{sendAddress['country']}}{{sendAddress['province']}}{{sendAddress['city']}}{{sendAddress['county']}}{{sendAddress['address']}}
-              </p>
             </div>
-            <div class="send-container-address__link">
-                <img src="../assets/images/sen_ico_com.png" alt="地址簿">
-            </div>
+            <p class="address-detail-info">
+             {{sendAddress['country']}}{{sendAddress['province']}}{{sendAddress['city']}}{{sendAddress['county']}}{{sendAddress['address']}}
+            </p>
+          </div>
+          <div class="send-container-address__link">
+              地址簿
           </div>
         </div>
       </router-link>
       <!-- 收件地址选择 -->
       <router-link to="/address?type=pickup&pick=1&tabshow=0">
         <div class="send-container-address">
-          <div class="common-padding">
-            <div class="send-container-address__intro">
-              <span class="bgred">收</span>
-            </div>
-            <div class="send-container-address__info">
-              <div class="send-container-address__info--line">
-                <div>
-                  <span>{{pickupAddress['name']}}&nbsp;&nbsp;</span>
-                  <span class="address-info">
-                    {{pickupAddress['mobile']}}
-                  </span>
-                </div>
+          <div class="send-container-address__intro">
+            <span class="bgred">收</span>
+          </div>
+          <div class="send-container-address__info">
+            <div class="send-container-address__info--line">
+              <div>
+                <span>{{pickupAddress['name']}}&nbsp;&nbsp;</span>
+                <span class="address-info">
+                  {{pickupAddress['mobile']}}
+                </span>
               </div>
-              <p class="address-detail-info">
-                 {{pickupAddress['country']}}{{pickupAddress['province']}}{{pickupAddress['city']}}{{pickupAddress['county']}}{{pickupAddress['address']}}
-              </p>
             </div>
-            <div class="send-container-address__link">
-              <img src="../assets/images/sen_ico_com.png" alt="地址簿">
-            </div>
+            <p class="address-detail-info">
+               {{pickupAddress['country']}}{{pickupAddress['province']}}{{pickupAddress['city']}}{{pickupAddress['county']}}{{pickupAddress['address']}}
+            </p>
+          </div>
+          <div class="send-container-address__link">
+            地址簿
           </div>
         </div>
       </router-link>
@@ -101,7 +88,6 @@
           </x-textarea>
         </group>
       </div>
-      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
       <!-- 订单包裹展示 -->
       <div class="send-container-package">
         <div class="send-container-package__title">
@@ -151,7 +137,7 @@
     </div>
     <!-- 产品重量体积弹出框 -->
     <div v-transfer-dom>
-      <x-dialog v-model="dialogshow" class="send-weight-dialog">
+      <x-dialog v-model="dialogshow" class="dialog-demo">
         <div class="dialog-content">
           <div class="dialog-content--weight">
             产品重量(kg)
@@ -189,20 +175,20 @@
     </div>
     <!-- 添加包裹弹出框 -->
     <div v-transfer-dom>
-      <x-dialog v-model="packageShow" class="send-package-dialog">
+      <x-dialog v-model="packageShow" class="package-dialog">
         <h1>添加包裹</h1>
         <div class="package-close" @click="packageShow = false">
           <span class="vux-close"></span>
         </div>
-        <div class="send-package-dialog-form">
+        <div class="package-dialog-form">
           <group>
             <x-input title="中文品名" type="text" v-model="newPackage['nameCn']" required></x-input>
             <x-input title="产品单价" type="number" v-model="newPackage['unitPrice']" required></x-input>
             <x-input title="产品数量" type="number" v-model="newPackage['quantity']" required></x-input>
           </group>
-          <div class="send-package-dialog-form__confrim">
-            <button type="" class="send-package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
-            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge">完成</button>
+          <div class="package-dialog-form__confrim">
+            <button type="" class="package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
+            <button type="" class="package-dialog-form__confrim--sure" @click="addPackge">完成</button>
           </div>
         </div>
         <div class="package-dialog-tips">
@@ -497,16 +483,16 @@ export default {
      * @param  {[type]} options.serialnumber [description]
      * @return {[type]}                      [description]
      */
-    async wxPay ({money, orderNo}) {
+    async wxPay ({money, serialnumber}) {
       let intParams = {
         openid: storage({key: 'openid'}),
         money: (money * 100),
-        orderNo,
+        serialnumber,
         body: '国际快递包裹',
         payType: 0
       }
       let successParams = {
-        orderNo,
+        serialnumber,
         isPay: 1,
         payType: 0
       }
@@ -515,7 +501,7 @@ export default {
         const wxPayRes = await wxUtil.pay({intParams, successParams})
         this.$vux.toast.show(wxPayRes)
         if (wxPayRes.type === 'success') {
-          _this.$router.push({path: '/orderdetail', query: {orderNo}})
+          _this.$router.push({path: '/orderdetail', query: {serialnumber}})
         }
       } catch (err) {
         console.error(err)
@@ -587,16 +573,6 @@ export default {
           priceId: this.priceId,
           totalFee: advance * 100,
           remark: this.remark,
-          // 寄件人地址
-          senderCountry: this.sendAddress['country'],
-          senderProv: this.sendAddress['province'],
-          senderCity: this.sendAddress['city'],
-          senderCounty: this.sendAddress['county'],
-          // 收件人地址
-          receiverCountry: this.pickupAddress['country'],
-          receiverProv: this.pickupAddress['province'],
-          receiverCity: this.pickupAddress['city'],
-          receiverCounty: this.pickupAddress['county'],
           orderItems
         })
         this.$vux.loading.hide()
@@ -604,7 +580,7 @@ export default {
         console.log('res', result)
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
-          this.wxPay({money: this.advance, orderNo: result.obj.orderNo})
+          this.wxPay({money: this.advance, serialnumber: this.serialnumber})
           // this.clearForm()
         } else {
           this.$vux.toast.show({
@@ -841,17 +817,201 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
+.dialog-confirm-btn {
+  button {
+    color: white;
+    padding: 0.3rem 0;
+    margin: 1rem;
+    font-size: 1.8rem;
+    width: 30%;
+    background-color: #eb1d21;
+    border: none;
+    border-radius: 5px;
+  }
+}
 
-.bgblack {
-  background-color: #333;
+.dialog-demo {
+  .weui-dialog{
+    padding: 1rem 1rem 8px 1rem;
+    border-radius: 8px;
+  }
+  .dialog-close {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background: white;
+  }
+  .dialog-title {
+    line-height: 30px;
+    color: #666;
+  }
+  .send-weight-input {
+    .weui-cells {
+      &:before {
+        border-top: 2px solid #666 !important;
+      }
+      &:after {
+        border-top: 2px solid #666 !important;
+      }
+      .weui-cell {
+        border-left: 1px solid #666;
+        border-right: 1px solid #666;
+      }
+    }
+  }
+  .dialog-content {
+    text-align: left;
+    padding-bottom: 1rem;
+    &--weight {
+      color: #333;
+      padding-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    &--input {
+      input {
+        text-align: center;
+      }
+    }
+    &--input.volume {
+      padding-top: 1.17rem;
+      display: flex;
+      align-items: center;
+      input {
+        flex: 1;
+        padding: .7rem .2rem;
+        max-width: 50px;
+        border: 1px solid #666;
+      }
+      span {
+        flex: 1;
+        font-size: 1.8rem;
+        text-align: center;
+      }
+    }
+  }
+  p.dialog-tips {
+    text-align: left;
+    padding-top: 1rem;
+    font-size: 1.2rem;
+    color: #999;
+  }
+  .img-box {
+    height: 350px;
+    overflow: hidden;
+  }
+  .vux-close {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+.package-dialog {
+  .package-close {
+    position: absolute;
+    top: 15px;
+    right: 8px;
+    background: white;
+  }
+  .weui-dialog{
+    padding: 1rem 1rem 8px 1rem;
+    border-radius: 8px;
+  }
+  h1 {
+    color: #7f7f7f;
+    font-size: 1.8rem;
+    font-weight: 100;
+  }
+  &-form {
+    &__confrim {
+      padding: .8rem;
+      button {
+        width: 45%;
+        padding: 0.6rem 0;
+      }
+      &--cancle {
+        background: transparent;
+        margin-right: 4%;
+        color: @red;
+        border: 1px solid @red;
+        border-radius: 5px;
+      }
+      &--sure {
+        background: @red;
+        margin-right: 1rem;
+        color: white;
+        border: 1px solid @red;
+        border-radius: 5px;
+      }
+    }
+  }
+  &-tips {
+    padding: 0 .6rem;
+    text-align: left;
+    font-size: 1.2rem;
+    color: #999;
+  }
+}
+
+.bgblue {
+  background-color: black;
+}
+
+.bgyellow {
+  background-color: @dark-yellow;
 }
 
 .bgred {
   background-color: @red;
 }
+.weui-cells {
+  margin-top: 12px!important;
+}
+
+.weui-cell {
+  padding-left: 18px!important;
+}
+
+.weui-cell.office.weui-cell_access{
+  div.weui-cell__ft {
+    font-size: 1.5rem;
+    width: 100%;
+    color: #333;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.go-sendlist {
+  margin-bottom: 1.17647059em;
+  .weui-cell {
+    margin-top: 0!important;
+  }
+  .weui-cells {
+    margin-top: 0!important;
+  }
+}
 
 .send-icon {
   width: 3rem;
+}
+
+.weui-cell__bd {
+  font-size: 1.5rem;
+  textarea {
+    text-align: right;
+  }
+  select {
+    color: #333;
+  }
+}
+
+label {
+  font-size: 1.5rem;
+}
+
+.weui-cell:before {
+  border-top: 1px solid @borderbt!important;
 }
 
 .address-detail-info {
@@ -870,61 +1030,26 @@ export default {
   }
 }
 
-.common-padding {
-  padding: .8rem 0;
-  margin-left: 1rem;
-}
-
 .send {
   &-container {
-    .purple-bg;
-    padding-top: 39px;
     padding-bottom: 6rem;
     overflow: hidden;
-    &-list {
-      background-color: #fff;
-      .send-list {
-        .flex;
-        padding: 1rem 1rem;
-        padding-top: 0;
-        justify-content: space-between;
-        &--intro {
-          .flex;
-          span {
-            padding-left: 1rem;
-            font-size: 1.5rem;
-            color: @m-yellow;
-          }
-        }
-        div {
-          font-size: 0;
-          img {
-            width: auto;
-            height: 3rem;
-          }
-        }
-      }
-      .purple-border {
-        margin: 0 .5rem;
-        height: 3px;
-        background: url('../assets/images/border.png');
-        background-repeat: no-repeat;
-        background-size: 100% 100%;
-      }
-    }
     a {
       .send-container-address {
         color: #333;
       }
     }
     &-address {
-      .common-padding {
-        .flex;
-        justify-content: space-between;
-        border-bottom: 1px solid #dedede;
-      }
+      .flex;
       font-size: 1.4rem;
+      padding: .6rem 0;
+      padding-left: 18px;
+      justify-content: space-between;
       background: white;
+      &:first-child {
+        border-bottom: 1px solid @borderbt;
+      }
+
       &__intro {
         flex: 1;
         margin-right: 0.5rem;
@@ -938,6 +1063,7 @@ export default {
           color: white;
         }
       }
+      
       &__info {
         padding-left: .8rem;
         flex: 9;
@@ -950,13 +1076,14 @@ export default {
         }
       }
       &__link {
-        flex: 1;
+        white-space: nowrap;
+        flex: 2;
         padding: 0 0;
-        padding-right: 1rem;
-        font-size: 0;
-        img {
-          width: 100%;
-        }
+        padding-right: 15px;
+        text-align: right;
+        height: 5rem;
+        line-height: 5rem;
+        color: @red;
       }
     }
 
@@ -1059,6 +1186,16 @@ export default {
       }
     }
 
+    &-hall {
+      margin-top: 1rem;
+      padding: 1rem 1rem;
+      font-size: 1.4rem;
+      background: white;
+      justify-content: space-between;
+      img {
+        width: 3rem;
+      }
+    }
     .div-btn-sub {
       padding: 2rem 0rem;
       text-align: center;

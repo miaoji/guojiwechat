@@ -25,7 +25,7 @@ export async function getJssdkConfig (data) {
  */
 export async function getWxPayConfig (params) {
   return request({
-    url: wxApi.wxpay,
+    url: wxApi.wxpayInit,
     method: 'post',
     auth: true,
     params

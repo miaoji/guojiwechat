@@ -17,10 +17,10 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import sendPng from '../assets/images/nav_sen_nor.png'
-import acsendPng from '../assets/images/nav_ivo_che.png'
-import minePng from '../assets/images/nav_min_nor.png'
-import acminePng from '../assets/images/nav_min_che.png'
+import sendPng from '../assets/images/footer/nav_ivo_nor.png'
+import acsendPng from '../assets/images/footer/nav_ivo_che.png'
+import minePng from '../assets/images/footer/nav_min_nor.png'
+import acminePng from '../assets/images/footer/nav_min_che.png'
 
 export default {
   name: 'footer',
@@ -77,7 +77,7 @@ footer {
     display: flex;
     li {
       flex: 1;
-      padding: .4rem .1rem;
+      padding: .6rem .1rem;
       list-style: none;
       text-align: center;
       font-size: 0.3rem;
@@ -91,18 +91,17 @@ footer {
         border-right-width: 0;
       }
       p {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         color: #999;
       }
       img {
-        width: 2.4rem;
-        height: 2.2rem;
+        height: 1.9rem;
         display: block;
         margin: 0 auto;
       }
       div.footer-active {
         p {
-          color: @red;
+          color: @m-yellow;
         }
       }
       div.footer-unactive {
@@ -110,16 +109,6 @@ footer {
           color: @greyfont;
         }
       }
-    }
-  }
-  .footer-send {
-    img {
-      width: 5.8rem;
-      position: absolute;
-      bottom: 0rem;
-      left: 40%;
-      display: block;
-      z-index: 100;
     }
   }
 }

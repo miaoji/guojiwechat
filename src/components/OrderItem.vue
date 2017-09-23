@@ -1,30 +1,20 @@
 <template>
-  <div>
-    <div class="senditem">
-      <div class="senditem-box">
-        <span class="senditem-box__office">
-         <span class="senditem-box__office--info">
-          收件人: {{item.recipients}}&nbsp;&nbsp;
-          手机号:{{item.iphone}}
-         </span>
-        </span>
+  <div class="senditem">
+    <div class="senditem-detail">
+      <div class="senditem-detail__icon">
+        收
       </div>
-      <div class="senditem-box flex">
-        <div class="senditem-box__icon">
-          收
-        </div>
-        <div class="senditem-box__address">
-          <p class="senditem-box__address--detail">{{item.Countryname}}{{item.Provincename}}{{item.cityname}}{{item.countyname}}</p>
-          <p class="senditem-box__address--detail">详细:&nbsp;{{item.detaliedinformation}}</p>
-        </div>
-        <span class="senditem-box__state">{{item.starte | orderstatus}}</span>
+      <div class="senditem-detail__address">
+        <p class="senditem-detail__address--detail">{{item.RECEIVER_NAME}}&nbsp;&nbsp;{{item.RECEIVER_MOBILE}}</p>
+        <p class="senditem-detail__address--detail">{{item.RECEIVER_COUNTRY}}{{item.RECEIVER_PROV}}{{item.RECEIVER_CITY}}{{item.RECEIVER_COUNTY}}&nbsp;详细:&nbsp;{{item.RECEIVER_ADDRESS}}</p>
       </div>
-      <div class="senditem-box flex" style="justify-content: space-between;">
-        <p class="senditem-box__time">{{item.endtime}}</p>
-        <div>
-          <button v-show="item.starte === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
-          <button class="gosend-btn" @click="goPath(item, 'wait')">详情</button>
-        </div>
+      <span class="senditem-detail__state">{{item.STATUS | orderstatus}}</span>
+    </div>
+    <div class="senditem-edit" style="justify-content: space-between;">
+      <p class="senditem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
+      <div>
+        <button v-show="item.STATUS === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
+        <button class="gosend-btn" @click="goPath(item)">详情</button>
       </div>
     </div>
   </div>
@@ -55,7 +45,6 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setSend',
       'cancleSend'
     ]),
     showToast (data) {
@@ -65,17 +54,9 @@ export default {
         width: data.width || '20rem'
       })
     },
-    goPath (item, type) {
-      const serialnumber = item.serialnumber
-      this.$router.push({path: '/orderdetail', query: {serialnumber}})
-    },
-    showOffice ({province = '', city = '', district = '', descript = ''}) {
-      const content = province + city + district + descript
-      this.showToast({
-        text: content,
-        type: 'text',
-        width: '25rem'
-      })
+    goPath (item) {
+      const id = item.id
+      this.$router.push({path: '/orderdetail', query: {id}})
     },
     async cancle (item) {
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
@@ -90,9 +71,6 @@ export default {
           _this.showToast(res)
         }
       })
-    },
-    watchOffice (userId) {
-      this.$router.push({path: '/office/location', query: {userId}})
     }
   }
 }
@@ -108,7 +86,8 @@ export default {
 }
 
 .normal-btn {
-  width: 6.6rem;
+  min-width: 6rem;
+  max-width: 6.6rem;
   font-size: 1.4rem;
   text-align: center;
   padding: .4rem .4rem;
@@ -117,63 +96,41 @@ export default {
   white-space: nowrap;
 }
 
-.cancle-btn {
-  .normal-btn;
-  color: #999;
-  margin-right: 0.4rem;
-  border: 1px solid #999;
-  background: transparent;
-}
-
 .gosend-btn {
   .normal-btn;
   color: white;
   border: none;
-  border: 1px solid @red;
-  background: @red;
+  border: 1px solid @m-yellow;
+  background: @m-yellow;
+}
+
+.order-padding {
+  padding: 2px;
 }
 
 .senditem {
-  &-box {
+  padding: 0 .3rem;
+  background: white;
+  border-radius: 5px;
+  .senditem-box {
+    .flex;
     .border-bottom-grey;
     background: white;
     text-align: justify;
-    padding: .7rem 0;
-    &:last-child {
-      border-bottom-width: 0;
-    }
-    &__office {
-      img {
-        width: auto;
-        height: 2.5rem;
-        float: right;
-        vertical-align: middle;
-      }
-      &--info {
-        font-size: 1.5rem;
-        max-width: 86%;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        vertical-align: bottom;
-      }
-    }
+    padding: .5rem 0.8rem;
+  }
+  &-detail {
+    .senditem-box;
     &__state {
       font-size: 1.3rem;
-      color: @red;
+      color: @m-yellow;
       padding-top: .3rem;
       position: absolute;
       right: 2.7rem;
     }
-    &__price {
-      padding-right: 1rem;
-      font-size: 1.4rem;
-      color: @red;
-    }
     &__icon {
       border-radius: 50%;
-      background: #BEB9B9;
+      background: @m-receiver;
       color: white;
       margin-right: 1rem;
       width: 3rem;
@@ -185,6 +142,10 @@ export default {
     &__address {
       font-size: 1.3rem;
       &--detail {
+        &:first-child {
+          font-weight: 600;
+          font-size: 1.4rem;
+        }
         width: 18rem;
         text-align: left;
         overflow: hidden;
@@ -201,6 +162,9 @@ export default {
         }
       }
     }
+  }
+  &-edit {
+    .senditem-box;
     &__time {
       font-size: 1.2rem;
     }

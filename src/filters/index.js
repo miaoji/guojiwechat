@@ -238,14 +238,14 @@ export const paytype = function (key) {
 }
 
 export const orderstatus = function (val) {
-  // 状态 0 fpx完成 1下单，2付款完成，3中通完成，，4异常订单，5取消订单， 6全部完成
+  // 状态 1待付款，2付款完成，3国内完成，4国外完成，5异常订单，6取消订单
   const ordersta = {
-    0: 'fpx完成',
     1: '待付款',
     2: '待收货',
     3: '待收货',
-    4: '异常',
-    5: '已取消'
+    4: '已完成',
+    5: '异常',
+    6: '已取消'
   }
   return ordersta[val]
 }
