@@ -14,7 +14,7 @@ switch (NODE_ENV) {
     url = 'http://api.mingz-tech.com/DHL/'
     break
   case 'test':
-    url = 'http://api.didalive.net/DHL/'
+    url = 'http://api.didalive.net/'
     break
   default:
     break

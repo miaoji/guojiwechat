@@ -55,7 +55,7 @@ export const actions = {
   async setUserInfo ({ dispatch, commit }, {openid}) {
     try {
       const res = await instance({
-        method: 'post',
+        method: 'get',
         url: userApi.getuserinfo,
         params: {
           openid
