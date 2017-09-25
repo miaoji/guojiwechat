@@ -51,6 +51,7 @@ export default function request (options) {
   return fetch(options).then((response) => {
     const { status } = response
     let data = response.data
+    data = typeof data === 'object' ? data : {'stringData': data}
     return {
       success: true,
       statusCode: status,

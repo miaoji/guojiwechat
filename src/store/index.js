@@ -2,15 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import * as user from './modules/user'
 import * as address from './modules/address'
-import * as boot from './modules/boot'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
     user,
-    address,
-    boot
+    address
   },
   state: {
     title: '妙寄',

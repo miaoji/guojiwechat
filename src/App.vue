@@ -48,42 +48,12 @@ select,option,textarea {
   font-family: 'Microsoft YaHei', 'Avenir', Helvetica, Arial, sans-serif;
 }
 
-.loading-img {
-  position: absolute;
-  top: 20%;
-  left: 0;
-  width: 100%;
-  height: auto;
-}
-
-.pic-enter-active {
-  animation: pic-in .5s;
-}
-.pic-leave-active {
-  animation: pic-out .5s;
-}
 .weui-dialog__btn_primary {
-    color: @red;
+    color: @m-yellow;
 }
 
 .weui-toast {
   z-index: 6000;
-}
-
-.addaddress {
-  .weui-cell__bd.weui-cell__primary {
-    input {
-      text-align: right;
-    }
-  }
-}
-
-.editaddress {
-  .weui-cell__bd.weui-cell__primary {
-    input {
-      text-align: right;
-    }
-  }
 }
 
 .orderdetail {

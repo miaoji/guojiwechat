@@ -1,37 +1,37 @@
 <template>
-  <div class="sendqr">
+  <div class="bootdetail">
     <div class="container">
-      <div class="sendqr-detail">
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">订单号</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{serialnumber}}</span>
+      <div class="bootdetail-detail">
+        <div class="bootdetail-detail-box">
+          <span class="bootdetail-detail-box__title">订单号</span>
+          <span class="bootdetail-detail-box__yin">:</span>
+          <span class="bootdetail-detail-box__content">{{bootData.orderNo}}</span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">补价金额</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{boot / 100}}元</span>
+        <div class="bootdetail-detail-box">
+          <span class="bootdetail-detail-box__title">补价金额</span>
+          <span class="bootdetail-detail-box__yin">:</span>
+          <span class="bootdetail-detail-box__content">{{bootData.priceSpread / 100}}元</span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">补价原因</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{reason}}</span>
+        <div class="bootdetail-detail-box">
+          <span class="bootdetail-detail-box__title">补价原因</span>
+          <span class="bootdetail-detail-box__yin">:</span>
+          <span class="bootdetail-detail-box__content">{{bootData.reason}}</span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">创建时间</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{createtime | formatedatestamp}}</span>
+        <div class="bootdetail-detail-box">
+          <span class="bootdetail-detail-box__title">创建时间</span>
+          <span class="bootdetail-detail-box__yin">:</span>
+          <span class="bootdetail-detail-box__content">{{bootData.createTime | formatedatestamp}}</span>
         </div>
-        <div class="sendqr-detail-box">
-          <span class="sendqr-detail-box__title">补价状态</span>
-          <span class="sendqr-detail-box__yin">:</span>
-          <span class="sendqr-detail-box__content">{{status | bootstatus}}</span>
+        <div class="bootdetail-detail-box">
+          <span class="bootdetail-detail-box__title">补价状态</span>
+          <span class="bootdetail-detail-box__yin">:</span>
+          <span class="bootdetail-detail-box__content">{{bootData.status | bootstatus}}</span>
         </div>
       </div>
-      <div class="pay-btn" v-show="status !== 2"> 
+      <div class="pay-btn" v-show="bootData.status !== 2"> 
         <button class="btn-sub" @click="submitBoot">提交付款</button>
       </div>
-      <div class="pay-btn linkto" v-show="status === 2">
+      <div class="pay-btn linkto" v-show="bootData.status === 2">
         <h1>
           <router-link to="usercenter">前往主页</router-link>
         </h1>
@@ -40,10 +40,9 @@
   </div>
 </template>
 <script>
-import { storage } from '../utils'
-import request from '../utils/request'
+import {storage} from '@/utils'
 import * as wxUtil from '@/utils/wx'
-import { boot as bootApi } from '@/api'
+import { show } from '@/services/boot'
 
 export default {
   name: 'bootdetail',
@@ -51,16 +50,19 @@ export default {
     return {
       loading: false,
       id: null,
-      boot: '',
-      serialnumber: '',
-      reason: '',
-      createtime: '',
-      status: 1
+      bootData: {
+        createTime: '',
+        hiddenStatus: '',
+        orderNo: '',
+        priceSpread: '',
+        reason: '',
+        remark: '',
+        status: 0
+      }
     }
   },
   async created () {
-    let query = this.$route.query
-    const id = query.id
+    const {id} = this.$route.query
     if (!id) {
       this.$vux.toast.show({
         type: 'warn',
@@ -70,13 +72,8 @@ export default {
       })
     }
     this.id = id
-    let bootData = await request({
-      url: bootApi.detail,
-      method: 'post',
-      auth: true,
-      params: {
-        id
-      }
+    let bootData = await show({
+      id
     })
     if (bootData.code !== 200) {
       this.$vux.toast.show({
@@ -88,11 +85,7 @@ export default {
       return
     }
     bootData = bootData.obj
-    this.boot = bootData.boot || 0
-    this.serialnumber = bootData.serialNumber || ''
-    this.reason = bootData.reason || ''
-    this.createtime = bootData.createTime || ''
-    this.status = bootData.status || ''
+    this.bootData = bootData
     // 初始化wx jssdk
     try {
       const wxIntRes = await wxUtil.init()
@@ -106,18 +99,18 @@ export default {
   },
   methods: {
     async submitBoot () {
-      const money = this.boot
-      const serialnumber = this.serialnumber
+      const money = this.bootData.priceSpread
+      const orderNo = this.bootData.orderNo
       let intParams = {
         openid: storage({key: 'openid'}),
         money,
-        serialnumber,
+        orderNo,
         body: '国际快递包裹',
         payType: 0
       }
       let successParams = {
-        serialnumber,
-        bootId: this.id,
+        orderNo,
+        closingPriceId: this.id,
         isPay: 1,
         payType: 1
       }
@@ -125,7 +118,7 @@ export default {
         const wxPayRes = await wxUtil.pay({intParams, successParams})
         this.$vux.toast.show(wxPayRes)
         if (wxPayRes.type === 'success') {
-          this.status = 2
+          this.bootData.status = 2
         }
       } catch (err) {
         console.error(err)
@@ -152,54 +145,25 @@ export default {
 .lightyellow {
   color: @red!important;
 }
-.sendqr {
+.bootdetail {
+  .purple-bg;
+  overflow-y: hidden;
+  padding-top: 10px;
+  min-height: 100vh;
   .container {
-  }
-  &-img {
-    .btg;
+    border-radius: 5px;
     background: white;
-    padding: 1rem;
-    padding-bottom: 2.5rem;
-    &--wait {
-      img {
-        width: 15rem;
-      }
-      p {
-        font-size: 1.4rem;
-        color: @greyfont;
-      }
-    }
-    &--sign {
-      img {
-        padding: 2.5rem;
-        padding-bottom: 0.8rem;
-        width: 6rem;
-        height: auto;
-      }
-      p {
-        font-size: 1.8rem;
-        color: @dark-yellow;
-      }
-    }
-    button {
-      text-align: center;
-      border: none;
-      background: @dark-yellow;
-      padding: 0 0.3rem;
-      color: white;
-      border-radius: 5px;
-      margin-left: 6px;
-    }
+    margin: 20px 10px;
+    padding: 10px;
+    padding-top: 0;
   }
   &-detail {
-    .btopg;
-    margin-top: 1.17647059em;
     box-sizing: border-box;
     &-box {
       .flex;
       .btg;
       background: white;
-      padding: 1rem 2rem;
+      padding: 1rem;
       &__detail {
         flex: 4;
         text-align: left;
@@ -218,17 +182,18 @@ export default {
         }
       }
       &__title {
-        font-size: 1.6rem;
-        width: 7rem;
+        font-size: 1.4rem;
+        width: 6rem;
         text-align: left;
       }
       &__yin {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
       }
       &__content {
-        font-size: 1.6rem;
-        color: @red;
-        margin-left: 1rem;
+        flex: 2;
+        text-align: right;
+        font-size: 1.4rem;
+        color: @m-yellow;
         white-space: nowrap;
         overflow: hidden;
       }
@@ -243,9 +208,9 @@ export default {
     color: white;
     border: none;
     padding: 1rem 0;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     width: 92%;
-    background-color: @red;
+    background-color: @m-yellow;
     border: none;
     border-radius: 5px;
   }

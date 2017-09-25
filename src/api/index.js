@@ -8,10 +8,10 @@ switch (NODE_ENV) {
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/'
     // 正式 app 云端服务 Wechat
-    // url = 'http://api.mingz-tech.com/DHL/'
+    // url = 'http://api.mingz-tech.com/'
     break
   case 'production':
-    url = 'http://api.mingz-tech.com/DHL/'
+    url = 'http://api.mingz-tech.com/'
     break
   case 'test':
     url = 'http://api.didalive.net/'
@@ -122,33 +122,33 @@ export const orderInfo = {
   delete: url + 'api/orderInfo/delOrderInfoById'
 }
 
-export const order = {
-  list: url + 'wx/OrderInfo/ShowOrderInfo',
-  update: url + 'wx/OrderInfo/UpdateOrderInfostarte',
-  updatenumber: url + 'wx/OrderInfo/Updateserialnumberstarte',
-  detail: url + 'wx/OrderInfo/ShowOrderInfoid',
-  detailbyserialnumber: url + 'wx/OrderInfo/getOrderBySerialnumber',
-  ztoinfo: url + 'wx/order/getOrderInfo',
-  kd100: url + '/wx/order/queryByCompany'
-}
-
-export const send = {
-  create: url + 'wx/pic'
-}
-
+// 用户信息等
 export const user = {
   gettoken: function (code, params) {
     return url + 'wx/GetAccessToken?code=' + code + '&params=' + params
   },
   sendsms: url + 'wx/User/ShowranCode',
-  bindphone: url + 'wx/User/AddUserPhone',
-  getuserinfo: url + 'login/wxLogin',
-  getwebopenid: 'http://app.quandikeji.com/WeChatService/UserOpenId'
+  bindPhone: url + 'wx/User/AddUserPhone',
+  show: url + 'login/wxLogin',
+  getOpenid: url + 'login/getOpenid'
+}
+
+// 短信发送接口
+export const sms = {
+  send: url + 'login/sendCode'
+}
+
+// 物流信息
+export const expressRoute = {
+  zto: url + 'wx/order/getOrderInfo',
+  kd100: url + 'wx/order/queryByCompany'
 }
 
 // 查询补价
 export const boot = {
-  detail: url + 'wx/boot/getBootInfoById',
-  // 根据单号查询最新补价信息String serialnumber
-  query: url + 'wx/boot/getBootInfo'
+  query: url + 'api/closingPrice/index',
+  show: url + 'api/closingPrice/getClosingPriceById',
+  // 单个
+  getLast: url + 'api/closingPrice/getLast',
+  getByOrderNo: url + 'api/closingPrice/getByOrderNo'
 }

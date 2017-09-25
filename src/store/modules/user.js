@@ -1,20 +1,9 @@
-import {user as userApi} from '@/api'
-import axios from 'axios'
+import {show, getOpenid, bindPhone} from '@/services/user'
+import {send as sendSms} from '@/services/sms'
+import { storage } from '@/utils'
 import * as types from '../mutation-types'
-import window from 'window'
-
-let instance = axios.create({
-  timeout: 5000
-})
-/**
- * [state description]
- * userid openid mobile nickname headimgurl等信息放在localStorage
- * @type {Object}
- */
-let localStorage = window.localStorage
 
 export const state = {
-  init: false,
   userId: null,
   mobile: '',
   nickname: '',
@@ -25,13 +14,13 @@ export const state = {
 
 export const getters = {
   getUserId: state => {
-    const userId = window.localStorage.getItem('mj_userId') || ''
+    const userId = storage({key: 'userId'}) || ''
     return userId
   },
   getUserInfo: state => {
-    const mobile = localStorage.getItem('mj_mobile') || ''
-    const nickname = localStorage.getItem('mj_nickname') || ''
-    const headimgurl = localStorage.getItem('mj_headimgurl') || ''
+    const mobile = storage({key: 'mobile'}) || ''
+    const nickname = storage({key: 'nickname'}) || ''
+    const headimgurl = storage({key: 'headimgurl'}) || ''
     return {
       mobile,
       nickname,
@@ -39,42 +28,33 @@ export const getters = {
     }
   },
   getOpenId: state => {
-    const openid = localStorage.getItem('mj_openid') || ''
+    const openid = storage({key: 'openid'}) || ''
     return openid
   },
-  getSmsCode: state => state.smscode,
-  getUserInit: state => state.init
+  getSmsCode: state => state.smscode
 }
 
 export const actions = {
-  setUserId ({ commit }, { userId }) {
-    window.localStorage.removeItem('mj_userId')
-    window.localStorage.setItem('mj_userId', userId)
-    commit(types.SET_USERID, { userId })
-  },
+  /**
+   * [根据openid获取用户信息]
+   * @param {[type]} options.dispatch [description]
+   * @param {[type]} options.commit   [description]
+   * @param {[type]} options.openid   [description]
+   */
   async setUserInfo ({ dispatch, commit }, {openid}) {
     try {
-      const res = await instance({
-        method: 'get',
-        url: userApi.getuserinfo,
-        params: {
-          openid
-        }
+      const res = await show({
+        openid
       })
-      const data = res.data
-      if (data.msg === '登陆成功') {
-        let user = data.user
-        // 暂时去掉注册页面
-        // if (!user.mobile) {
-        //   localStorage.setItem('mj_token', data.token)
-        //   return {
-        //     text: '用户未绑定手机号，将跳转绑定页面',
-        //     width: '15rem',
-        //     type: 'text'
-        //   }
-        // }
-        dispatch('setUserId', {userId: user.id})
-        commit(types.SET_USERINFO, {token: data.token, mobile: user.mobile, headimgurl: user.headimgurl, nickname: user.nickname})
+      if (res.statusCode === 200) {
+        let user = res.user
+        commit(types.SET_USERINFO, {
+          token: res.token,
+          userId: user.id,
+          mobile: user.mobile,
+          headimgurl: user.headimgurl,
+          nickname: user.nickname
+        })
         return {
           text: '获取用户信息成功',
           width: '15rem',
@@ -97,27 +77,20 @@ export const actions = {
   },
   async setOpenid ({ commit }, {appid, secret, code}) {
     try {
-      localStorage.setItem('mj_init', 'done')
       const url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + appid + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code'
-      const res = await instance({
-        method: 'post',
-        url: userApi.getwebopenid,
-        params: {
-          url
-        }
+      const res = await getOpenid({
+        url
       })
-      if (res.status === 200) {
-        let data = res.data
-        data = JSON.parse(data)
-        if (data.errcode) {
+      if (res.statusCode === 200) {
+        if (res.errcode) {
           return {
-            text: data.errmsg,
+            text: res.errmsg,
             type: 'warn'
           }
         }
-        let openid = data.openid
-        localStorage.removeItem('mj_openid')
-        localStorage.setItem('mj_openid', openid)
+        let openid = res.openid
+        storage({key: 'openid', type: 'remove'})
+        storage({key: 'openid', val: openid, type: 'set'})
         commit(types.SET_OPENID, {openid})
         return {
           text: '获取用户openid成功',
@@ -137,31 +110,19 @@ export const actions = {
       }
     }
   },
+  /**
+   * [发送短信]
+   */
   async smsSend ({commit}, {phone}) {
     try {
-      const res = await instance({
-        method: 'post',
-        url: userApi.sendsms,
-        params: {
-          phone
-        },
-        headers: {
-          'token': localStorage.getItem('mj_token')
-        }
+      const res = await sendSms({
+        phone
       })
-      const data = res.data
-      const code = data.code
-      if (code === 200 || code === 201) {
-        commit(types.SET_SMSCODE, {smscode: data.obj})
+      if (res.code === 200 || res.code === 201) {
+        commit(types.SET_SMSCODE, {smscode: res.obj})
         return {
-          text: data.mess,
+          text: res.mess,
           type: 'success',
-          width: '18rem'
-        }
-      } else if (code === 201) {
-        return {
-          text: data.mess,
-          type: 'warn',
           width: '18rem'
         }
       }
@@ -179,19 +140,17 @@ export const actions = {
       }
     }
   },
-  async bindUser ({dispatch, commit}, {mobile, openid, IDcard}) {
+  /**
+   * [用户绑定手机号]
+   * @param  {[type]} options.mobile   [description]
+   * @param  {[type]} options.openid   [description]
+   * @return {[type]}                  [description]
+   */
+  async bindUser ({dispatch, commit}, {mobile, openid}) {
     try {
-      const res = await instance({
-        method: 'post',
-        url: userApi.bindphone,
-        params: {
-          mobile,
-          openid,
-          IDcard
-        },
-        headers: {
-          'token': localStorage.getItem('mj_token')
-        }
+      const res = await bindPhone({
+        mobile,
+        openid
       })
       const data = res.data
       const code = data.code
@@ -224,23 +183,23 @@ export const actions = {
 }
 
 export const mutations = {
-  [types.SET_USERID] (state, { userId }) {
-    state.userId = userId
-  },
-  [types.SET_USERINFO] (state, { token = localStorage.mj_token, mobile = localStorage.mj_mobile, nickname = localStorage.mj_nickname,
-    headimgurl = localStorage.mj_headimgurl }) {
-    localStorage.setItem('mj_mobile', mobile)
-    localStorage.setItem('mj_token', token)
-    localStorage.setItem('mj_nickname', nickname)
-    localStorage.setItem('mj_headimgurl', headimgurl)
+  [types.SET_USERINFO] (state, {
+    token = storage({key: 'token'}),
+    userId = storage({key: 'userId'}),
+    mobile = storage({key: 'mobile'}),
+    nickname = storage({key: 'nickname'}),
+    headimgurl = storage({key: 'headimgurl'})
+  }) {
+    storage({key: 'token', val: token, type: 'set'})
+    storage({key: 'userId', val: userId, type: 'set'})
+    storage({key: 'mobile', val: mobile, type: 'set'})
+    storage({key: 'nickname', val: nickname, type: 'set'})
+    storage({key: 'headimgurl', val: headimgurl, type: 'set'})
   },
   [types.SET_OPENID] (state, { openid }) {
     state.openid = openid
   },
   [types.SET_SMSCODE] (state, { smscode }) {
     state.smscode = smscode
-  },
-  [types.SET_USERINIT] (state, { init }) {
-    state.init = init
   }
 }

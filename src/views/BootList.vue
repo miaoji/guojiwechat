@@ -1,22 +1,23 @@
 <template>
-  <div class="bootlist-main">
-    <div class="header">补价纪录明细</div>
-    <div v-if="error" class="error">
-      <div class="error-item">{{error}}</div>
-      <button class="pay" @click.stop="goBack">点击返回</button>
-    </div>
-    <div v-else>
-      <div v-for="item in data"class="list-main" >
-        <div class="box-title">第 {{item.index+1}} 条记录</div>
+  <div class="bootlist">
+    <div class="container">
+      <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+      <div v-if="error" class="error">
+        <div class="error-item">{{error}}</div>
+        <button class="pay" @click.stop="goBack">点击返回</button>
+      </div>
+      <div v-else>
+        <div v-for="item, index in data"class="list-main" >
+          <div class="box-title"><span>|</span>记录 {{index+1}}</div>
+          <div class="box-item">
+            <span class="list-box-left">订单号</span>
+            <span class="list-box-ico">:</span>
+            <span class="list-box-right">{{orderNo}}</span>
+          </div>
           <div class="box-item">
             <span class="list-box-left">补价金额</span>
             <span class="list-box-ico">:</span>
-            <span class="list-box-right">¥{{item.boot/100}}</span>
-          </div>
-          <div class="box-item">
-            <span class="list-box-left">创建时间</span>
-            <span class="list-box-ico">:</span>
-            <span class="list-box-right">{{item.createTime | formatedatestamp}}</span>
+            <span class="list-box-right">¥{{item.priceSpread / 100}}</span>
           </div>
           <div class="box-item">
             <span class="list-box-left">补价原因</span>
@@ -24,50 +25,44 @@
             <span class="list-box-right">{{item.reason}}</span>
           </div>
           <div class="box-item">
-            <span class="list-box-left">订单号</span>
-            <span class="list-box-ico">:</span>
-            <span class="list-box-right">{{item.serialNumber}}</span>
-          </div>
-          <div class="box-item">
             <span class="list-box-left">订单状态</span>
             <span class="list-box-ico">:</span>
             <span class="list-box-right">{{item.status | bootstatus}}</span>
           </div>
+          <div class="box-item">
+            <span class="list-box-left">创建时间</span>
+            <span class="list-box-ico">:</span>
+            <span class="list-box-right">{{item.createTime | formatedatestamp}}</span>
+          </div>
+          <div class="purple-border">
+          </div>
+        </div>
       </div>
+      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
   </div>
 </template>
 <script>
-import { boot as bootApi } from '@/api'
-import request from '@/utils/request'
-const localStorage = window.localStorage
+import { getByOrderNo as getBootByOrderNo } from '@/services/boot'
+
 export default {
   name: 'bootlist',
   data () {
     return {
       data: {},
       error: null,
-      index: 0,
-      serialnumber: ''
+      orderNo: ''
     }
   },
   async created () {
-    let query = this.$route.query
-    let serialnumber = query.serialnumber || 1
-    this.serialnumber = serialnumber
-    const res = await request({
-      url: bootApi.query,
-      method: 'post',
-      params: { serialnumber },
-      headers: {'token': localStorage.getItem('mj_token')},
-      auth: true
+    let {orderNo} = this.$route.query
+    this.orderNo = orderNo
+    const res = await getBootByOrderNo({
+      orderNo
     })
-    if (res.code === 200 && res.obj.length > 0) {
+    if (res.code === 200 && res.obj) {
       this.data = res.obj
-      for (let i = 0; i < this.data.length; i++) {
-        this.data[i].index = i
-      }
-    } else if (res.code === 200 && res.obj.length <= 0) {
+    } else if (res.code === 200 && !res.obj) {
       this.error = '暂无改价记录'
       return
     } else if (res.code !== 200) {
@@ -79,7 +74,7 @@ export default {
   },
   methods: {
     goBack () {
-      window.history.back()
+      this.$router.go(-1)
     }
   }
 }
@@ -88,28 +83,48 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
-.header{
-  padding: 0.8rem 2rem;
-  font-size: 1.6rem;
-  color: @light-yellow;
-}
-.bootlist-main{
-  margin-top: 1.17647059em;
+
+.bootlist{
+  .purple-bg;
+  overflow-y: auto;
+  padding-top: 10px;
+  min-height: 99vh;
   text-align: left;
-  padding: 2rem 0;
-  background-color: #fff;
+  .container {
+    background: white;
+    margin: 20px 10px;
+    .bor-bottom {
+      margin-bottom: -20px;
+    }
+  }
   .list-main{
     color: @text-color;
-    padding: 0.5rem 0;
+    padding: 0 .6rem;
     border-bottom: 1px solid #dedede;
     .box-title{
+      span {
+        color: @m-yellow;
+        vertical-align: text-bottom;
+        padding-right: 3px;
+      }
       font-size: 1.4rem;
       font-weight: bold;
-      padding: 0.5rem 2rem;
+      padding: 0.5rem 1rem;
+    }
+    .purple-border {
+      margin: 0;
+      margin-top: 15px;
+      height: 3px;
+      background: url('../assets/images/border.png');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
     }
     .box-item{
       font-size: 1.4rem;
-      padding: 0.1rem 2rem;
+      padding: 0.1rem 1rem;
+      &:last-child {
+        padding-bottom: 10px;
+      }
       .list-box-left{
         display: inline-block;
         width:5.7rem;
@@ -119,7 +134,7 @@ export default {
         padding: 0 .1rem;
       }
       .list-box-right{
-        color: @red;
+        color: @m-yellow;
         padding-left: 0.5rem;
       }
     }
@@ -128,6 +143,7 @@ export default {
     border-bottom: none;
   }
 }
+
 .error{
   margin-top: 1.17647059em;
   padding: 8rem 2rem;
@@ -139,10 +155,10 @@ export default {
   button.pay {
     background: transparent;
     font-size: 13px;
-    padding: 2px 5px;
-    border: 1px solid @red;
-    border-radius: 3px;
-    color: @red;
+    padding: 5px 10px;
+    border: 1px solid @m-yellow;
+    border-radius: 5px;
+    color: @m-yellow;
   }
 }
 </style>

@@ -38,4 +38,5 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/init/index.less';
 @import '../assets/styles/init/send.less';
+@import '../assets/styles/init/address.less';
 </style>

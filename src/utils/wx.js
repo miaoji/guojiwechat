@@ -14,7 +14,8 @@ export const init = function () {
     if (!wxconfig.success) {
       return reject({
         text: '获取微信jssdk配置失败',
-        type: 'warn'
+        type: 'warn',
+        width: '18rem'
       })
     }
     const jssdk = JSON.parse(wxconfig.obj)
@@ -31,7 +32,8 @@ export const init = function () {
     })
     return resolve({
       text: '微信jssdk初始化成功',
-      type: 'success'
+      type: 'success',
+      width: '18rem'
     })
   })
 }
@@ -44,7 +46,8 @@ export const pay = function ({intParams, successParams}) {
     if (!wxpayCon.success) {
       return reject({
         text: '提交失败',
-        type: 'warn'
+        type: 'warn',
+        width: '16rem'
       })
     }
     const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
@@ -64,25 +67,29 @@ export const pay = function ({intParams, successParams}) {
           if (successRes.success) {
             resolve({
               text: '支付成功',
-              type: 'success'
+              type: 'success',
+              width: '16rem'
             })
           } else {
             reject({
               text: '支付成功, 保存记录失败',
-              type: 'warn'
+              type: 'warn',
+              width: '20rem'
             })
           }
         },
         cancel: function () {
           reject({
-            text: '支付失败, 用户取消',
-            type: 'warn'
+            text: '支付失败, 已取消',
+            type: 'warn',
+            width: '20rem'
           })
         },
         fail: function () {
           reject({
             text: '支付失败',
-            type: 'warn'
+            type: 'warn',
+            width: '16rem'
           })
         }
       })

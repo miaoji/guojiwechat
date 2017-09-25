@@ -1,19 +1,104 @@
 <template>
   <div class="addaddress">
     <div class="addaddress-container" v-show="mainContainerShow">
-      <group label-width="8rem" label-align="left">
-        <x-input type="text" title="联系人" v-model="name" :max="20" placeholder="请填写您的真实姓名" required></x-input>
-        <x-input title="电话" v-model="mobile" type="text" placeholder="请输入手机号" required></x-input>
-        <x-input @click.native="onClickCountry" disabled title="国家/地区" placeholder="请选择国家/地区" type="text" required v-model="country['name']"></x-input>
-        <x-input v-show="type === 1" @click.native="getPosition(2)" disabled title="省份" placeholder="请选择省份" type="text" v-model="province['name']" ></x-input>
-        <x-input v-show="type === 1" @click.native="getPosition(3)" disabled title="市级" placeholder="请选择市级" type="text" v-model="city['name']"></x-input>
-        <x-input v-show="type === 1" @click.native="getPosition(4)" disabled title="县区" placeholder="请选择县区" type="text" v-model="county['name']"></x-input>
-        <x-textarea type="text" title="地址" :max="200" placeholder="请详细到门牌号(限60字、必填)" :show-counter="false" v-model="address" :rows="1" :height="address.length + 22" required></x-textarea>
-        <x-input type="text" title="邮编" required v-model="postcode" :max="20" placeholder="请填写邮编"></x-input>
-        <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remark" :rows="1" :height="22" required></x-textarea>
-      </group>
-      <group>
-         <x-switch title="设为默认地址" class="mj-switch" v-model="isDefault"></x-switch>
+      <group 
+        label-width="8rem"
+        label-align="left"
+      >
+        <x-input 
+          title="联系人"
+          type="text"
+          v-model="name"
+          :max="20"
+          placeholder="请填写您的真实姓名" 
+          text-align="right"
+          required
+        ></x-input>
+        <x-input 
+          title="电话" 
+          v-model="mobile"
+          type="text" 
+          placeholder="请输入手机号" 
+          required 
+          text-align="right"
+        ></x-input>
+        <x-input 
+          title="国家/地区" 
+          @click.native="onClickCountry" 
+          disabled 
+          placeholder="请选择国家/地区" 
+          type="text"
+          required 
+          v-model="country['name']" 
+          text-align="right"
+        ></x-input>
+        <x-input 
+          title="省份" 
+          v-show="type === 1" 
+          @click.native="getPosition(2)"
+          disabled
+          placeholder="请选择省份" 
+          type="text"
+          v-model="province['name']"
+          text-align="right"
+        ></x-input>
+        <x-input 
+          title="市级" 
+          v-show="type === 1" 
+          @click.native="getPosition(3)" 
+          disabled 
+          placeholder="请选择市级" 
+          type="text" 
+          v-model="city['name']"
+          text-align="right"
+        ></x-input>
+        <x-input 
+          title="县区" 
+          v-show="type === 1" 
+          @click.native="getPosition(4)" 
+          disabled 
+          placeholder="请选择县区" 
+          type="text" 
+          v-model="county['name']"
+          text-align="right"
+        ></x-input>
+        <x-textarea 
+          title="地址"
+          type="text" 
+          :max="200"
+          placeholder="请详细到门牌号(限60字、必填)" 
+          :show-counter="false" 
+          v-model="address" 
+          :rows="1" 
+          :height="address.length + 22" 
+          required
+          text-align="right"
+        ></x-textarea>
+        <x-input 
+          title="邮编"
+          type="text"
+          required
+          v-model="postcode"
+          :max="20"
+          placeholder="请填写邮编" 
+          text-align="right"
+        ></x-input>
+        <x-textarea 
+          title="备注"
+          type="text"
+          :max="50"
+          placeholder="请添加备注 (限50字)" 
+          :show-counter="false" 
+          v-model="remark" 
+          :rows="1" 
+          :height="22" 
+          required
+        ></x-textarea>
+        <x-switch 
+          title="设为默认地址" 
+          class="mj-switch" 
+          v-model="isDefault"
+        ></x-switch>
       </group>
       <get-position
         :type='positionType'
@@ -442,7 +527,6 @@ export default {
         remark: this.remark
       }
       const type = this.type
-      console.log('tyoe', type)
       const res = await this.updateAddress({
         data,
         type
@@ -484,9 +568,15 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 .addaddress {
+  .purple-bg;
+  padding: 10px;
+  padding-top: 20px;
   min-height: 95vh;
-  background-color: @bg-grey;
   &-container {
+    border-radius: 5px;
+    background: white;
+    padding: 10px;
+    padding-top: 1px;
     .weui-cell__bd.weui-cell__primary {
       input {
         text-align: right;
@@ -506,14 +596,14 @@ export default {
       }
     }
     &-add {
-      margin-top: 5rem;
+      margin-top: 3rem;
       padding: 1rem 1rem;
       p {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         padding: 1rem 0;
         width: 100%;
         color: white;
-        background: @red;
+        background: @m-yellow;
         border-radius: 6px;
       }
     }

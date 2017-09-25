@@ -2,11 +2,11 @@
   <div class="usercenter">
     <div class="usercenter-info">
       <div class="usercenter-info__container">
-        <img :src="headImgUrl" alt="用户背景">
+        <img :src="userAvar" alt="用户背景">
       </div>
       <div class="usercenter-info__detail">
         <div class="usercenter-info__detail--image">
-          <img :src="headImgUrl" :alt="user.nickname || ''" @click="usershow = true">
+          <img :src="userAvar" :alt="user.nickname || ''" @click="usershow = true">
         </div>
         <p>{{user.nickname}}</p>
       </div>
@@ -22,7 +22,7 @@
     </div>
     <div v-transfer-dom>
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
-        <div class="customer-service flex">
+        <div class="customer-service">
           <p>客服热线:&nbsp;&nbsp;</p>
           <p><a href="tel:021-60314051">{{hotline}}</a></p>
         </div>
@@ -34,7 +34,7 @@
 
     <div v-transfer-dom>
       <x-dialog v-model="usershow" class="user-dialog" hide-on-blur>
-        <div class="img-box" :style="'background-image:url(' + headImgUrl + ')'">
+        <div class="img-box" :style="'background-image:url(' + userAvar + ')'">
         </div>
         <div class="user-info">
           <p>微信昵称: {{user.nickname}}</p>
@@ -58,6 +58,7 @@ import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { mapGetters } from 'vuex'
 import { storage } from '../utils'
 import { hotline } from '../utils/config'
+import logoPng from '../assets/images/logo.png'
 
 export default {
   name: 'usercenter',
@@ -65,6 +66,7 @@ export default {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
     this.hotline = hotline
     this.headImgUrl = storage({key: 'headimgurl'}) || ''
+    this.logoPng = logoPng
   },
   directives: {
     TransferDom
@@ -74,10 +76,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      user: 'getUserInfo',
-      userid: 'getUserId',
-      openid: 'getOpenId'
-    })
+      user: 'getUserInfo'
+    }),
+    userAvar () {
+      return this.headImgUrl || this.logoPng
+    }
   },
   mounted () {
     window.document.title = '我的'
@@ -151,10 +154,11 @@ export default {
     color: #666;
   }
   .customer-service {
+    .flex;
     padding: 1rem;
     font-size: 1.6rem;
     a {
-      color: @red;
+      color: @m-yellow;
     }
   }
   .vux-close {
@@ -176,7 +180,7 @@ export default {
     top: 0;
     padding: 15px;
     p {
-      color: white;
+      color: @m-yellow;
       font-size: 1.4rem;
       text-align: left;
     }
@@ -192,6 +196,7 @@ export default {
 
 .usercenter {
   .purple-bg;
+  padding: 10px;
   padding-top: 21px;
   min-height: 92vh;
   overflow: hidden;
@@ -239,7 +244,7 @@ export default {
     flex-wrap: wrap;
     &-box {
       justify-content: space-between;
-      padding: .7rem .5rem;
+      padding: 1rem .5rem;
       padding-left: 1rem;
       box-sizing: border-box;
       background: #fff;

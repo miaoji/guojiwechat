@@ -1,6 +1,7 @@
 <template>
   <div class="orderdetail">
     <div class="container">
+      <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
       <!-- 寄件收件地址 -->
       <div class="orderdetail-detail">
         <div class="orderdetail-detail-box">
@@ -8,34 +9,45 @@
             <span class="bgblack">寄</span>
           </div>
           <div class="orderdetail-detail-box__detail">
-            <p>{{data.listMailingaddress ? data.listMailingaddress[0].linkman : ''}}&nbsp;{{data.listMailingaddress ? data.listMailingaddress[0].iphone : ''}}</p>
-            <p>{{sendAddress['allName']}}&nbsp;{{data.listMailingaddress ? data.listMailingaddress[0].detailedinformation : ''}}</p>
+            <p>{{orderInfo.senderName}}&nbsp;{{orderInfo.senderMobile}}</p>
+            <p>{{orderInfo.senderCountry}}{{orderInfo.senderProv}}{{orderInfo.senderCity}}{{orderInfo.senderCounty}}&nbsp;{{orderInfo.senderAddress}}</p>
           </div>
         </div>
-        <div class="orderdetail-detail-box">
+        <div class="orderdetail-detail-box" style="border-bottom-width: 0;">
           <div class="orderdetail-detail-box__icon">
             <span class="bgred">收</span>
           </div>
           <div class="orderdetail-detail-box__detail">
-            <p>{{data.listConsigneeaddress ? data.listConsigneeaddress[0].recipients : ''}}&nbsp;{{data.listConsigneeaddress ? data.listConsigneeaddress[0].iphone : ''}}</p>
-            <p>{{pickupAddress['allName']}}&nbsp;{{data.listConsigneeaddress ? data.listConsigneeaddress[0].detaliedinformation : ''}}</p>
+            <p>{{orderInfo.receiverName}}&nbsp;{{orderInfo.receiverMobile}}</p>
+            <p>{{orderInfo.receiverCountry}}{{orderInfo.receiverProv}}{{orderInfo.receiverCity}}{{orderInfo.receiverCounty}}&nbsp;{{orderInfo.receiverAddress}}</p>
           </div>
+        </div>
+        <div class="purple-border">
         </div>
       </div>
       <!-- 订单状态等 -->
       <div class="orderdetail-detail">
         <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">单号</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">
+            {{orderInfo.orderNo}}
+          </span>
+        </div>
+        <div class="orderdetail-detail-box">
           <span class="orderdetail-detail-box__title">订单状态</span>
           <span class="orderdetail-detail-box__yin">:</span>
           <span class="orderdetail-detail-box__content">
-            {{data.starte | orderstatus}}
-            <button class="pay" @click.stop="wxpay" v-show="data.starte === 1">立即付款</button>
+            {{orderInfo.status | orderstatus}}
+            <button class="pay" @click.stop="wxPay" v-show="orderInfo.status === 1">立即付款</button>
           </span>
         </div>
         <div class="orderdetail-detail-box">
           <span class="orderdetail-detail-box__title">预付金额</span>
           <span class="orderdetail-detail-box__yin">:</span>
-          <span class="orderdetail-detail-box__content">{{data.totalFee/100}}元</span>
+          <span class="orderdetail-detail-box__content">
+            <span class="money">{{orderInfo.totalFee/100}}</span>元
+          </span>
         </div>
         <div class="orderdetail-detail-box">
           <span class="orderdetail-detail-box__title">待补价</span>
@@ -58,13 +70,17 @@
         <div class="orderdetail-detail-box">
           <span class="orderdetail-detail-box__title">备注</span>
           <span class="orderdetail-detail-box__yin">:</span>
-          <span class="orderdetail-detail-box__content">{{data.remove}}</span>
+          <span class="orderdetail-detail-box__content">{{orderInfo.remark || '备注为空'}}</span>
         </div>
       </div>
+      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
+    </div>
+    <p class="intro-p">物流信息</p>
+    <div class="express-container">
+      <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
       <!-- 路由信息 -->
       <div class="orderdetail-detail">
         <div class="logisticsresult">
-          <p class="logisticsresult-title">物流信息:</p>
           <load-more v-show="!getRouteDone" :show-loading="!getRouteDone"></load-more>
           <h2 v-show="!route.status">{{route.msg}}</h2>
           <!-- 国际路由信息 -->
@@ -96,15 +112,16 @@
           </div>
         </div>
       </div>
+      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
   </div>
 </template>
 <script>
 import { LoadMore } from 'vux'
-import { mapActions } from 'vuex'
-import { order as orderApi } from '@/api'
+import { show } from '@/services/orderInfo'
+import { getLast as getLastBootByOrderNo } from '@/services/boot'
+import { getZTO, getKD100 } from '@/services/expressRoute'
 import { storage } from '@/utils'
-import request from '@/utils/request'
 import * as wxUtil from '@/utils/wx'
 
 export default {
@@ -114,11 +131,8 @@ export default {
   },
   data () {
     return {
-      data: {},
-      serialnumber: '',
-      item: {},
-      sendAddress: '',
-      pickupAddress: '',
+      orderInfo: {},
+      // 0表示不需要补价， 1相反
       bootStatus: {
         val: 0,
         id: 0
@@ -137,40 +151,16 @@ export default {
       this.$vux.loading.show({text: ' '})
       // 初始化wxssdk
       await wxUtil.init()
-      let query = this.$route.query
-      let serialnumber = query.serialnumber || 1
-      this.serialnumber = serialnumber
-      await this.getOrderDetail(serialnumber)
+      let {id} = this.$route.query
+      await this.getOrderDetail(id)
       this.$vux.loading.hide()
-      const sendgeography = this.data['listMailingaddress'][0]
-      const sendAddress = await this.getGeography({countryid: sendgeography.nationid, provinceid: sendgeography.provinnce, cityid: sendgeography.city, countyid: sendgeography.county})
-      this.sendAddress = sendAddress.data
-      const pickupgeography = this.data['listConsigneeaddress'][0]
-      const pickupAddress = await this.getGeography({countryid: pickupgeography.nation, provinceid: pickupgeography.provinnce, cityid: pickupgeography.city, countyid: pickupgeography.county})
-      this.pickupAddress = pickupAddress.data
-      // 获取订单补价信息, 并从中筛选出最新的补价，判断是否有为 1 或 2 状态的boot，并保存他的id
-      const boot = await this.getBoot({ serialnumber })
-      if (boot.code === 200) {
-        const bootData = boot.obj
-        let bootStatus = {
-          val: 0, // 0表示不需要补价， 1相反
-          id: 0
-        }
-        for (let item in bootData) {
-          let status = bootData[item].status
-          if (status !== 2) {
-            bootStatus = {
-              val: 1,
-              id: bootData[item].id
-            }
-            break
-          }
-        }
-        this.bootStatus = bootStatus
-      }
+      // 获取订单补价信息
+      await this.getLastBoot({
+        orderNo: this.orderInfo.orderNo
+      })
       this.getBootStatusDone = true
       // 根据中通单号获取路由信息
-      const ZTONO = this.data.ZTONO
+      const ZTONO = this.orderInfo.ZTONO || ''
       if (!ZTONO) {
         this.getRouteDone = true
         this.route['msg'] = '暂未接入物流'
@@ -178,12 +168,12 @@ export default {
         this.getZTORoute(ZTONO)
       }
       // 根据国际单号获取路由信息
-      const FPXNO = this.data.FPXNO
+      const FPXNO = this.orderInfo.FPXNO || ''
       if (!FPXNO) {
         console.log('暂未到国外')
       } else {
         this.getInterRoute({
-          company: this.data.nation_express_com,
+          company: this.orderInfo.nation_express_com,
           num: FPXNO
         })
       }
@@ -196,34 +186,20 @@ export default {
     window.document.title = '寄件明细'
   },
   methods: {
-    ...mapActions([
-      'getGeography',
-      'getBoot'
-    ]),
-    async getOrderDetail (serialnumber = 1) {
+    async getOrderDetail (id) {
       try {
-        const orderdetail = await request({
-          method: 'post',
-          auth: true,
-          url: orderApi.detailbyserialnumber,
-          params: {
-            serialnumber
-          }
+        const res = await show({
+          id
         })
-        if (orderdetail.code !== 200) {
+        if (res.code !== 200) {
           return this.$vux.toast.show({
-            text: orderdetail.mess,
+            text: res.mess,
             type: 'warn',
             width: '18rem'
           })
         }
-        let data = orderdetail.obj
-        if (data.length > 0) {
-          data.sort(function (a, b) {
-            return a.id < b.id
-          })
-        }
-        this.data = data[0]
+        let orderInfo = res.obj
+        this.orderInfo = orderInfo
         return
       } catch (e) {
         console.error(e)
@@ -234,26 +210,34 @@ export default {
         })
       }
     },
-    async wxpay () {
-      const serialnumber = this.serialnumber
+    async wxPay () {
+      const orderNo = this.orderInfo.orderNo
       let intParams = {
         openid: storage({key: 'openid'}),
-        money: (this.data.totalFee),
-        serialnumber,
+        money: (this.orderInfo.totalFee),
+        orderNo,
         body: '国际快递包裹',
         payType: 0
       }
       let successParams = {
-        serialnumber,
+        orderNo,
         isPay: 1,
         payType: 0
       }
       const wxPayRes = await wxUtil.pay({intParams, successParams})
       this.showToast(wxPayRes)
       if (wxPayRes.type === 'success') {
-        this.data.starte = 2
-      } else {
         window.location.reload()
+      }
+    },
+    async getLastBoot ({orderNo = ''}) {
+      if (!orderNo) return
+      const boot = await getLastBootByOrderNo({ orderNo })
+      if (boot.code !== 200) return
+      if (!boot.obj) return
+      this.bootStatus = {
+        val: 1,
+        id: boot.obj.ID
       }
     },
     goBootDetail ({id}) {
@@ -261,18 +245,13 @@ export default {
       return
     },
     goBootList () {
-      this.$router.push({path: 'bootlist', query: {serialnumber: this.serialnumber}})
+      this.$router.push({path: 'bootlist', query: {orderNo: this.orderInfo.orderNo}})
       return
     },
     async getZTORoute (logisticsId) {
       try {
-        const orderdetail = await request({
-          method: 'post',
-          url: orderApi.ztoinfo,
-          auth: true,
-          params: {
-            logisticsId
-          }
+        const orderdetail = await getZTO({
+          logisticsId
         })
         this.getRouteDone = true
         if (orderdetail.code !== 200) {
@@ -303,14 +282,9 @@ export default {
     },
     async getInterRoute ({company, num}) {
       try {
-        const interTraces = await request({
-          method: 'post',
-          url: orderApi.kd100,
-          auth: true,
-          params: {
-            company,
-            num
-          }
+        const interTraces = await getKD100({
+          company,
+          num
         })
         this.interTracesRes = interTraces.obj.message
         this.interTraces = interTraces.obj.data
@@ -333,16 +307,14 @@ export default {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
-@grey: #efeff4;
-
 .isfirstPart {
-  color: @red;
+  color: @m-yellow;
   .line {
     &:before {
-      background: @red!important;
+      background: @m-yellow!important;
     }
     &-div {
-      background: @red!important;
+      background: @m-yellow!important;
     }
   }
 }
@@ -350,65 +322,41 @@ export default {
 .bgblack {
   background-color: black;
 }
+
 .bgred {
   background-color: @red;
 }
-.darkyellow {
-  color: @dark-yellow;
-}
-
-.lightyellow {
-  color: @red!important;
-}
 
 .orderdetail {
+  .purple-bg;
+  overflow-y: auto;
+  padding-top: 10px;
+  min-height: 95vh;
   .container {
-  }
-  &-img {
-    .btg;
     background: white;
-    padding: 1rem;
-    padding-bottom: 2.5rem;
-    &--wait {
-      img {
-        width: 15rem;
-      }
-      p {
-        font-size: 1.4rem;
-        color: @greyfont;
-      }
-    }
-    &--sign {
-      img {
-        padding: 2.5rem;
-        padding-bottom: 0.8rem;
-        width: 6rem;
-        height: auto;
-      }
-      p {
-        font-size: 1.8rem;
-        color: @dark-yellow;
-      }
-    }
-    button {
-      text-align: center;
-      border: none;
-      background: @dark-yellow;
-      padding: 0 0.3rem;
-      color: white;
-      border-radius: 5px;
-      margin-left: 6px;
+    margin: 20px 10px;
+    .bor-bottom {
+      margin-bottom: -20px;
     }
   }
   &-detail {
-    .btopg;
-    margin-top: 1.17647059em;
-    box-sizing: border-box;
+    padding: 0 10px;
+    .purple-border {
+      margin: 0;
+      height: 3px;
+      background: url('../assets/images/border.png');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+    }
     &-box {
       .flex;
       .btg;
+      box-sizing: border-box;
       background: white;
-      padding: 1rem 2rem;
+      padding: 1rem 5px;
+      &:last-child {
+        border-bottom-width: 0;
+      }
       &__icon {
         flex: 1;
         span {
@@ -442,96 +390,104 @@ export default {
         font-size: 1.4rem;
         width: 5.7rem;
         text-align: left;
+        color: #999;
       }
       &__yin {
         font-size: 1.4rem;
       }
       &__content {
+        flex: 3;
+        text-align: right;
         font-size: 1.4rem;
-        color: @red;
-        margin-left: 1rem;
+        color: #333;
         white-space: nowrap;
         overflow: hidden;
+        .money {
+          color: @m-yellow;
+        }
         a {
           font-size: 13px;
           padding: 2px 5px;
-          border: 1px solid @red;
+          border: 1px solid @m-yellow;
           border-radius: 3px;
-          color: @red;
+          color: @m-yellow;
         }
         button.pay {
           background: transparent;
           font-size: 13px;
           padding: 2px 5px;
-          border: 1px solid @red;
+          border: 1px solid @m-yellow;
           border-radius: 3px;
-          color: @red;
+          color: @m-yellow;
+        }
+      }
+    }
+  }
+  .express-container {
+    .container;
+    .logisticsresult {
+      background: white;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      &-title {
+        padding-left: 2rem;
+        font-size: 1.4rem;
+        text-align: left;
+      }
+      &-content {
+        display: flex;
+        padding: 1rem;
+        padding-bottom: 0;
+        &:first-child {
+          p {
+            color: @dark-yellow;
+          }
+        }
+        .date-intro {
+          max-width: 8rem;
+        }
+        &--part {
+          text-align: justify;
+          padding: 0 1rem;
+          // flex: 1;
+          p {
+            font-size: 1.4rem;
+          }
+          p.minute {
+            text-align: center;
+            font-size: 1.4rem;
+            max-height: 1.4rem;
+            // overflow: hidden;
+            white-space: nowrap;
+          }
+          p.date {
+            text-align: center;
+            font-size: 1.3rem;
+            max-height: 1.3rem;
+            // overflow: hidden;
+            white-space: nowrap;
+          }
+        }
+        div.line {
+          width: 1rem;
+          &:before {
+            content: ' ';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #999;
+            border-radius: 50%;
+          }
+          &-div {
+            height: 6rem;
+            width: 2px;
+            margin-left: 38%;
+            background: #999;
+          }
         }
       }
     }
   }
 }
 
-.logisticsresult {
-  background: white;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  &-title {
-    padding-left: 2rem;
-    font-size: 1.4rem;
-    text-align: left;
-  }
-  &-content {
-    display: flex;
-    padding: 1rem;
-    padding-bottom: 0;
-    &:first-child {
-      p {
-        color: @dark-yellow;
-      }
-    }
-    .date-intro {
-      max-width: 8rem;
-    }
-    &--part {
-      text-align: justify;
-      padding: 0 1rem;
-      // flex: 1;
-      p {
-        font-size: 1.4rem;
-      }
-      p.minute {
-        text-align: center;
-        font-size: 1.4rem;
-        max-height: 1.4rem;
-        // overflow: hidden;
-        white-space: nowrap;
-      }
-      p.date {
-        text-align: center;
-        font-size: 1.3rem;
-        max-height: 1.3rem;
-        // overflow: hidden;
-        white-space: nowrap;
-      }
-    }
-    div.line {
-      width: 1rem;
-      &:before {
-        content: ' ';
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        background: #999;
-        border-radius: 50%;
-      }
-      &-div {
-        height: 6rem;
-        width: 2px;
-        margin-left: 38%;
-        background: #999;
-      }
-    }
-  }
-}
 </style>

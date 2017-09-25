@@ -95,59 +95,88 @@
             @on-change="onProduTypeChange"
           >
           </selector>
-          <cell @click.native="dialogshow = true"  class="office" title="产品规格" is-link>{{showProductSpecs}}</cell>
-          <selector direction="rtl" v-model="isBack" placeholder="退件要承担逆向物流费用, 默认不选"   title="是否退件" name="district" :options="isBackOption"></selector>
-          <x-textarea type="text" title="备注" :max="50" placeholder="请添加备注 (限50字)" :show-counter="false" v-model="remark" :rows="1" :height="remark.length + 20" required>
+          <cell 
+            @click.native="dialogshow = true"
+            :class="{'office': true, 'isFilled': orderOptions.weight}"
+            title="产品规格"
+            :value="showProductSpecs"
+            is-link>
+          </cell>
+          <selector 
+            direction="rtl"
+            v-model="isBack"
+            placeholder="退件要承担逆向物流费用, 默认不选"
+            title="是否退件"
+            name="district"
+            :options="isBackOption"
+          >
+          </selector>
+          <x-textarea
+            type="text"
+            title="备注" 
+            :max="50"
+            placeholder="请添加备注 (限50字)"
+            :show-counter="false"
+            v-model="remark"
+            :rows="1" 
+            :height="remark.length + 20"
+            required
+          >
           </x-textarea>
         </group>
       </div>
       <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
       <!-- 订单包裹展示 -->
+      <p  class="intro-p">包裹报关</p>
       <div class="send-container-package">
-        <div class="send-container-package__title">
-          <div>
-            包裹报关
+        <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+        <div class="container-padding">
+          <div class="send-container-package__title">
+            <div>
+              包裹报关
+            </div>
+            <div @click="packageShow = true">
+              <button type="" >添加包裹</button>
+            </div>
           </div>
-          <div @click="packageShow = true">
-            <button type="" >添加包裹</button>
+          <div class="send-container-package__table">
+            <table>
+              <thead>
+                <tr>
+                  <th>中文品名</th>
+                  <th>数量</th>
+                  <th>单价/元</th>
+                  <th>价值/元</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
+                  <td>
+                    <input type="text" v-model="item['nameCn']">
+                  </td>
+                  <td>
+                    <input type="number" v-model="item['quantity']">
+                  </td>
+                  <td>
+                    <input type="number" v-model="item['unitPrice']">
+                  </td>
+                  <td>
+                    <input type="text" v-model="item['worth']">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div class="send-container-package__table">
-          <table>
-            <thead>
-              <tr>
-                <th>中文品名</th>
-                <th>数量</th>
-                <th>单价/元</th>
-                <th>价值/元</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
-                <td>
-                  <input type="text" v-model="item['nameCn']">
-                </td>
-                <td>
-                  <input type="number" v-model="item['quantity']">
-                </td>
-                <td>
-                  <input type="number" v-model="item['unitPrice']">
-                </td>
-                <td>
-                  <input type="text" v-model="item['worth']">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="send-container-package__money">
-          预付运费：￥ <span>{{advance === 'NaN' ? '请先选择产品类型' : advance}}</span>
+          <div class="send-container-package__money">
+            预付运费：￥ <span>{{advance === 'NaN' ? '请先选择产品类型' : advance}}</span>
+          </div>
+          <!-- 提交按钮 -->
+          <div class="div-btn-sub"> 
+            <button class="btn-sub" @click="submitOrderInfo">提交</button>
+          </div>
         </div>
       </div>
-      <!-- 提交按钮 -->
-      <div class="div-btn-sub"> 
-        <button class="btn-sub" @click="submitOrderInfo">提交</button>
-      </div>
+      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
     <!-- 产品重量体积弹出框 -->
     <div v-transfer-dom>
@@ -497,7 +526,7 @@ export default {
      * @param  {[type]} options.serialnumber [description]
      * @return {[type]}                      [description]
      */
-    async wxPay ({money, orderNo}) {
+    async wxPay ({money, orderNo, orderId}) {
       let intParams = {
         openid: storage({key: 'openid'}),
         money: (money * 100),
@@ -507,7 +536,7 @@ export default {
       }
       let successParams = {
         orderNo,
-        isPay: 1,
+        paymentStatus: 1,
         payType: 0
       }
       const _this = this
@@ -515,7 +544,7 @@ export default {
         const wxPayRes = await wxUtil.pay({intParams, successParams})
         this.$vux.toast.show(wxPayRes)
         if (wxPayRes.type === 'success') {
-          _this.$router.push({path: '/orderdetail', query: {orderNo}})
+          _this.$router.push({path: '/orderdetail', query: {id: orderId}})
         }
       } catch (err) {
         console.error(err)
@@ -601,11 +630,10 @@ export default {
         })
         this.$vux.loading.hide()
         this.loading = false
-        console.log('res', result)
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
-          this.wxPay({money: this.advance, orderNo: result.obj.orderNo})
-          // this.clearForm()
+          this.wxPay({money: this.advance, orderNo: result.obj.orderNo, orderId: result.obj.id})
+          this.clearForm()
         } else {
           this.$vux.toast.show({
             text: result.msg || '创建订单失败',
@@ -871,15 +899,16 @@ export default {
 }
 
 .common-padding {
-  padding: .8rem 0;
+  padding: 1rem 0;
   margin-left: 1rem;
 }
 
 .send {
   &-container {
     .purple-bg;
+    padding: 10px;
     padding-top: 39px;
-    padding-bottom: 6rem;
+    padding-bottom: 9rem;
     overflow: hidden;
     &-list {
       background-color: #fff;
@@ -900,7 +929,7 @@ export default {
           font-size: 0;
           img {
             width: auto;
-            height: 3rem;
+            height: 2.6rem;
           }
         }
       }
@@ -929,10 +958,10 @@ export default {
         flex: 1;
         margin-right: 0.5rem;
         span {
-          font-size: 1.6rem;
-          width: 3rem;
-          height: 3rem;
-          line-height: 3rem;
+          font-size: 1.5rem;
+          width: 2.6rem;
+          height: 2.6rem;
+          line-height: 2.6rem;
           display: block;
           border-radius: 50%;
           color: white;
@@ -955,11 +984,10 @@ export default {
         padding-right: 1rem;
         font-size: 0;
         img {
-          width: 100%;
+          width: 2.6rem;
         }
       }
     }
-
     &-detail {
       margin-top: 1rem;
       font-size: 1.6rem;
@@ -984,7 +1012,6 @@ export default {
         }
       }
     }
-    
     &-select {
       label {
         text-align: left;
@@ -992,11 +1019,12 @@ export default {
         color: @greyfont;
       }
     }
-
     &-package {
-      margin-top: 12px;
+      margin-top: 20px;
       background: white;
-      padding: 10px 11px 10px 18px;
+      .container-padding {
+        padding: 0 11px 10px 18px;
+      }
       &__title {
         padding-bottom: 1rem;
         align-content: center;
@@ -1005,15 +1033,14 @@ export default {
         font-size: 1.5rem;
         color: @greyfont;
         button {
-          color: @red;
-          border: 2px solid @red;
+          color: @m-yellow;
+          border: 2px solid @m-yellow;
           border-radius: 5px;
           padding: .1rem .3rem;
           background: transparent;
           font-weight: 600;
         }
       }
-
       &__table {
         padding: .5rem 0;
         border: 1px solid #dedede;
@@ -1047,29 +1074,27 @@ export default {
           }
         }
       }
-
       &__money {
         text-align: center;
         color: @greyfont;
         padding-top: 10px;
         font-size: 1.5rem;
         span {
-          color: @red;
+          color: @m-yellow;
         }
       }
     }
-
     .div-btn-sub {
-      padding: 2rem 0rem;
+      padding: 1rem 0rem;
       text-align: center;
       overflow: hidden;
       .btn-sub {
         color: white;
         border: none;
         padding: 1rem 0;
-        font-size: 1.8rem;
-        width: 92%;
-        background-color: @red;
+        font-size: 1.6rem;
+        width: 100%;
+        background-color: @m-yellow;
         border: none;
         border-radius: 5px;
       }

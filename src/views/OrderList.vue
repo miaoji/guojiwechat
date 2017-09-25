@@ -16,10 +16,12 @@
           ref="my_scroller_orderlist"
           class="orderlist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="orderlist-cell-detail" v-for="item in data" :key="item.id">
+          <div class="orderlist-cell-detail" v-for="item in orderlist[show]" :key="item.id">
             <mj-orderitem :item="item"></mj-orderitem>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
+          <div class="scroller-fixed">
+          </div>
         </scroller>
       </div>
     </div>
@@ -46,15 +48,22 @@ export default {
   },
   data () {
     return {
-      data: [],
-      show: 'waitpay'
+      orderlist: {
+        'all': [],
+        'waitpay': [],
+        'waitdelivery': [],
+        'done': []
+      },
+      show: 'all'
     }
   },
   methods: {
     async getOrderList (status) {
       try {
+        const show = this.show
         const orderlist = await query({
-          status
+          status,
+          wxUserId: storage({key: 'userId'})
         })
         if (orderlist.code !== 200) {
           return this.$vux.toast.show({
@@ -68,19 +77,17 @@ export default {
           // status为2时要查询order为3:中通完成和4:fx完成
           try {
             const ZTOList = await query({
-              status: 3
+              status: 3,
+              wxUserId: storage({key: 'userId'})
             })
-            const FXList = await await query({
-              status: 4
-            })
-            let dataMerge = ZTOList.obj.concat(FXList.obj)
+            let dataMerge = ZTOList.obj
             data = data.concat(dataMerge)
           } catch (e) {
             console.error(e)
           }
         }
-        this.data = data
-        return
+        console.log('show', show)
+        this.orderlist[show] = data
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({
@@ -126,26 +133,19 @@ export default {
         }
       })
     },
-    showOffice ({province = '', city = '', district = '', descript = ''}) {
-      const content = province + city + district + descript
-      this.showToast({
-        text: content,
-        type: 'text'
-      })
-    },
     refresh (done) {
       const _this = this
-      const starte = localStorage.getItem('mj_order_type')
+      const status = localStorage.getItem('mj_order_type') || ''
       setTimeout(async function () {
-        _this.getOrderList(starte)
+        _this.getOrderList(status)
         done(true)
       }, 1200)
     },
     infinite (done) {
       const _this = this
-      const starte = localStorage.getItem('mj_order_type')
+      const status = localStorage.getItem('mj_order_type') || ''
       setTimeout(async function () {
-        _this.getOrderList(starte)
+        _this.getOrderList(status)
         done(true)
       }, 1500)
     }
@@ -166,20 +166,20 @@ export default {
           this.getOrderList(2)
           break
         case 'done':
-          localStorage.setItem('mj_order_type', 0)
-          this.getOrderList(0)
-          break
-        case 'cancle':
-          localStorage.setItem('mj_order_type', 5)
-          this.getOrderList(5)
-          break
-        case 'unusual':
           localStorage.setItem('mj_order_type', 4)
           this.getOrderList(4)
           break
-        default:
+        case 'cancle':
           localStorage.setItem('mj_order_type', 6)
           this.getOrderList(6)
+          break
+        case 'unusual':
+          localStorage.setItem('mj_order_type', 5)
+          this.getOrderList(5)
+          break
+        default:
+          localStorage.setItem('mj_order_type', '')
+          this.getOrderList()
       }
     }
   }
@@ -249,5 +249,8 @@ export default {
     padding: 0 0;
     padding-top: 44px;
   }
+}
+.scroller-fixed {
+  height: 6rem;
 }
 </style>

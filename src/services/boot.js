@@ -12,3 +12,31 @@ export async function query (params) {
     auth: true
   })
 }
+
+export async function show (params) {
+  return request({
+    url: bootApi.show,
+    method: 'get',
+    data: params,
+    auth: true
+  })
+}
+
+export async function getLast (params) {
+  return request({
+    url: bootApi.getLast,
+    method: 'get',
+    data: params,
+    auth: true
+  })
+}
+
+export async function getByOrderNo (params) {
+  return request({
+    url: bootApi.getByOrderNo,
+    method: 'get',
+    data: params,
+    auth: true
+  })
+}
+

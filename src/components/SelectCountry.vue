@@ -314,10 +314,8 @@ export default {
     padding: 0;
     position: relative;
     min-height: 100vh;
-    background-image: url('../assets/images/global-bg-new.jpg');
     background-size: 100% auto;
     background-repeat: no-repeat;
-    background-color: #0666C1;
     .fix-box {
       padding-top: .6rem;
       position: fixed;
@@ -337,7 +335,7 @@ export default {
         &-right {
           position: absolute;
           top: .7rem;
-          right: 1rem;
+          right: 3rem;
           font-size: 1.5rem;
           color: #fff;
         }
@@ -349,9 +347,9 @@ export default {
       width: 100vw;
       .nation-input {
         padding-left: .5rem;
-        width: 93vw;
-        padding: 1rem 0 0 1rem; 
-        margin: 1rem auto;
+        width: 92vw;
+        padding: 1rem 0 0 1rem;
+        margin-top: 1.5rem;
         margin-bottom: 1rem;
         border-radius: 8px;
         background: #fff;

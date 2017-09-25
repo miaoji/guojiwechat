@@ -47,15 +47,8 @@ export default {
     ...mapActions([
       'cancleSend'
     ]),
-    showToast (data) {
-      this.$vux.toast.show({
-        text: data.text || '出错啦',
-        type: data.type || 'warn',
-        width: data.width || '20rem'
-      })
-    },
     goPath (item) {
-      const id = item.id
+      const id = item.ID
       this.$router.push({path: '/orderdetail', query: {id}})
     },
     async cancle (item) {
@@ -67,8 +60,9 @@ export default {
         async onConfirm () {
           const res = await _this.cancleSend({
             id: item.id,
-            type: 5})
-          _this.showToast(res)
+            type: 5
+          })
+          _this.$vux.toast.show(res)
         }
       })
     }
@@ -115,9 +109,9 @@ export default {
   .senditem-box {
     .flex;
     .border-bottom-grey;
+    .item-padding;
     background: white;
     text-align: justify;
-    padding: .5rem 0.8rem;
   }
   &-detail {
     .senditem-box;

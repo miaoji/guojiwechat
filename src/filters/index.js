@@ -240,6 +240,7 @@ export const paytype = function (key) {
 export const orderstatus = function (val) {
   // 状态 1待付款，2付款完成，3国内完成，4国外完成，5异常订单，6取消订单
   const ordersta = {
+    0: '待付款',
     1: '待付款',
     2: '待收货',
     3: '待收货',

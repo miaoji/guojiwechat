@@ -10,6 +10,11 @@
       }
     }
   }
+  .isFilled {
+    .weui-cell__ft {
+      color: #333;
+    }
+  }
 }
 
 .send-weight-dialog {
@@ -24,7 +29,7 @@
       margin: 1rem;
       font-size: 1.8rem;
       width: 30%;
-      background-color: #eb1d21;
+      background-color: @m-yellow;
       border: none;
       border-radius: 5px;
     }
@@ -125,15 +130,15 @@
       &--cancle {
         background: transparent;
         margin-right: 4%;
-        color: @red;
-        border: 1px solid @red;
+        color: @m-yellow;
+        border: 1px solid @m-yellow;
         border-radius: 5px;
       }
       &--sure {
-        background: @red;
+        background: @m-yellow;
         margin-right: 1rem;
         color: white;
-        border: 1px solid @red;
+        border: 1px solid @m-yellow;
         border-radius: 5px;
       }
     }

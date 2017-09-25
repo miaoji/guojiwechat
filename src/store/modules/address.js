@@ -18,6 +18,11 @@ export const getters = {
 
 // actions
 export const actions = {
+  /**
+   * [刷新地址数据]
+   * @param  {[type]} options.commit [description]
+   * @return {[type]}                [description]
+   */
   async changeAddress ({ commit }) {
     try {
       const userId = storage({
@@ -95,8 +100,17 @@ export const actions = {
       }
     }
   },
+  /**
+   * [更新地址]
+   * @param  {[type]} options.data     [description]
+   * @param  {Number} options.type     [description]
+   * @return {[type]}                  [description]
+   */
   async updateAddress ({dispatch}, {data, type = 1}) {
     try {
+      if (!data.wx_user_id) {
+        data.wx_user_id = storage({key: 'userId'})
+      }
       let service = type === 1 ? mailingAddrService.update : receiveAddrService.update
       const res = await service(data)
       if (res.code === 200) {
@@ -206,22 +220,6 @@ export const actions = {
         width: '20rem'
       }
     }
-  },
-  /**
-   * [寄件页面的选中地址检测，如果选中的被编辑或者删除，寄件页面选中的地址要进行相应改变]
-   * @param  {[type]} options.id          [description]
-   * @param  {[type]} options.addressType [description]
-   * @return {[type]}                     [description]
-   */
-  addressCheck ({ commit }, {id, addressType}) {
-    let params = {
-      key: addressType === 'send' ? 'send_sendaddress' : 'send_pickupaddress',
-      val: JSON.stringify({
-        id
-      }),
-      type: 'set'
-    }
-    storage(params)
   }
 }
 
