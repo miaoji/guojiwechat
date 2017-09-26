@@ -53,7 +53,7 @@ import { XInput, Selector } from 'vux'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'login',
+  name: 'bindphone',
   created () {
   },
   components: {
@@ -95,7 +95,6 @@ export default {
     context.strokeWidth = 1
     context.fillStyle = 'rgba(0,0,0,0.1)'
     let circleArr = []
-
     // 线条：开始xy坐标，结束xy坐标，线条透明度
     function Line (x, y, _x, _y, o) {
       this.beginX = x
@@ -243,7 +242,7 @@ export default {
       this.getting = true
       this.setTime()
       const res = await this.smsSend({
-        phone: this.mobile
+        mobile: this.mobile
       })
       this.$vux.toast.show(res)
       const mb = this.mobile
@@ -345,8 +344,8 @@ export default {
 
 .btn-get {
   .btn-normal;
-  color: @red;
-  border: 1px solid @red;
+  color: @m-yellow;
+  border: 1px solid @m-yellow;
   background: transparent
 }
 
@@ -363,7 +362,7 @@ export default {
   padding: 1rem;
   color: white;
   border: none;
-  background: @red;
+  background: @m-yellow;
 }
 
 .getcode {

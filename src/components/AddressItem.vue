@@ -167,6 +167,7 @@ export default {
   &-func {
     .flex;
     .item-padding;
+    height: 2.2rem;
     background: #fff;
     font-size: 1.2rem;
     justify-content: space-between;

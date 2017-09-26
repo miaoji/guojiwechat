@@ -224,10 +224,15 @@ export default {
         isPay: 1,
         payType: 0
       }
-      const wxPayRes = await wxUtil.pay({intParams, successParams})
-      this.showToast(wxPayRes)
-      if (wxPayRes.type === 'success') {
-        window.location.reload()
+      try {
+        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        this.$vux.toast.show(wxPayRes)
+        if (wxPayRes.type === 'success') {
+          window.location.reload()
+        }
+      } catch (e) {
+        console.error(e)
+        this.$vux.toast.show(e)
       }
     },
     async getLastBoot ({orderNo = ''}) {

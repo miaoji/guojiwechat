@@ -106,12 +106,12 @@ export default {
         money,
         orderNo,
         body: '国际快递包裹',
-        payType: 0
+        payType: 1
       }
       let successParams = {
         orderNo,
         closingPriceId: this.id,
-        isPay: 1,
+        paymentStatus: 1,
         payType: 1
       }
       try {

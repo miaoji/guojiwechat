@@ -29,10 +29,6 @@ export default {
     item: {
       type: Object,
       default: {}
-    },
-    readonly: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
@@ -159,6 +155,7 @@ export default {
   }
   &-edit {
     .senditem-box;
+    height: 2.2rem;
     &__time {
       font-size: 1.2rem;
     }

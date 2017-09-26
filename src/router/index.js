@@ -93,7 +93,7 @@ export default new Router({
     component: require('@/views/BootList'),
     meta: {
       intro: '补价记录',
-      requiresAuth: false
+      requiresAuth: true
     }
   }]
 })

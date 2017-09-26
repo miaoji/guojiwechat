@@ -13,11 +13,15 @@
         <scroller
           :on-refresh="refresh"
           :on-infinite="infinite"
+          :noDataText="scrollerNoDataText"
           ref="my_scroller_orderlist"
           class="orderlist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="orderlist-cell-detail" v-for="item in orderlist[show]" :key="item.id">
-            <mj-orderitem :item="item"></mj-orderitem>
+          <div class="orderlist-cell-detail" v-for="item in orderlist" :key="item.id" v-show="isShow(item.STATUS)">
+            <mj-orderitem 
+              :item="item"
+            >
+            </mj-orderitem>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
           <div class="scroller-fixed">
@@ -48,21 +52,16 @@ export default {
   },
   data () {
     return {
-      orderlist: {
-        'all': [],
-        'waitpay': [],
-        'waitdelivery': [],
-        'done': []
-      },
-      show: 'all'
+      orderlist: [],
+      showList: [],
+      show: 'all',
+      scrollerNoDataText: '没有更多数据啦~'
     }
   },
   methods: {
-    async getOrderList (status) {
+    async getOrderList () {
       try {
-        const show = this.show
         const orderlist = await query({
-          status,
           wxUserId: storage({key: 'userId'})
         })
         if (orderlist.code !== 200) {
@@ -73,21 +72,7 @@ export default {
           })
         }
         let data = orderlist.obj
-        if (Number(status) === 2) {
-          // status为2时要查询order为3:中通完成和4:fx完成
-          try {
-            const ZTOList = await query({
-              status: 3,
-              wxUserId: storage({key: 'userId'})
-            })
-            let dataMerge = ZTOList.obj
-            data = data.concat(dataMerge)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        console.log('show', show)
-        this.orderlist[show] = data
+        this.orderlist = data
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({
@@ -101,12 +86,15 @@ export default {
       window.localStorage.setItem('mj_senddetail_switch_type', type)
       this.show = type
     },
-    showToast (data) {
-      this.$vux.toast.show({
-        text: data.text || '出错啦',
-        type: data.type || 'warn',
-        width: '20rem'
-      })
+    isShow (status = 1) {
+      const showList = this.showList
+      if (showList.length === 0) {
+        return true
+      }
+      if (showList.indexOf(Number(status)) !== -1) {
+        return true
+      }
+      return false
     },
     async cancle (item) {
       const _this = this
@@ -129,23 +117,21 @@ export default {
             sum: item.sum,
             type: 5})
           _this.$vux.loading.hide()
-          _this.showToast(res)
+          _this.$vux.toast.show(res)
         }
       })
     },
     refresh (done) {
       const _this = this
-      const status = localStorage.getItem('mj_order_type') || ''
       setTimeout(async function () {
-        _this.getOrderList(status)
+        _this.getOrderList()
         done(true)
       }, 1200)
     },
     infinite (done) {
       const _this = this
-      const status = localStorage.getItem('mj_order_type') || ''
       setTimeout(async function () {
-        _this.getOrderList(status)
+        _this.getOrderList()
         done(true)
       }, 1500)
     }
@@ -155,23 +141,19 @@ export default {
       switch (val) {
         case 'all':
           localStorage.setItem('mj_order_type', '')
-          this.getOrderList()
+          this.showList = []
           break
         case 'waitpay':
           localStorage.setItem('mj_order_type', 1)
-          this.getOrderList(1)
+          this.showList = [1]
           break
         case 'waitdelivery':
           localStorage.setItem('mj_order_type', 2)
-          this.getOrderList(2)
+          this.showList = [2, 3]
           break
         case 'done':
           localStorage.setItem('mj_order_type', 4)
-          this.getOrderList(4)
-          break
-        case 'cancle':
-          localStorage.setItem('mj_order_type', 6)
-          this.getOrderList(6)
+          this.showList = [4]
           break
         case 'unusual':
           localStorage.setItem('mj_order_type', 5)
@@ -179,7 +161,7 @@ export default {
           break
         default:
           localStorage.setItem('mj_order_type', '')
-          this.getOrderList()
+          this.showList = []
       }
     }
   }
@@ -251,6 +233,6 @@ export default {
   }
 }
 .scroller-fixed {
-  height: 6rem;
+  height: 3rem;
 }
 </style>

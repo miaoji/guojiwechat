@@ -53,7 +53,7 @@ export const actions = {
           userId: user.id,
           mobile: user.mobile,
           headimgurl: user.headimgurl,
-          nickname: user.nickname
+          nickname: user.nickName
         })
         return {
           text: '获取用户信息成功',
@@ -113,10 +113,10 @@ export const actions = {
   /**
    * [发送短信]
    */
-  async smsSend ({commit}, {phone}) {
+  async smsSend ({commit}, {mobile}) {
     try {
       const res = await sendSms({
-        phone
+        mobile
       })
       if (res.code === 200 || res.code === 201) {
         commit(types.SET_SMSCODE, {smscode: res.obj})

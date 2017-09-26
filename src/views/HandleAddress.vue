@@ -2,7 +2,7 @@
   <div class="addaddress">
     <div class="addaddress-container" v-show="mainContainerShow">
       <group 
-        label-width="8rem"
+        label-width="10rem"
         label-align="left"
       >
         <x-input 
@@ -70,7 +70,7 @@
           :show-counter="false" 
           v-model="address" 
           :rows="1" 
-          :height="address.length + 22" 
+          :height="address.length + 22"
           required
           text-align="right"
         ></x-textarea>

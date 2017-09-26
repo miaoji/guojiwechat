@@ -113,12 +113,12 @@
           </selector>
           <x-textarea
             type="text"
-            title="备注" 
-            :max="50"
-            placeholder="请添加备注 (限50字)"
+            title="备注"
+            :max="120"
+            placeholder="请添加备注 (限120字)"
             :show-counter="false"
             v-model="remark"
-            :rows="1" 
+            :rows="1"
             :height="remark.length + 20"
             required
           >
@@ -291,6 +291,8 @@ export default {
       height: null,
       volume: null,
       volumeWeight: null,
+      minWeight: 0,
+      maxWeight: 20,
       // 体积比
       volumeScale: 5000,
       // 备注
@@ -362,12 +364,10 @@ export default {
     })
     sendInfo = JSON.parse(sendInfo)
     Object.assign(this, sendInfo)
-    // 5. 设置 serial number
-    this.serialnumber = 'MZ' + new Date().getTime()
-    // 6. 如果,目的地还未选择, 到此结束
+    // 5. 如果,目的地还未选择, 到此结束
     const pickupCountryId = this.pickupAddress['countryId']
     if (!pickupCountryId) return
-    // 7. 根据国家id获取包裹类型
+    // 6. 根据国家id获取包裹类型
     const packageTypeOption = await this.getPackageType({countryId: pickupCountryId})
     this.packageTypeOption = packageTypeOption || []
   },
@@ -378,14 +378,11 @@ export default {
       userid: 'getUserId'
     }),
     packageTypeSelectContrl () {
-      let readonly = false
       let placeholder = '选择包裹类型'
       if (!this.pickupAddress['countryId']) {
-        readonly = true
         placeholder = '请先选择收件地址'
       }
       return {
-        readonly,
         placeholder
       }
     },
@@ -521,37 +518,6 @@ export default {
       this.packageShow = false
     },
     /**
-     * [提交订单后发起微信支付]
-     * @param  {[type]} options.money        [description]
-     * @param  {[type]} options.serialnumber [description]
-     * @return {[type]}                      [description]
-     */
-    async wxPay ({money, orderNo, orderId}) {
-      let intParams = {
-        openid: storage({key: 'openid'}),
-        money: (money * 100),
-        orderNo,
-        body: '国际快递包裹',
-        payType: 0
-      }
-      let successParams = {
-        orderNo,
-        paymentStatus: 1,
-        payType: 0
-      }
-      const _this = this
-      try {
-        const wxPayRes = await wxUtil.pay({intParams, successParams})
-        this.$vux.toast.show(wxPayRes)
-        if (wxPayRes.type === 'success') {
-          _this.$router.push({path: '/orderdetail', query: {id: orderId}})
-        }
-      } catch (err) {
-        console.error(err)
-        _this.$vux.toast.show(err)
-      }
-    },
-    /**
      * [submitSend 创建订单，成功后调用微信支付接口]
      * @return {[type]} [description]
      */
@@ -652,6 +618,37 @@ export default {
       }
     },
     /**
+     * [提交订单后发起微信支付]
+     * @param  {[type]} options.money        [description]
+     * @param  {[type]} options.serialnumber [description]
+     * @return {[type]}                      [description]
+     */
+    async wxPay ({money, orderNo, orderId}) {
+      let intParams = {
+        openid: storage({key: 'openid'}),
+        money: (money * 100),
+        orderNo,
+        body: '国际快递包裹',
+        payType: 0
+      }
+      let successParams = {
+        orderNo,
+        paymentStatus: 1,
+        payType: 0
+      }
+      const _this = this
+      try {
+        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        this.$vux.toast.show(wxPayRes)
+        if (wxPayRes.type === 'success') {
+          _this.$router.push({path: '/orderdetail', query: {id: orderId}})
+        }
+      } catch (err) {
+        console.error(err)
+        _this.$vux.toast.show(err)
+      }
+    },
+    /**
      * [下单成功后清空表单信息]
      * @return {[type]} [description]
      */
@@ -660,16 +657,16 @@ export default {
       this.remark = ''
       this.productType = null
       this.orderOptions = {}
-      this.isBack = false
+      this.isBack = 1
     },
     /**
      * [产品规格确定方法]
      * @return {[type]} [description]
      */
     volumeConfirm () {
-      if (Number(this.weight) > 20 || Number(this.weight) <= 0) {
+      if (Number(this.weight) > this.maxWeight || Number(this.weight) < this.minWeight) {
         this.$vux.toast.show({
-          text: '重量不能大于20kg不能为0',
+          text: `重量不能大于${this.maxWeight}kg不能小于${this.minWeight}kg`,
           width: '18rem',
           type: 'warn'
         })
@@ -744,13 +741,13 @@ export default {
           productTypeId: JSON.parse(this.productType)['id'],
           packageTypeId: JSON.parse(this.packageType)['id']
         })
-        if (price.success) {
-          let data = price.obj
-          this.priceId = data.priceId
-          this.advance = Number(data.finalPrice).toFixed(2)
-          return
-        }
         this.advance = '获取费用失败'
+        if (!price.success) return
+        if (price.code !== 200) return
+        let data = price.obj
+        this.priceId = data.priceId
+        this.advance = Number(data.finalPrice).toFixed(2)
+        return
       } catch (err) {
         console.error(err)
         this.advance = '获取费用失败'
@@ -798,24 +795,24 @@ export default {
       this.volume = this.length * this.height * this.width
     },
     volume () {
-      this.volumeWeight = Number(this.volume / this.volumeScale).toFixed(5)
+      this.volumeWeight = Number(this.volume / this.volumeScale)
     },
     async weight (val, oldval) {
       const _this = this
       if (!val) {
         return
       }
-      if (Number(val) > 20) {
+      if (Number(val) > this.maxWeight) {
         _this.$vux.toast.show({
-          text: '重量不能大于20kg',
+          text: `重量不能大于${this.maxWeight}kg`,
           width: '18rem',
           type: 'warn'
         })
         return
       }
-      if (Number(val) <= 0) {
+      if (Number(val) < this.minWeight) {
         _this.$vux.toast.show({
-          text: '重量不能小于等于0kg',
+          text: `重量不能小于等于${this.minWeight}kg`,
           width: '19rem',
           type: 'warn'
         })
@@ -827,6 +824,8 @@ export default {
       if (!val) return
       try {
         let packageType = JSON.parse(val)
+        this.minWeight = packageType['min_range'] || 0
+        this.maxWeight = packageType['max_range'] || 20
         const proRes = await productTypeService.showByPackage({
           packageTypeId: packageType['id']
         })
