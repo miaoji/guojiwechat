@@ -7,7 +7,7 @@
 
 <script>
 import { Loading } from 'vux'
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { storage, getConfByEnv } from '@/utils'
 
 // 微信公众号appid等配置
@@ -51,8 +51,8 @@ export default {
       await this.getUserInfoByOpenid({openid})
     } else {
       // 获取openid失败, 跳转到授权页面
-      let {page} = this.$route.query
-      const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_base&state=' + page + '#wechat_redirect'
+      let {page} = storage({})
+      const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_userinfo&state=' + page + '#wechat_redirect'
       window.location.href = url
       return
     }
@@ -67,9 +67,6 @@ export default {
   computed: {
     ...mapState({
       isLoading: state => state.isLoading
-    }),
-    ...mapGetters({
-      'openid': 'getOpenId'
     })
   },
   methods: {
@@ -100,22 +97,8 @@ export default {
           text: '登录成功',
           width: '16rem'
         })
-        let {page} = this.$route.query
-        const _this = this
-        switch (Number(page)) {
-          case 1:
-            _this.$router.push({path: '/pickup'})
-            break
-          case 2:
-            _this.$router.push({path: '/send'})
-            break
-          case 3:
-            _this.$router.push({path: '/usercenter'})
-            break
-          default:
-            _this.$router.push({path: '/usercenter'})
-            break
-        }
+        let path = storage({key: 'redirect_uri'}) || '/usercenter'
+        this.$router.push({path})
         return
       } else {
         storage({key: 'openid', type: 'remove'})
