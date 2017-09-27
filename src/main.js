@@ -34,6 +34,7 @@ Vue.component('get-position', GetPositionMsg)
 Vue.component('select-country', SelectCountry)
 
 router.beforeEach(function (to, from, next) {
+  // console.log('to', to)
   // 开发环境跳过验证登录码是否过期
   if (process.env.NODE_ENV === 'development') {
     return next()
@@ -59,7 +60,7 @@ router.beforeEach(function (to, from, next) {
         'openid'
       ]
     })
-    const redirectUri = to.path
+    const redirectUri = to.fullPath
     const {appid} = to.query
     storage({
       key: 'redirect_uri',

@@ -77,7 +77,7 @@ export default {
           width: '16rem'
         })
         let path = storage({key: 'redirect_uri'}) || '/usercenter'
-        this.$router.push({path})
+        this.$router.push(path)
         return
       } else {
         storage({key: 'openid', type: 'remove'})
