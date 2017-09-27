@@ -38,7 +38,6 @@ const store = new Vuex.Store({
       type: 'success',
       info: 'show'
     },
-    brand: [],
     page: 'usercenter'
   },
   actions: {

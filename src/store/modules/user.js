@@ -64,15 +64,6 @@ export const actions = {
       const data = res.data
       if (data.msg === '登陆成功') {
         let user = data.user
-        // 暂时去掉注册页面
-        // if (!user.mobile) {
-        //   localStorage.setItem('mj_token', data.token)
-        //   return {
-        //     text: '用户未绑定手机号，将跳转绑定页面',
-        //     width: '15rem',
-        //     type: 'text'
-        //   }
-        // }
         dispatch('setUserId', {userId: user.id})
         commit(types.SET_USERINFO, {token: data.token, mobile: user.mobile, headimgurl: user.headimgurl, nickname: user.nickname})
         return {

@@ -33,61 +33,47 @@ Vue.component('mj-orderitem', OrderItem)
 Vue.component('get-position', GetPositionMsg)
 Vue.component('select-country', SelectCountry)
 
-function SwitchfullPath (fullPath) {
-  let page = ''
-  switch (fullPath) {
-    case '/send':
-      page = 2
-      break
-    case '/usercenter':
-      page = 3
-      break
-    default:
-      page = 3
-      break
-  }
-  return page
-}
-
 router.beforeEach(function (to, from, next) {
+  // 开发环境跳过验证登录码是否过期
+  if (process.env.NODE_ENV === 'development') {
+    return next()
+  }
   // login auth
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (process.env.NODE_ENV !== 'development') {
-      // 生产环境验证登录码是否过期
-      const expire = storage({key: 'expire'}) || JSON.stringify({'expire': '0'})
-      if (!expire || JSON.parse(expire)['expire'] <= (new Date().getTime())) {
-        storage({
-          type: 'remove',
-          key: [
-            'init',
-            'token',
-            'nickname',
-            'mobile',
-            'userId',
-            'headimgurl',
-            'openid'
-          ]
-        })
-        const fullPath = to.fullPath
-        const page = SwitchfullPath(fullPath)
-        return next({
-          path: '/init',
-          query: { page }
-        })
-      }
-    }
-    // 时间戳未过期，进行下一步验证
     const openid = storage({key: 'openid'})
     const userid = storage({key: 'userId'})
     const token = storage({key: 'token'})
-    if (!openid || userid === '' || !userid || !token) {
-      const fullPath = to.fullPath
-      const page = SwitchfullPath(fullPath)
-      return next({
-        path: '/init',
-        query: { page }
-      })
+    const expire = storage({key: 'expire'}) || JSON.stringify({'expire': '0'})
+    const nowDate = new Date().getTime()
+    if (JSON.parse(expire)['expire'] >= nowDate && openid && userid && token) {
+      return next()
     }
+    storage({
+      type: 'remove',
+      key: [
+        'token',
+        'nickname',
+        'mobile',
+        'userId',
+        'headimgurl',
+        'openid'
+      ]
+    })
+    const redirectUri = to.path
+    const {appid} = to.query
+    storage({
+      key: 'redirect_uri',
+      val: redirectUri,
+      type: 'set'
+    })
+    storage({
+      key: 'appid',
+      val: appid || 'typeisappidis00000000',
+      type: 'set'
+    })
+    return next({
+      path: '/init'
+    })
   }
   return next()
 })
