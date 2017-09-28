@@ -45,22 +45,22 @@ router.beforeEach(function (to, from, next) {
     const token = storage({key: 'token'})
     const expire = storage({key: 'expire'}) || JSON.stringify({'expire': '0'})
     const nowDate = new Date().getTime()
+    // 如果token未过期，而且openid、userid、token等参数都存在，则直接进入页面
     if (JSON.parse(expire)['expire'] >= nowDate && openid && userid && token) {
       return next()
     }
     storage({
       type: 'remove',
       key: [
-        'init',
         'token',
-        'nickName',
+        'nickname',
         'mobile',
         'userId',
         'headimgurl',
         'openid'
       ]
     })
-    const redirectUri = to.path
+    const redirectUri = to.fullPath
     const {appid} = to.query
     storage({
       key: 'redirect_uri',
@@ -69,7 +69,7 @@ router.beforeEach(function (to, from, next) {
     })
     storage({
       key: 'appid',
-      val: appid,
+      val: appid || 'typeisappidis00000000',
       type: 'set'
     })
     return next({

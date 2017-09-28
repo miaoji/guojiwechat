@@ -32,7 +32,10 @@
       </div>
     </div>
     <div class="address-add" @click="goPath('/address/handle', {type: addressType, pagetype: 'add'})">
-      <p>新增地址</p>
+      <div class="address-add-content">
+        <img src="../assets/images/add_add.png" alt="新增地址">
+        <span>新增地址</span>
+      </div>
     </div>
   </div>
 </template>
@@ -144,16 +147,22 @@ export default {
   &-add {
     position: fixed;
     bottom: 0;
-    padding: .6rem 1.5rem;
-    padding-bottom: 1rem;
-    width: 90.4%;
-    p {
-      font-size: 1.6rem;
-      color: white;
-      background: @m-yellow;
-      border-radius: 5px;
+    width: 100%;
+    background: white;
+    &-content {
       border: none;
-      padding: 1rem 0;
+      padding: .8rem 0;
+      .flex;
+      justify-content: center;
+      img {
+        width: 3.3rem;
+        height: auto;
+      }
+      span {
+        padding-left: 1rem;
+        font-size: 1.6rem;
+        color: #666;
+      }
     }
   }
   .scroller-commen {

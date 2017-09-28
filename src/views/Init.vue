@@ -1,23 +1,18 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-    <loading v-model="isLoading"></loading>
+  <div id="init">
+    <h1>正在跳转。。。</h1>
   </div>
 </template>
 
 <script>
-import { Loading } from 'vux'
-import { mapState, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import { storage, getConfByEnv } from '@/utils'
-
 // 微信公众号appid等配置
 let conf = getConfByEnv()
 let appid = conf.appid
-let secret = conf.appsecret
 let redirectUri = conf.redirectUri
-
 export default {
-  name: 'app',
+  name: 'init',
   async created () {
     this.$vux.toast.show({
       type: 'text',
@@ -25,25 +20,6 @@ export default {
       time: '1500',
       text: '正在为您跳转，请稍候'
     })
-    const code = storage({key: 'code'})
-    if (code) {
-      // 通过code获取openid
-      const openidres = await this.setOpenid({appid, code, secret})
-      if (openidres.type !== 'success') {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '获取openid失败，请从公众号重新点击进入',
-          width: '20rem'
-        })
-        storage({key: 'code', type: 'remove'})
-        return this.$router.push({path: '/nouser'})
-      }
-      // 通过openid获取用户信息
-      let openid = openidres.openid
-      storage({key: 'code', type: 'remove'})
-      await this.getUserInfoByOpenid({openid})
-      return
-    }
     // 从localstorage中获取openid
     const openid = storage({key: 'openid'})
     if (openid) {
@@ -51,8 +27,10 @@ export default {
       await this.getUserInfoByOpenid({openid})
     } else {
       // 获取openid失败, 跳转到授权页面
-      let {page} = storage({})
-      const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_userinfo&state=' + page + '#wechat_redirect'
+      let state = storage({
+        key: 'appid'
+      })
+      const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_userinfo&state=' + state + '#wechat_redirect'
       window.location.href = url
       return
     }
@@ -61,20 +39,11 @@ export default {
     return {
     }
   },
-  components: {
-    Loading
-  },
-  computed: {
-    ...mapState({
-      isLoading: state => state.isLoading
-    })
-  },
   methods: {
     ...mapActions([
-      'setOpenid',
       'setUserInfo'
     ]),
-    getDate (val = 20) {
+    getDate (val = 30) {
       let time = new Date()
       const expireNew = {
         'now': new Date().getTime(),
@@ -90,15 +59,15 @@ export default {
         return
       } else if (userinfo.type === 'success') {
         // 获取用户信息成功, 根据page跳转页面
-        // 获取当前时间20分钟后时间戳, 并保存
-        this.getDate(20)
+        // 获取当前时间30分钟后时间戳, 并保存
+        this.getDate(30)
         this.$vux.toast.show({
           type: 'success',
           text: '登录成功',
           width: '16rem'
         })
         let path = storage({key: 'redirect_uri'}) || '/usercenter'
-        this.$router.push({path})
+        this.$router.push(path)
         return
       } else {
         storage({key: 'openid', type: 'remove'})

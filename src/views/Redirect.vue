@@ -5,23 +5,27 @@
 
 <script>
 import {storage} from '@/utils'
-
 export default {
   created () {
-    let {code, state} = this.$route.query
-    if (!code && !state) {
-      console.log('Redirect.vue: no code fail')
-      return
+    let {openid} = this.$route.query
+    if (!openid) {
+      this.$vux.toast.show({
+        type: 'text',
+        width: '20rem',
+        time: '1500',
+        text: '获取用户信息失败，请联系客服人员'
+      })
+      return this.$router.push({path: '/nouser'})
     }
-    // 删除code
+    // 删除openid
     storage({
-      key: 'code',
+      key: 'openid',
       type: 'remove'
     })
-    // 删除存入新的code
+    // 删除存入新的openid
     storage({
-      key: 'code',
-      val: code,
+      key: 'openid',
+      val: openid,
       type: 'set'
     })
     this.$router.push({path: '/init'})
