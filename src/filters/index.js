@@ -63,13 +63,16 @@ export const formatedatestamp = function (timpstamp) {
   let date = new Date(Number(timpstamp))
   const year = date.getFullYear()
   let month = date.getMonth() + 1
-  month = month > 10 ? month : '0' + month
+  month = month >= 10 ? month : '0' + month
   let day = date.getDate()
   day = day >= 10 ? day : '0' + day
-  let h = date.getHours() + ':'
-  let m = date.getMinutes() + ':'
+  let h = date.getHours()
+  h = h >= 10 ? h : '0' + h
+  let m = date.getMinutes()
+  m = m >= 10 ? m : '0' + m
   let s = date.getSeconds()
-  return year + '-' + month + '-' + day + ' ' + h + m + s
+  s = s >= 10 ? s : '0' + s
+  return year + '-' + month + '-' + day + ' ' + h + ':' + m + ':' + s
 }
 
 const BRAND_TYPE = {

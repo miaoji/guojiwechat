@@ -244,7 +244,7 @@
 
 <script>
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
@@ -397,6 +397,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'setOrderList'
+    ]),
     /**
      * [根据localStorage中数据，获取地址信息]
      * @param  {[type]} options.type [description]
@@ -598,6 +601,7 @@ export default {
         this.loading = false
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
+          this.setOrderList()
           this.wxPay({money: this.advance, orderNo: result.obj.orderNo, orderId: result.obj.id})
           this.clearForm()
         } else {

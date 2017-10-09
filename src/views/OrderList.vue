@@ -32,10 +32,8 @@
   </div>
 </template>
 <script>
-import { query } from '../services/orderInfo'
 import { storage } from '../utils'
-
-const localStorage = window.localStorage
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'senddetail',
@@ -50,29 +48,28 @@ export default {
   mounted () {
     window.document.title = '寄件列表'
   },
+  computed: {
+    ...mapGetters({
+      'orderlist': 'getOrderList'
+    })
+  },
   data () {
     return {
-      orderlist: [],
       showList: [],
       show: 'all',
       scrollerNoDataText: '没有更多数据啦~'
     }
   },
   methods: {
+    ...mapActions([
+      'setOrderList'
+    ]),
     async getOrderList () {
       try {
-        const orderlist = await query({
-          wxUserId: storage({key: 'userId'})
-        })
-        if (orderlist.code !== 200) {
-          return this.$vux.toast.show({
-            text: orderlist.mess || '获取寄件列表失败',
-            type: 'warn',
-            width: '18rem'
-          })
+        const orderlist = await this.setOrderList()
+        if (orderlist.type !== 'success') {
+          return this.$vux.toast.show(orderlist)
         }
-        let data = orderlist.obj
-        this.orderlist = data
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({
@@ -83,7 +80,11 @@ export default {
       }
     },
     changeShow (type) {
-      window.localStorage.setItem('mj_senddetail_switch_type', type)
+      storage({
+        key: 'senddetail_switch_type',
+        val: type,
+        type: 'set'
+      })
       this.show = type
     },
     isShow (status = 1) {
@@ -138,31 +139,39 @@ export default {
   },
   watch: {
     show (val, oldval) {
+      let storageVal = ''
+      let showList = []
       switch (val) {
         case 'all':
-          localStorage.setItem('mj_order_type', '')
-          this.showList = []
+          storageVal = ''
+          showList = []
           break
         case 'waitpay':
-          localStorage.setItem('mj_order_type', 1)
-          this.showList = [1]
+          storageVal = 1
+          showList = [1]
           break
         case 'waitdelivery':
-          localStorage.setItem('mj_order_type', 2)
-          this.showList = [2, 3]
+          storageVal = 2
+          showList = [2, 3]
           break
         case 'done':
-          localStorage.setItem('mj_order_type', 4)
-          this.showList = [4]
+          storageVal = 4
+          showList = [4]
           break
         case 'unusual':
-          localStorage.setItem('mj_order_type', 5)
-          this.getOrderList(5)
+          storageVal = 5
+          showList = [5]
           break
         default:
-          localStorage.setItem('mj_order_type', '')
-          this.showList = []
+          storageVal = ''
+          showList = []
       }
+      storage({
+        key: 'order_type',
+        val: storageVal,
+        type: 'set'
+      })
+      this.showList = showList
     }
   }
 }
