@@ -628,21 +628,23 @@ export default {
      * @return {[type]}                      [description]
      */
     async wxPay ({money, orderNo, orderId}) {
-      let intParams = {
+      const total = money * 100
+      let initParams = {
         openid: storage({key: 'openid'}),
-        money: (money * 100),
+        money: total,
         orderNo,
         body: '国际快递包裹',
         payType: 0
       }
       let successParams = {
         orderNo,
+        total,
         paymentStatus: 1,
         payType: 0
       }
       const _this = this
       try {
-        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
         if (wxPayRes.type === 'success') {
           _this.$router.push({path: '/orderdetail', query: {id: orderId}})

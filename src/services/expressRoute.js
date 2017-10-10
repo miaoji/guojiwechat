@@ -15,7 +15,7 @@ export async function getZTO (data) {
 
 export async function getKD100 (data) {
   return request({
-    url: expressRouteApi.getKD100,
+    url: expressRouteApi.kd100,
     method: 'get',
     auth: true,
     data

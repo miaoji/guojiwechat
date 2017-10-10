@@ -107,18 +107,7 @@ export default {
           this.$vux.loading.show({
             text: '正在取消'
           })
-          const res = await _this.cancleSend({
-            brand: item.brand,
-            describe: item.describe,
-            note: item.note,
-            office: item.officeId,
-            order: item.order,
-            receiptAddressId: item.receiptAddressId,
-            sendAddressId: item.sendAddressId,
-            sum: item.sum,
-            type: 5})
           _this.$vux.loading.hide()
-          _this.$vux.toast.show(res)
         }
       })
     },

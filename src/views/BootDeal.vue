@@ -101,7 +101,7 @@ export default {
     async submitBoot () {
       const money = this.bootData.priceSpread
       const orderNo = this.bootData.orderNo
-      let intParams = {
+      let initParams = {
         openid: storage({key: 'openid'}),
         money,
         orderNo,
@@ -110,12 +110,13 @@ export default {
       }
       let successParams = {
         orderNo,
+        total: money,
         closingPriceId: this.id,
         paymentStatus: 1,
         payType: 1
       }
       try {
-        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
         if (wxPayRes.type === 'success') {
           this.bootData.status = 2

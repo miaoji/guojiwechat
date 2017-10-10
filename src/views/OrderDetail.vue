@@ -102,12 +102,8 @@
               </div>
             </div>
             <div class="logisticsresult-content--part">
-              <p v-show="Number(part.Status) === 720">
-                {{'[' + part.OptCity + ']'}}快递已经抵达上海仓，正发往机场
-              </p>
-              <p  v-show="Number(part.Status) === 10">{{'[' + part.OptCity + ']'}}{{part.OptSiteName}}&nbsp;{{part.OptReason}}&nbsp;
-              </p>
-              <p>{{part.OptDate}}</p>
+              <p >{{part.context}}</p>
+              <p>{{part.time}}</p>
             </div>
           </div>
         </div>
@@ -120,7 +116,7 @@
 import { LoadMore } from 'vux'
 import { show } from '@/services/orderInfo'
 import { getLast as getLastBootByOrderNo } from '@/services/boot'
-import { getZTO, getKD100 } from '@/services/expressRoute'
+import { getKD100 } from '@/services/expressRoute'
 import { storage } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 
@@ -160,23 +156,27 @@ export default {
       })
       this.getBootStatusDone = true
       // 根据中通单号获取路由信息
-      const ZTONO = this.orderInfo.ZTONO || ''
-      if (!ZTONO) {
+      const cnNo = this.orderInfo.cnNo || ''
+      if (!cnNo) {
         this.getRouteDone = true
         this.route['msg'] = '暂未接入物流'
       } else {
-        this.getZTORoute(ZTONO)
-      }
-      // 根据国际单号获取路由信息
-      const FPXNO = this.orderInfo.FPXNO || ''
-      if (!FPXNO) {
-        console.log('暂未到国外')
-      } else {
-        this.getInterRoute({
-          company: this.orderInfo.nation_express_com,
-          num: FPXNO
+        this.getZTORoute({
+          company: this.orderInfo.kdCompanyCodeCn || 'zhongtong',
+          num: cnNo
         })
       }
+      // 根据国际单号获取路由信息
+      const intlNo = this.orderInfo.intlNo || ''
+      console.log('intlNo', intlNo)
+      if (!intlNo) {
+        console.log('暂未到国外')
+        return
+      }
+      this.getInterRoute({
+        company: this.orderInfo.kdCompanyCode,
+        num: intlNo
+      })
     } catch (err) {
       console.error(err)
       this.$vux.loading.hide()
@@ -204,7 +204,7 @@ export default {
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({
-          text: e.message,
+          text: '网络错误',
           type: 'warn',
           width: '18rem'
         })
@@ -212,20 +212,22 @@ export default {
     },
     async wxPay () {
       const orderNo = this.orderInfo.orderNo
-      let intParams = {
+      const money = this.orderInfo.totalFee
+      let initParams = {
         openid: storage({key: 'openid'}),
-        money: (this.orderInfo.totalFee),
+        money,
         orderNo,
         body: '国际快递包裹',
         payType: 0
       }
       let successParams = {
         orderNo,
+        total: money,
         isPay: 1,
         payType: 0
       }
       try {
-        const wxPayRes = await wxUtil.pay({intParams, successParams})
+        const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
         if (wxPayRes.type === 'success') {
           window.location.reload()
@@ -253,33 +255,35 @@ export default {
       this.$router.push({path: 'bootlist', query: {orderNo: this.orderInfo.orderNo}})
       return
     },
-    async getZTORoute (logisticsId) {
+    async getZTORoute ({company, num}) {
       try {
-        const orderdetail = await getZTO({
-          logisticsId
+        const CNRoute = await getKD100({
+          company,
+          num
         })
         this.getRouteDone = true
-        if (orderdetail.code !== 200) {
+        if (!CNRoute.success) {
           return this.$vux.toast.show({
-            text: orderdetail.mess,
+            text: CNRoute.message || '网络错误',
             type: 'warn',
             width: '18rem'
           })
         }
-        let data = orderdetail.obj
-        this.route['status'] = data.status
-        this.route['msg'] = data.msg
-        let traces = data.data.traces.reverse()
-        this.traces = []
-        for (let i = 0, len = traces.length; i < len; i++) {
-          if (Number(traces[i].Status) === 720 || Number(traces[i].Status) === 10) {
-            this.traces.push(traces[i])
+        this.route['status'] = CNRoute.success
+        this.route['msg'] = CNRoute.obj.message
+        let traces = CNRoute.obj.data
+        if (CNRoute.obj.state === '3') {
+          console.log('快递已经签收，需要修改信息')
+          const changePart = traces[0]
+          traces[0] = {
+            context: '[上海市] [上海]快递已抵达上海中转站',
+            time: changePart['time']
           }
         }
+        this.traces = traces
       } catch (e) {
-        console.error(e)
         return this.$vux.toast.show({
-          text: e.message,
+          text: '网络错误',
           type: 'warn',
           width: '18rem'
         })
@@ -291,12 +295,19 @@ export default {
           company,
           num
         })
+        if (!interTraces.success) {
+          return this.$vux.toast.show({
+            text: interTraces.message || '网络错误',
+            type: 'warn',
+            width: '18rem'
+          })
+        }
         this.interTracesRes = interTraces.obj.message
         this.interTraces = interTraces.obj.data
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({
-          text: e.message,
+          text: '网络错误',
           type: 'warn',
           width: '18rem'
         })

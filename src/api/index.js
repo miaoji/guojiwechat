@@ -140,7 +140,7 @@ export const sms = {
 // 物流信息
 export const expressRoute = {
   zto: url + 'wx/order/getOrderInfo',
-  kd100: url + 'wx/order/queryByCompany'
+  kd100: url + 'api/order/queryByCompany'
 }
 
 // 查询补价

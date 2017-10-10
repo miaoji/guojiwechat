@@ -38,10 +38,30 @@ export const init = function () {
   })
 }
 
-export const pay = function ({intParams, successParams}) {
+/**
+ * [pay 微信公众号付款]
+ * @param  {[type]} options.initParams    [description]
+ * @param  {[type]} options.successParams [description]
+ * @return {[type]}                       [description]
+ * example
+ * let initParams = {
+ *    openid: storage({key: 'openid'}),
+ *    money: total,
+ *    orderNo,
+ *    body: '国际快递包裹',
+ *    payType: 0
+ * }
+ * let successParams = {
+ *   orderNo,
+ *   total,
+ *   paymentStatus: 1,
+ *   payType: 0
+ * }
+ */
+export const pay = function ({initParams, successParams}) {
   return new Promise(async (resolve, reject) => {
     const wxpayCon = await wxService.getWxPayConfig({
-      ...intParams
+      ...initParams
     })
     if (!wxpayCon.success) {
       return reject({
