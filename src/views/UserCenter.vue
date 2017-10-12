@@ -6,9 +6,9 @@
       </div>
       <div class="usercenter-info__detail">
         <div class="usercenter-info__detail--image">
-          <img :src="userAvar" :alt="user.nickname || ''" @click="usershow = true">
+          <img :src="userAvar" alt="用户头像" @click="usershow = true">
         </div>
-        <p>{{user.nickname}}</p>
+        <p>{{nickname}}</p>
       </div>
     </div>
     <div class="usercenter-orderfunc">
@@ -24,7 +24,7 @@
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service">
           <p>客服热线:&nbsp;&nbsp;</p>
-          <p><a :href="'tel:' + hotline">{{hotline}}</a></p>
+          <p><a :href="telHotline">{{hotline}}</a></p>
         </div>
         <div @click="dialogshow = false">
           <span class="vux-close"></span>
@@ -37,9 +37,9 @@
         <div class="img-box" :style="'background-image:url(' + userAvar + ')'">
         </div>
         <div class="user-info">
-          <p>微信昵称: {{user.nickname}}</p>
-          <p>手机号: {{user.mobile || '未绑定手机号'}} 
-            <span v-show="!user.mobile">
+          <p>微信昵称: {{nickname}}</p>
+          <p>手机号: {{mobile || '未绑定手机号'}} 
+            <span v-show="!mobile">
               <router-link to="/bindphone">
                 点击此处绑定
               </router-link>
@@ -55,7 +55,6 @@
 </template>
 <script>
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
-import { mapGetters } from 'vuex'
 import { storage } from '../utils'
 import { hotline } from '../utils/config'
 import logoPng from '../assets/images/logo.png'
@@ -66,6 +65,8 @@ export default {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
     this.hotline = hotline
     this.headImgUrl = storage({key: 'headimgurl'}) || ''
+    this.nickname = storage({key: 'nickname'}) || '未知用户'
+    this.mobile = storage({key: 'mobile'})
     this.logoPng = logoPng
   },
   directives: {
@@ -75,9 +76,6 @@ export default {
     XDialog
   },
   computed: {
-    ...mapGetters({
-      user: 'getUserInfo'
-    }),
     userAvar () {
       return this.headImgUrl || this.logoPng
     },
@@ -93,6 +91,8 @@ export default {
       usershow: false,
       isShow: false,
       headImgUrl: '',
+      nickname: '',
+      mobile: '',
       orderfunc: [{
         src: require('../assets/images/min_ico_add.png'),
         name: '地址管理',
