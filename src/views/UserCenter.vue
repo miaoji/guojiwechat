@@ -24,7 +24,7 @@
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service">
           <p>客服热线:&nbsp;&nbsp;</p>
-          <p><a href="tel:021-60314051">{{hotline}}</a></p>
+          <p><a :href="'tel:' + hotline">{{hotline}}</a></p>
         </div>
         <div @click="dialogshow = false">
           <span class="vux-close"></span>
@@ -80,6 +80,9 @@ export default {
     }),
     userAvar () {
       return this.headImgUrl || this.logoPng
+    },
+    telHotline () {
+      return 'tel:' + this.hotline
     }
   },
   mounted () {

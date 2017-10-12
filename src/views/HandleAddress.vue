@@ -65,8 +65,8 @@
         <x-textarea 
           title="地址"
           type="text" 
-          :max="200"
-          placeholder="请详细到门牌号(限60字、必填)" 
+          :max="500"
+          placeholder="请详细到门牌号(必填)" 
           :show-counter="false" 
           v-model="address" 
           :rows="1" 
@@ -531,11 +531,11 @@ export default {
         data,
         type
       })
-      console.log('res', res)
       this.ajaxasync = false
       this.$vux.loading.hide()
       this.$vux.toast.show(res)
       if (res.type !== 'success') return
+      this.$router.go(-1)
     }
   },
   beforeDestroy () {

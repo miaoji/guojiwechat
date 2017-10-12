@@ -43,6 +43,18 @@
             </li>
           </ul>
         </div>
+        
+        <!-- 热门国家、地区 -->
+        <div class="selectcountry-container-city city-hot">
+          <div class="country-title">热门国家/地区</div>
+          <ul class="city-list">
+            <li v-for="item in hotNation">
+              <span class="city" @click.stop="onClickCity({name: item.country_cn})">
+                {{item.country_cn}}
+              </span>
+            </li>
+          </ul>
+        </div>
 
         <div class="selectcountry-container-city city-hot">
           <div class="country-title">所有国家/地区</div>
@@ -92,6 +104,7 @@ export default {
   data () {
     return {
       allNation: [],
+      hotNation: [],
       inputCountryName: '',
       inSearching: false,
       hotcity: [
@@ -117,7 +130,7 @@ export default {
       return false
     },
     inputPlaceHolder () {
-      return this.countryName
+      return this.countryName || '输入国家名搜索'
     }
   },
   methods: {
@@ -132,11 +145,36 @@ export default {
         this.$vux.loading.hide()
         if (res.code === 200) {
           let nations = res.obj
+          if (!nations) return
           // 当type为pickup时，过滤中国这一选项
           if (this.type === 'pickup') {
             nations = this.fliterChina(nations)
           }
           this.allNation = nations
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    /**
+     * [获取热门国家]
+     * @return {[type]} [description]
+     */
+    async getHotNation () {
+      this.$vux.loading.show()
+      try {
+        const res = await geographyService.queryCountry({
+          hot: 1
+        })
+        this.$vux.loading.hide()
+        if (res.code === 200) {
+          let nations = res.obj
+          if (!nations) return
+          // 当type为pickup时，过滤中国这一选项
+          if (this.type === 'pickup') {
+            nations = this.fliterChina(nations)
+          }
+          this.hotNation = nations
         }
       } catch (e) {
         console.error(e)
@@ -251,6 +289,9 @@ export default {
       if (!val) return
       if (this.allNation.length === 0) {
         this.getAllNation()
+      }
+      if (this.hotNation.length === 0) {
+        this.getHotNation()
       }
       // 输入框值清空
       this.inputCountryName = ''

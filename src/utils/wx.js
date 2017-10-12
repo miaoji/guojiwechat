@@ -1,5 +1,5 @@
 import * as wxService from '@/services/wx'
-import { getConfByEnv } from '@/utils'
+import { getConfByEnv, storage } from '@/utils'
 
 /**
  * [初始化wx jssdk]
@@ -72,6 +72,9 @@ export const pay = function ({initParams, successParams}) {
     }
     const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
     successParams['prepayId'] = prepayId
+    successParams['wxUserId'] = storage({
+      key: 'userId'
+    })
     window.wx.ready(function () {
       console.log('wx jssdk 初始化成功')
       window.wx.chooseWXPay({

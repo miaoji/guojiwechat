@@ -663,6 +663,7 @@ export default {
       this.remark = ''
       this.productType = null
       this.orderOptions = {}
+      this.advance = null
       this.isBack = 1
     },
     /**
@@ -670,7 +671,7 @@ export default {
      * @return {[type]} [description]
      */
     volumeConfirm () {
-      if (Number(this.weight) > this.maxWeight || Number(this.weight) < this.minWeight) {
+      if (Number(this.weight) > this.maxWeight || Number(this.weight) < this.minWeight || !this.weight) {
         this.$vux.toast.show({
           text: `重量不能大于${this.maxWeight}kg不能小于${this.minWeight}kg`,
           width: '18rem',
@@ -736,7 +737,7 @@ export default {
           return
         }
         const orderOptions = this.orderOptions
-        let weight = orderOptions.volume > orderOptions.weight ? orderOptions.volume : orderOptions.weight
+        let weight = orderOptions.volumeWeight > orderOptions.weight ? orderOptions.volumeWeight : orderOptions.weight
         if (!weight) {
           this.advance = '请先输入重量'
           return
@@ -765,7 +766,7 @@ export default {
       const _this = this
       if (val > 120) {
         _this.$vux.toast.show({
-          text: '长度不能大于1.2m',
+          text: '长度不能大于120cm',
           width: '18rem',
           type: 'warn'
         })
@@ -778,7 +779,7 @@ export default {
       const _this = this
       if (val > 120) {
         _this.$vux.toast.show({
-          text: '高度不能大于1.2m',
+          text: '高度不能大于120cm',
           width: '18rem',
           type: 'warn'
         })
@@ -791,7 +792,7 @@ export default {
       const _this = this
       if (val > 120) {
         _this.$vux.toast.show({
-          text: '宽度不能大于1.2m',
+          text: '宽度不能大于120cm',
           width: '18rem',
           type: 'warn'
         })

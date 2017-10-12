@@ -136,7 +136,10 @@ export default {
       payloading: false,
       getBootStatusDone: false,
       getRouteDone: false,
-      route: {},
+      route: {
+        status: false,
+        msg: '暂未接入物流'
+      },
       traces: {},
       interTracesRes: {},
       interTraces: []
@@ -159,7 +162,8 @@ export default {
       const cnNo = this.orderInfo.cnNo || ''
       if (!cnNo) {
         this.getRouteDone = true
-        this.route['msg'] = '暂未接入物流'
+        this.route['status'] = false
+        this.route['msg'] = '未接入国内物流'
       } else {
         this.getZTORoute({
           company: this.orderInfo.kdCompanyCodeCn || 'zhongtong',
@@ -177,6 +181,7 @@ export default {
         company: this.orderInfo.kdCompanyCode,
         num: intlNo
       })
+      this.route['status'] = true
     } catch (err) {
       console.error(err)
       this.$vux.loading.hide()

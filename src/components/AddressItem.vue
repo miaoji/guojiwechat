@@ -70,7 +70,7 @@ export default {
       } else {
         window.localStorage.setItem('mj_send_pickupaddress', JSON.stringify(item))
       }
-      this.$router.go(-1)
+      this.$router.push({path: '/send'})
     },
     changeChecked (id, checked, userid) {
       if (checked === 3) {
