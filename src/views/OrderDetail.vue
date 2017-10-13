@@ -229,6 +229,7 @@ export default {
         orderNo,
         total: money,
         isPay: 1,
+        paymentStatus: 1,
         payType: 0
       }
       try {
