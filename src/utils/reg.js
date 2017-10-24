@@ -6,7 +6,7 @@
  */
 export const checkMobile = function (num, type) {
   const regFor = /^\+?\d{1,6}-?\d{8,15}$/
-  const regCN = /^1(3|4|5|7|8|9|6)\d{9}$/
+  const regCN = /^1(3|4|5|6|7|8|9)\d{9}$/
   return regFor.test(num) || regCN.test(num)
 }
 
@@ -16,7 +16,8 @@ export const checkPostcode = function (num) {
   const regCN = /^[1-9]\d{5}$/g
   const regUSA = /\d{5}-\d{4}|\d{5}/
   const regFor = /^\w{0,5}-?\d{4,6}$/g
-  return regFor.test(num) || regCN.test(num) || regUSA.test(num)
+  const regComm = /^\w{0,8}$/g
+  return regFor.test(num) || regCN.test(num) || regUSA.test(num) || regComm.test(num)
 }
 
 export const checkSpechars = function (str) {

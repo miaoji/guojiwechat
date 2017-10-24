@@ -5,7 +5,7 @@
         label-width="10rem"
         label-align="left"
       >
-        <x-input 
+        <x-input
           title="联系人"
           type="text"
           v-model="name"

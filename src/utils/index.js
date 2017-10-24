@@ -122,7 +122,7 @@ const storage = function ({key = '', val = '', prefix = true, type = 'get'}) {
       break
     case 'remove':
       if (Array.isArray(key)) {
-        for (let i, len = key.length; i < len; i++) {
+        for (let i = 0, len = key.length; i < len; i++) {
           let removeKey = localPrefix + key[i]
           localStorage.removeItem(removeKey)
         }

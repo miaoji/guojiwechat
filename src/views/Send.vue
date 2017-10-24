@@ -370,6 +370,13 @@ export default {
     // 6. 根据国家id获取包裹类型
     const packageTypeOption = await this.getPackageType({countryId: pickupCountryId})
     this.packageTypeOption = packageTypeOption || []
+    // 7. 如果国家变化则清空已选好的包裹类型和产品类型配置和产品类型
+    const oldpickupCountryId = sendInfo['pickupCountryId']
+    if (oldpickupCountryId !== pickupCountryId) {
+      this.packageType = null
+      this.productType = null
+      this.productTypeOption = []
+    }
   },
   computed: {
     ...mapGetters({
@@ -844,6 +851,8 @@ export default {
             }
             return item
           })
+        } else {
+          this.productTypeOption = []
         }
       } catch (e) {
         console.error(e)
@@ -856,6 +865,7 @@ export default {
     // 离开页面时在localStorage中保存产品规格，包裹信息和备注信息
     const sendInfo = {
       orderOptions: this.orderOptions,
+      pickupCountryId: this.pickupAddress['countryId'] || 0,
       remark: this.remark,
       packageTable: this.packageTable,
       packageType: this.packageType,
