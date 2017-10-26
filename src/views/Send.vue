@@ -148,9 +148,7 @@
         <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__title">
-            <div>
-              包裹报关
-            </div>
+            <div> 包裹报关<span class="question_icon"><img src="../assets/images/question.png"></span></div>
             <div @click="packageShow = true">
               <button type="" >添加包裹</button>
             </div>
@@ -225,7 +223,7 @@
           </div>
         </div>
         <p class="dialog-tips">
-          请准确填写重量或体积，以免耽误货物妥投
+          请准确填写重量与体积，若复重出现差异，可能会发生补价差
         </p>
         <div class="dialog-confirm-btn">
           <button type="" @click.stop="volumeConfirm">确定</button>
@@ -920,7 +918,18 @@ export default {
     }
   }
 }
-
+.question_icon{
+  width: 1.5rem;
+  height: 1.5rem;
+  position: relative;
+  top: 4px;
+  left: 4px;
+  overflow: hidden; 
+  img{
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
 .bgblack {
   background-color: #333;
 }
