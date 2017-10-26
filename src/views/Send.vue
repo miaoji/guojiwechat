@@ -75,7 +75,7 @@
       <!-- 订单配置选择 -->
       <div class="send-container-select" >
         <group label-width="6rem" label-align="left">
-          <selector 
+          <selector
             direction="rtl" 
             v-model="packageType" 
             :placeholder="packageTypeSelectContrl['placeholder']"
@@ -102,6 +102,22 @@
             :value="showProductSpecs"
             is-link>
           </cell>
+          <selector 
+            direction="rtl"
+            v-model="isOffer"
+            placeholder="是否保价"
+            title="是否保价"
+            name="isoffer"
+            :options="isBackOption"
+          >
+          </selector>
+          <x-input
+            title="保价费用"
+            type="number"
+            v-model="offer"
+            placeholder="请填写您的物品的实际重量"
+          >
+          </x-input>
           <selector 
             direction="rtl"
             v-model="isBack"
@@ -304,6 +320,17 @@ export default {
       // 产品类型
       productType: undefined,
       productTypeOption: [],
+      // 保价
+      isOffer: 1,
+      offer: 0,
+      // 1 不保价 2 保价
+      isOfferOption: [{
+        key: 1,
+        value: '否'
+      }, {
+        key: 2,
+        value: '是'
+      }],
       isBack: 1,
       // 1 不退件 2 退件
       isBackOption: [{
@@ -885,6 +912,14 @@ export default {
 @import '../assets/styles/colors.less';
 @import '../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
+
+:global {
+  .send {
+    .weui-input {
+      text-align: right;
+    }
+  }
+}
 
 .bgblack {
   background-color: #333;
