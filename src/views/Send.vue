@@ -115,9 +115,10 @@
           </selector>
           <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
           <x-input
-            title="保价金额(元)"
+            title="保价金额"
             v-model="offer"
             v-show='isofferShow'
+            :max="6"
             placeholder="请填写您的物品的保价金额"
             @on-change='offerChange'
           >
@@ -610,12 +611,10 @@ export default {
      * @return {[type]} [description]
      */
     async submitOrderInfo () {
-      console.log('isoffer', this.isOffer)
-      console.log('offer', this.offer)
       try {
-        if (this.offer > 200000 && this.isOffer === 1) {
+        if ((Number(this.offer) > 200000) && this.isOffer === 1) {
           this.$vux.toast.show({
-            text: '报价金额不能大于20万元！',
+            text: '保价金额不能大于20万元！',
             width: '18rem',
             type: 'warn'
           })
@@ -656,7 +655,6 @@ export default {
           })
           return
         }
-        console.log('pickupAddress', this.pickupAddress)
         if (!this.pickupAddress['id']) {
           this.$vux.toast.show({
             text: '请选择收件地址',
@@ -680,8 +678,6 @@ export default {
         })
         const orderItems = JSON.stringify(this.packageTable)
         const orderOptions = this.orderOptions
-        console.log('orderOptions', orderOptions)
-        // return
         const result = await orderInfoService.save({
           ...orderOptions,
           wxUserId: storage({key: 'userId'}),
@@ -737,7 +733,6 @@ export default {
      * @return {[type]}                      [description]
      */
     async wxPay ({money, orderNo, orderId}) {
-      console.log('money', money)
       const total = money * 100
       let initParams = {
         openid: storage({key: 'openid'}),
@@ -841,8 +836,7 @@ export default {
     },
     // 在输入报价金额的时候查询订单金额
     offerChange (val) {
-      console.log('aaa', val)
-      if (val > 200000 || val === 200000) {
+      if (Number(val) > 200000 || Number(val) === 200000) {
         this.offer = 200000
       }
       this.getPrice()
@@ -901,9 +895,6 @@ export default {
         this.insuredPrice = 0
       } else {
         this.insuredPrice = val * 0.005
-      }
-      if (val > '200000') {
-        this.offer = 200000
       }
     },
     length (val, oldval) {
