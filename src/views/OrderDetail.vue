@@ -50,6 +50,20 @@
           </span>
         </div>
         <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">保价金额</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">
+            <span class="money">{{orderInfo.insuredAmount}}</span>元
+          </span>
+        </div>
+        <div class="orderdetail-detail-box">
+          <span class="orderdetail-detail-box__title">保费</span>
+          <span class="orderdetail-detail-box__yin">:</span>
+          <span class="orderdetail-detail-box__content">
+            <span class="money">{{orderInfo.insuredPrice}}</span>元
+          </span>
+        </div>
+        <div class="orderdetail-detail-box">
           <span class="orderdetail-detail-box__title">待补价</span>
           <span class="orderdetail-detail-box__yin">:</span>
           <span class="orderdetail-detail-box__content">
