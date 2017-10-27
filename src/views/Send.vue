@@ -74,7 +74,7 @@
       </router-link>
       <!-- 订单配置选择 -->
       <div class="send-container-select" >
-        <group label-width="6rem" label-align="left">
+        <group label-width="8rem" label-align="left">
           <selector
             direction="rtl" 
             v-model="packageType" 
@@ -98,6 +98,7 @@
           <cell 
             @click.native="dialogshow = true"
             :class="{'office': true, 'isFilled': orderOptions.weight}"
+            type="number"
             title="产品规格"
             :value="showProductSpecs"
             is-link>
@@ -108,14 +109,17 @@
             placeholder="是否保价"
             title="是否保价"
             name="isoffer"
-            :options="isBackOption"
+            :options="isOfferOption"
+            @on-change='isofferShowChange'
           >
           </selector>
+          <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
           <x-input
-            title="保价费用"
-            type="number"
+            title="保价金额(元)"
             v-model="offer"
-            placeholder="请填写您的物品的实际重量"
+            v-show='isofferShow'
+            placeholder="请填写您的物品的保价金额"
+            @on-change='offerChange'
           >
           </x-input>
           <selector 
@@ -127,6 +131,7 @@
             :options="isBackOption"
           >
           </selector>
+          <div class="float-icon"><span class="float-icon-img" @click='districtPromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
           <x-textarea
             type="text"
             title="备注"
@@ -148,7 +153,7 @@
         <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__title">
-            <div> 包裹报关<span class="question_icon"><img src="../assets/images/question.png"></span></div>
+            <div> 包裹报关 <span class="question_icon" @click='packagePromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
             <div @click="packageShow = true">
               <button type="" >添加包裹</button>
             </div>
@@ -253,6 +258,42 @@
         </div>
       </x-dialog>
     </div>
+    <!-- 包裹报关提示信息弹出框 -->
+    <div v-transfer-dom>
+      <x-dialog v-model="packagePromptInfoShow" class="send-package-dialog">
+        <h1>包裹报关</h1>
+        <div class="package-close" @click="packagePromptInfoShow = false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="package-prompt-info">
+          此栏内容用于清关使用，若不填，清关另需其他材料我们会电话联系您。
+        </div>
+      </x-dialog>
+    </div>
+    <!-- 退件提示信息弹出框 -->
+    <div v-transfer-dom>
+      <x-dialog v-model="districtPromptInfoShow" class="send-package-dialog">
+        <h1>退件说明</h1>
+        <div class="package-close" @click="districtPromptInfoShow = false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="package-prompt-info">
+          若快递妥投出现问题，我们会逆向返还给寄件人，逆向物流费用将由寄件人承担。
+        </div>
+      </x-dialog>
+    </div>
+    <!-- 保价提示信息弹出框 -->
+    <div v-transfer-dom>
+      <x-dialog v-model="isofferPromptInfoShow" class="send-package-dialog">
+        <h1>保价说明</h1>
+        <div class="package-close" @click="isofferPromptInfoShow = false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="package-prompt-info">
+          此项服务以自愿为原则。寄件人选择此项服务时，应确定保价金额与每个邮件内件实际价值一致，每个邮件保价金额最高限额为二十万元人民币，保价费按申报的保价金额的0.5%收取，每件最低收取1.00元人民币。未按规定交纳保价费的快件，不属于保价快件。
+        </div>
+      </x-dialog>
+    </div>
   </div>
 </template>
 
@@ -312,6 +353,14 @@ export default {
       // 备注
       remark: '',
       packageShow: false,
+      // 包裹报关提示信息
+      packagePromptInfoShow: false,
+      // 退件提示信息
+      districtPromptInfoShow: false,
+      // 保价提示信息
+      isofferPromptInfoShow: false,
+      // 保价金额输入框是否显示
+      isofferShow: false,
       // 包裹类型
       packageType: undefined,
       packageTypeOption: [],
@@ -319,14 +368,18 @@ export default {
       productType: undefined,
       productTypeOption: [],
       // 保价
-      isOffer: 1,
+      // 0 不保价 1 保价
+      isOffer: 0,
+      // 报价信息
       offer: 0,
-      // 1 不保价 2 保价
+      // 保费
+      insuredPrice: 0,
+      // 0 不保价 1 保价
       isOfferOption: [{
-        key: 1,
+        key: 0,
         value: '否'
       }, {
-        key: 2,
+        key: 1,
         value: '是'
       }],
       isBack: 1,
@@ -557,7 +610,25 @@ export default {
      * @return {[type]} [description]
      */
     async submitOrderInfo () {
+      console.log('isoffer', this.isOffer)
+      console.log('offer', this.offer)
       try {
+        if (this.offer > 200000 && this.isOffer === 1) {
+          this.$vux.toast.show({
+            text: '报价金额不能大于20万元！',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
+        if (this.offer === null && this.isOffer === 1 || this.offer === '0' && this.isOffer === 1) {
+          this.$vux.toast.show({
+            text: '请输入您的保价金额！',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
         if (this.loading) return
         // 包裹长度要在小于3，可以为空
         if (!(this.packageTable.length <= 3)) {
@@ -585,6 +656,7 @@ export default {
           })
           return
         }
+        console.log('pickupAddress', this.pickupAddress)
         if (!this.pickupAddress['id']) {
           this.$vux.toast.show({
             text: '请选择收件地址',
@@ -608,12 +680,17 @@ export default {
         })
         const orderItems = JSON.stringify(this.packageTable)
         const orderOptions = this.orderOptions
+        console.log('orderOptions', orderOptions)
+        // return
         const result = await orderInfoService.save({
           ...orderOptions,
           wxUserId: storage({key: 'userId'}),
           mailingAddrId: this.sendAddress['id'],
           receiveAddrId: this.pickupAddress['id'],
           returnGood: this.isBack,
+          insured: this.isOffer,
+          insuredAmount: this.offer ? this.offer : 0,
+          insuredPrice: this.insuredPrice,
           priceId: this.priceId,
           totalFee: advance * 100,
           remark: this.remark,
@@ -660,6 +737,7 @@ export default {
      * @return {[type]}                      [description]
      */
     async wxPay ({money, orderNo, orderId}) {
+      console.log('money', money)
       const total = money * 100
       let initParams = {
         openid: storage({key: 'openid'}),
@@ -751,6 +829,25 @@ export default {
       this.getPrice()
     },
     /**
+     * [保价金额输入按钮显示触发方法]
+     */
+    isofferShowChange (val) {
+      if (val === 1) {
+        this.isofferShow = true
+      } else {
+        this.isofferShow = false
+        this.offer = null
+      }
+    },
+    // 在输入报价金额的时候查询订单金额
+    offerChange (val) {
+      console.log('aaa', val)
+      if (val > 200000 || val === 200000) {
+        this.offer = 200000
+      }
+      this.getPrice()
+    },
+    /**
      * [getPrice 获取预付费用]
      * @return {[type]} [description]
      */
@@ -785,7 +882,12 @@ export default {
         if (price.code !== 200) return
         let data = price.obj
         this.priceId = data.priceId
+        // console.log('data.finalPrice', data.finalPrice)
+        // 将通过后台计算的价格加上本地的保价
+        data.finalPrice = Number(data.finalPrice) + Number(this.insuredPrice)
         this.advance = Number(data.finalPrice).toFixed(2)
+        // console.log('通过接口查询到的价格', this.advance)
+        // this.advance = this.advance + this.insuredPrice
         return
       } catch (err) {
         console.error(err)
@@ -794,6 +896,16 @@ export default {
     }
   },
   watch: {
+    offer (val, oldval) {
+      if (val === null) {
+        this.insuredPrice = 0
+      } else {
+        this.insuredPrice = val * 0.005
+      }
+      if (val > '200000') {
+        this.offer = 200000
+      }
+    },
     length (val, oldval) {
       const _this = this
       if (val > 120) {
@@ -918,18 +1030,7 @@ export default {
     }
   }
 }
-.question_icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  position: relative;
-  top: 4px;
-  left: 4px;
-  overflow: hidden; 
-  img{
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-}
+
 .bgblack {
   background-color: #333;
 }
@@ -938,6 +1039,28 @@ export default {
   background-color: @red;
 }
 
+.package-prompt-info {
+  font-size: 1.5rem;
+  color: #999;
+  padding: 20px;
+  text-align: left;
+}
+
+.float-icon{
+  height: 0px;
+  position: relative;
+  &-img{
+    position: absolute;
+    width: 1.5rem;
+    height: 1.5rem;
+    top: -32px;
+    left: 76px;
+    img {
+      width: inherit;
+      height: inherit;
+    }
+  }
+}
 .send-icon {
   width: 3rem;
 }
@@ -1092,6 +1215,20 @@ export default {
         display: flex;
         font-size: 1.5rem;
         color: @greyfont;
+        div {
+          .question_icon{
+            width: 1.5rem;
+            height: 1.5rem;
+            position: relative;
+            top: 4px;
+            left: 4px;
+            overflow: hidden; 
+            img{
+              width: 1.5rem;
+              height: 1.5rem;
+            }
+          }
+        }
         button {
           color: @m-yellow;
           border: 2px solid @m-yellow;
