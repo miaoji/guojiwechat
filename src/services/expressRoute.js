@@ -14,10 +14,11 @@ export async function getZTO (data) {
 }
 
 export async function getKD100 (data) {
+  const newdata = {...data, source: 'php'}
   return request({
     url: expressRouteApi.kd100,
     method: 'get',
     auth: true,
-    data
+    data: newdata
   })
 }

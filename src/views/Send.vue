@@ -833,6 +833,7 @@ export default {
         this.isofferShow = false
         this.offer = null
       }
+      this.getPrice()
     },
     // 在输入报价金额的时候查询订单金额
     offerChange (val) {
@@ -878,6 +879,12 @@ export default {
         this.priceId = data.priceId
         // console.log('data.finalPrice', data.finalPrice)
         // 将通过后台计算的价格加上本地的保价
+        // 判断如果点击了报价，但是没有输入报价金额，默认保价金额为1元
+        if (this.isOffer === 1 && this.insuredPrice < 1) {
+          this.insuredPrice = 1
+        } else if (this.isOffer === 0) {
+          this.insuredPrice = 0
+        }
         data.finalPrice = Number(data.finalPrice) + Number(this.insuredPrice)
         this.advance = Number(data.finalPrice).toFixed(2)
         // console.log('通过接口查询到的价格', this.advance)
