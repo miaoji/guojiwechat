@@ -35,6 +35,7 @@
         <x-input 
           title="省份" 
           v-show="type === 1" 
+          v-if="country['name']==='中国'?true:false"
           @click.native="getPosition(2)"
           disabled
           placeholder="请选择省份" 
@@ -45,6 +46,7 @@
         <x-input 
           title="市级" 
           v-show="type === 1" 
+          v-if="country['name']==='中国'?true:false"
           @click.native="getPosition(3)" 
           disabled 
           placeholder="请选择市级" 
@@ -55,6 +57,7 @@
         <x-input 
           title="县区" 
           v-show="type === 1" 
+          v-if="country['name']==='中国'?true:false"
           @click.native="getPosition(4)" 
           disabled 
           placeholder="请选择县区" 
@@ -397,15 +400,37 @@ export default {
       this.selectCountryShow = false
     },
     onCountryConfirm (val) {
-      let oldName = this.country['name']
+      console.log('valwinnder', val)
+      // 之前的版本
+      // let oldName = this.country['name']
+      // if (val['name'] !== oldName) {
+      //   this.country = val
+      //   this.provincedataShow = ''
+      //   this.provinceId = 0
+      //   this.citydataShow = ''
+      //   this.cityId = 0
+      //   this.countydataShow = ''
+      //   this.countyId = 0
+      // }
+      // 修改后的版本
+      const oldName = this.country['name']
       if (val['name'] !== oldName) {
         this.country = val
-        this.provincedataShow = ''
-        this.provinceId = 0
-        this.citydataShow = ''
-        this.cityId = 0
-        this.countydataShow = ''
-        this.countyId = 0
+        this.province = {
+          id: 0,
+          name: '',
+          code: ''
+        }
+        this.city = {
+          id: 0,
+          name: '',
+          code: ''
+        }
+        this.county = {
+          id: 0,
+          name: '',
+          code: ''
+        }
       }
     },
     async saveAddress () {
