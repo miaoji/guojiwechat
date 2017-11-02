@@ -23,7 +23,6 @@ export async function show (data) {
 }
 
 export async function save (params) {
-  console.log('params', params)
   return request({
     url: orderInfoApi.save,
     method: 'post',

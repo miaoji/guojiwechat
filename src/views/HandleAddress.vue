@@ -67,13 +67,13 @@
         ></x-input>
         <x-textarea 
           title="地址"
-          type="text" 
-          :max="500"
-          placeholder="请详细到门牌号(必填)" 
-          :show-counter="false" 
-          v-model="address" 
-          :rows="1" 
+          type="text"
+          :max="800"
+          placeholder="         请详细到门牌号(必填)" 
+          :show-counter="false"
+          v-model="address"
           :height="address.length + 22"
+          :rows="1"
           required
           text-align="right"
         ></x-textarea>
@@ -90,11 +90,11 @@
           title="备注"
           type="text"
           :max="50"
-          placeholder="请添加备注 (限50字)" 
+          placeholder="         请添加备注 (限50字)" 
           :show-counter="false" 
           v-model="remark" 
           :rows="1" 
-          :height="22" 
+          :height="remark.length + 22" 
           required
         ></x-textarea>
         <x-switch 
@@ -131,9 +131,11 @@
 </template>
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
+import ZextArea from '../components/ZextArea.vue'
 import { mapActions } from 'vuex'
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
+// import * as redisService from '@/services/redis'
 import { reg as regUtil, storage } from '../utils'
 
 export default {
@@ -144,7 +146,8 @@ export default {
     XAddress,
     Radio,
     XTextarea,
-    Picker
+    Picker,
+    ZextArea
   },
   data () {
     return {
@@ -210,10 +213,10 @@ export default {
       this.remark = localData.remark || ''
       this.isDefault = localData.isDefault || false
       // 定义国家省市区 id 和展示的名称
-      this.country = localData.country || {
-        id: 0,
-        name: '',
-        code: ''
+      // 如果 localData country 为空 则根据经纬度获取大致位置
+      if (localData.country) {
+        this.country = localData.country
+      } else {
       }
       this.province = localData.province || {
         id: 0,
@@ -329,7 +332,6 @@ export default {
     },
     toPositionConfirm (val) {
       if (!val) return
-      console.log('val', val)
       let oldName = ''
       switch (val.typePosition) {
         case 1: // 获取国家信息
@@ -400,7 +402,6 @@ export default {
       this.selectCountryShow = false
     },
     onCountryConfirm (val) {
-      console.log('valwinnder', val)
       // 之前的版本
       // let oldName = this.country['name']
       // if (val['name'] !== oldName) {

@@ -76,7 +76,6 @@ export const pay = function ({initParams, successParams}) {
       key: 'userId'
     })
     window.wx.ready(function () {
-      console.log('wx jssdk 初始化成功')
       window.wx.chooseWXPay({
         'timestamp': wxpayCon.timeStamp,
         'nonceStr': wxpayCon.nonceStr,

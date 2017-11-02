@@ -6,9 +6,9 @@ switch (NODE_ENV) {
     // 仝舟
     // url = 'http://192.168.1.210:8080/'
     // 测试 app 云端服务 Wechat
-    // url = 'http://api.didalive.net/'
+    url = 'http://api.didalive.net/'
     // 正式 app 云端服务 Wechat
-    url = 'http://api.mingz-tech.com/'
+    // url = 'http://api.mingz-tech.com/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/'
@@ -18,6 +18,11 @@ switch (NODE_ENV) {
     break
   default:
     break
+}
+
+// redis
+export const redis = {
+  query: url + 'api/redis/getRedisVal'
 }
 
 // 寄件地址

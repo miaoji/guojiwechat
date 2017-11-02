@@ -88,7 +88,7 @@
           <selector 
             direction="rtl" 
             title="产品类型" 
-            v-model="productType" 
+            v-model="productType"
             placeholder="选择产品类型"   
             name="productionType"
             :options="productTypeOption" 
@@ -181,7 +181,7 @@
                     <input type="number" v-model="item['unitPrice']">
                   </td>
                   <td>
-                    <input type="text" v-model="item['worth']">
+                    <input type="text" v-model="item['worth']" disabled>
                   </td>
                 </tr>
               </tbody>
@@ -246,7 +246,7 @@
         <div class="send-package-dialog-form">
           <group>
             <x-input title="中文品名" type="text" v-model="newPackage['nameCn']" required></x-input>
-            <x-input title="产品单价" type="number" v-model="newPackage['unitPrice']" required></x-input>
+            <x-input title="产品单价" lang="en" type="tel" name="tel" v-model="newPackage['unitPrice']" required></x-input>
             <x-input title="产品数量" type="number" v-model="newPackage['quantity']" required></x-input>
           </group>
           <div class="send-package-dialog-form__confrim">
@@ -309,7 +309,7 @@ import * as productTypeService from '@/services/productType'
 import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
 
-import { storage } from '../utils'
+import { storage, cache as cacheUtil } from '../utils'
 import * as wxUtil from '@/utils/wx'
 
 export default {
@@ -419,7 +419,37 @@ export default {
         province: '',
         city: '',
         county: ''
-      }
+      },
+      dataInCache: [
+        {
+          name: 'orderOptions',
+          needJudge: 0
+        }, {
+          name: 'pickupCountryId',
+          needJudge: 1
+        }, {
+          name: 'remark',
+          needJudge: 0
+        }, {
+          name: 'packageTable',
+          needJudge: 0
+        }, {
+          name: 'packageType',
+          needJudge: 1
+        }, {
+          name: 'isBack',
+          needJudge: 0
+        }, {
+          name: 'productType',
+          needJudge: 1
+        }, {
+          name: 'isOffer',
+          needJudge: 0
+        }, {
+          name: 'offer',
+          needJudge: 1
+        }
+      ]
     }
   },
   async created () {
@@ -427,34 +457,43 @@ export default {
     this.$store.commit('SET_PAGE', {page: 'send'})
     // 2. 初始化wx jssdk
     try {
-      const wxIntRes = await wxUtil.init()
-      console.log('微信jssdk初始化', wxIntRes)
+      this.$vux.loading.show()
+      await wxUtil.init()
+      // 3. 获取地址
+      const sendAddress = await this.getAddress({type: 'send'})
+      if (sendAddress) {
+        this.sendAddress = sendAddress
+      }
+      const pickupAddress = await this.getAddress({type: 'pickup'})
+      if (pickupAddress) {
+        this.pickupAddress = pickupAddress
+      }
+      // 4. 根据收件国家id获取包裹类型
+      const pickupCountryId = this.pickupAddress['countryId']
+      this.pickupCountryId = pickupCountryId
+      if (pickupCountryId) {
+        let packageTypeOption = await this.getPackageType({countryId: pickupCountryId})
+        this.packageTypeOption = packageTypeOption || []
+      }
+      // 5. 从localStorage中获取存储的用户习惯信息, 将可以直接赋值的赋值到this
+      const dataInCache = this.dataInCache
+      let sendInfo = cacheUtil.setCacheToData.apply(this, [dataInCache, 'send_info'])
+      // 6. 处理需要判断才能赋值的缓存
+      if (sendInfo) {
+        if (this.isOffer === 1) {
+          this.offer = sendInfo['offer']
+        }
+        const oldpickupCountryId = sendInfo['pickupCountryId']
+        if (oldpickupCountryId === pickupCountryId) {
+          this.packageType = sendInfo['packageType']
+          this.productType = sendInfo['productType']
+        }
+      }
+      return
     } catch (e) {
       console.error(e)
-    }
-    // 3. 获取地址
-    const sendAddress = await this.getAddress({type: 'send'})
-    this.sendAddress = sendAddress || this.sendAddress
-    const pickupAddress = await this.getAddress({type: 'pickup'})
-    this.pickupAddress = pickupAddress || this.pickupAddress
-    // 4. 从localStorage中获取存储的用户习惯信息
-    let sendInfo = storage({
-      key: 'send_info'
-    })
-    sendInfo = JSON.parse(sendInfo)
-    Object.assign(this, sendInfo)
-    // 5. 如果,目的地还未选择, 到此结束
-    const pickupCountryId = this.pickupAddress['countryId']
-    if (!pickupCountryId) return
-    // 6. 根据国家id获取包裹类型
-    const packageTypeOption = await this.getPackageType({countryId: pickupCountryId})
-    this.packageTypeOption = packageTypeOption || []
-    // 7. 如果国家变化则清空已选好的包裹类型和产品类型配置和产品类型
-    const oldpickupCountryId = sendInfo['pickupCountryId']
-    if (oldpickupCountryId !== pickupCountryId) {
-      this.packageType = null
-      this.productType = null
-      this.productTypeOption = []
+    } finally {
+      this.$vux.loading.hide()
     }
   },
   computed: {
@@ -666,7 +705,7 @@ export default {
         const advance = Number(this.advance)
         if (!advance || advance < 0 || advance === 'NaN') {
           this.$vux.toast.show({
-            text: '价格不能为空或0!',
+            text: '价格不能为空或0 !',
             width: '18rem',
             type: 'warn'
           })
@@ -707,7 +746,7 @@ export default {
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
           this.setOrderList()
-          this.wxPay({money: this.advance, orderNo: result.obj.orderNo, orderId: result.obj.id})
+          this.wxPay({money: advance, orderNo: result.obj.orderNo, orderId: result.obj.id})
           this.clearForm()
         } else {
           this.$vux.toast.show({
@@ -751,12 +790,14 @@ export default {
       try {
         const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
-        if (wxPayRes.type === 'success') {
-          _this.$router.push({path: '/orderdetail', query: {id: orderId}})
-        }
       } catch (err) {
+        console.log('微信支付报错---')
         console.error(err)
         _this.$vux.toast.show(err)
+      } finally {
+        setTimeout(function () {
+          _this.$router.push({path: '/orderdetail', query: {id: orderId}})
+        }, 800)
       }
     },
     /**
@@ -766,10 +807,42 @@ export default {
     clearForm () {
       this.packageTable = []
       this.remark = ''
-      this.productType = null
-      this.orderOptions = {}
+      this.packageTypeOption = []
+      this.packageType = undefined
+      this.productType = undefined
+      this.orderOptions = {
+        weight: null,
+        width: null,
+        length: null,
+        height: null,
+        volume: null
+      }
       this.advance = null
       this.isBack = 1
+      this.isOffer = 0
+      this.offer = 0
+      this.sendAddress = {
+        name: '',
+        mobile: '',
+        address: '',
+        country: '',
+        province: '',
+        city: '',
+        county: ''
+      }
+      this.pickupAddress = {
+        name: '',
+        mobile: '',
+        address: '',
+        country: '',
+        province: '',
+        city: '',
+        county: ''
+      }
+      storage({
+        type: 'remove',
+        key: ['send_pickupaddress', 'send_sendaddress']
+      })
     },
     /**
      * [产品规格确定方法]
@@ -879,7 +952,7 @@ export default {
         this.priceId = data.priceId
         // console.log('data.finalPrice', data.finalPrice)
         // 将通过后台计算的价格加上本地的保价
-        // 判断如果点击了报价，但是没有输入报价金额，默认保价金额为1元
+        // 判断如果点击了保价，但是没有输入保价金额，默认保价金额为1元
         if (this.isOffer === 1 && this.insuredPrice < 1) {
           this.insuredPrice = 1
         } else if (this.isOffer === 0) {
@@ -887,8 +960,6 @@ export default {
         }
         data.finalPrice = Number(data.finalPrice) + Number(this.insuredPrice)
         this.advance = Number(data.finalPrice).toFixed(2)
-        // console.log('通过接口查询到的价格', this.advance)
-        // this.advance = this.advance + this.insuredPrice
         return
       } catch (err) {
         console.error(err)
@@ -992,26 +1063,29 @@ export default {
       } catch (e) {
         console.error(e)
       }
+    },
+    async productTypeOption (val, oldval) {
+      if (Array.isArray(val) && val.length === 1) {
+        this.productType = val[0]['key']
+      }
     }
   },
   beforeDestroy () {
     this.$vux.loading.hide()
     this.$vux.toast.hide()
     // 离开页面时在localStorage中保存产品规格，包裹信息和备注信息
-    const sendInfo = {
-      orderOptions: this.orderOptions,
-      pickupCountryId: this.pickupAddress['countryId'] || 0,
-      remark: this.remark,
-      packageTable: this.packageTable,
-      packageType: this.packageType,
-      productType: this.productType,
-      isBack: this.isBack
-    }
-    storage({
-      key: 'send_info',
-      val: JSON.stringify(sendInfo),
-      type: 'set'
-    })
+    const dataInCache = this.dataInCache
+    cacheUtil.setDataToCache.call(this, dataInCache, 'send_info')
+    // let sendInfo = {}
+    // for (let i = 0, len = dataInCache.length; i < len; i++) {
+    //   let item = dataInCache[i]
+    //   sendInfo[item.name] = this[item.name]
+    // }
+    // storage({
+    //   key: 'send_info',
+    //   val: JSON.stringify(sendInfo),
+    //   type: 'set'
+    // })
   }
 }
 </script>
@@ -1025,6 +1099,13 @@ export default {
   .send {
     .weui-input {
       text-align: right;
+    }
+  }
+  .weui-cell {
+    .weui-cell__bd {
+      textarea {
+        text-align: end;
+      }
     }
   }
 }

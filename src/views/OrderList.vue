@@ -5,7 +5,7 @@
         <tab active-color='#ffa414'>
           <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
           <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
-          <tab-item :selected="show ==='waitdelivery '" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
+          <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
           <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
         </tab>
       </div>

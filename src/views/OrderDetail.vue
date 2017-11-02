@@ -186,7 +186,6 @@ export default {
       }
       // 根据国际单号获取路由信息
       const intlNo = this.orderInfo.intlNo || ''
-      console.log('intlNo', intlNo)
       if (!intlNo) {
         console.log('暂未到国外')
         return

@@ -109,7 +109,6 @@ export default {
           })
           const delRes = await _this.delAddress({ids, type: addressType})
           _this.$vux.loading.hide()
-          console.log('dsa', delRes)
           _this.$vux.toast.show(delRes)
         }
       })

@@ -57,6 +57,8 @@
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { storage } from '../utils'
 import { hotline } from '../utils/config'
+import { query } from '../services/redis'
+import * as map from '../utils/map'
 import logoPng from '../assets/images/logo.png'
 
 export default {
@@ -68,6 +70,17 @@ export default {
     this.nickname = storage({key: 'nickname'}) || '未知用户'
     this.mobile = storage({key: 'mobile'})
     this.logoPng = logoPng
+    // 地图定位测试
+    const openid = storage({key: 'openid'})
+    console.log('openid', openid)
+    const lng = await query({
+      key: 'osdH7v8UJRnWajOGBWKHEodcMWFo'
+    })
+    const lnglatXY = []
+    lnglatXY[0] = Number(lng.obj.longitude)
+    lnglatXY[1] = Number(lng.obj.latitude)
+    console.log('asdsa', lnglatXY)
+    map.reGeocoder(lnglatXY)
   },
   directives: {
     TransferDom
@@ -151,8 +164,7 @@ export default {
   .weui-dialog{
     padding: 1rem 1rem 8px 1rem;
     border-radius: 8px;
-  }
-  .dialog-title {
+  }  .dialog-title {
     line-height: 30px;
     color: #666;
   }

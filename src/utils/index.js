@@ -1,8 +1,9 @@
 import lodash from 'lodash'
 import config from 'config'
+import { localPrefix } from './config'
 import * as time from './time'
 import * as reg from './reg'
-import { localPrefix } from './config'
+import * as cache from './cache'
 
 // 连字符转驼峰
 String.hyphenToHump = function () {
@@ -201,5 +202,6 @@ export {
   storage,
   time,
   reg,
-  getRating
+  getRating,
+  cache
 }
