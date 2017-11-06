@@ -5,6 +5,7 @@
 
 <script>
 import {storage} from '@/utils'
+
 export default {
   created () {
     let {openid} = this.$route.query

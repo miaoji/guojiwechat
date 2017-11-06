@@ -3,12 +3,12 @@
     <canvas id="Mycanvas" width="541" height="780" style="opacity: .5"></canvas>
     <div class="bind-container">
      <div class="logo">
-       <img src="../assets/images/logo.png" alt="logo">
+       <img src="../../assets/images/logo.png" alt="logo">
        <h1 v-once>国际快递服务中心</h1>
      </div>
      <div class="input mobile">
        <div>
-         <img src="../assets/images/bin_ico_pho.png" alt="phone">
+         <img src="../../assets/images/bin_ico_pho.png" alt="phone">
        </div>
        <div>
          <input style="max-width: 10rem;" type="text" name="mobile" v-model="mobile" placeholder="输入手机号" required />
@@ -21,7 +21,7 @@
      </div>
      <div class="input mobile" @click="foucsOnCode">
        <div>
-         <img src="../assets/images/bin_ico_ver.png" alt="phone">
+         <img src="../../assets/images/bin_ico_ver.png" alt="phone">
        </div>
        <div>
          <input style="max-width: 10rem;" id="inputCode" type="number" name="mobile" v-model="code" placeholder="输入验证码" required />
@@ -32,7 +32,7 @@
      </div>
      <div class="input mobile" @click="foucsOnShenfen">
        <div>
-         <img src="../assets/images/bin_ico_car.png" alt="phone">
+         <img src="../../assets/images/bin_ico_car.png" alt="phone">
        </div>
        <div>
          <input style="max-width: 10rem;" id="inputShenfen" type="text" name="mobile" v-model="idcard" :placeholder="idcardHolder" />
@@ -335,7 +335,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
+@import '../../assets/styles/colors.less';
+
 .btn-normal {
   border-radius: 5px;
   padding: .3rem .3rem;

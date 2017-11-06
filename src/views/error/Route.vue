@@ -2,10 +2,10 @@
   <div class="customservice">
     <div>
       <div class="customservice-title">
-        <p>国际快递</p>
+        <p>404</p>
       </div>
       <div class="customservice-num flex">
-        <p>登录失败!</p>
+        <p>该页面不存在!</p>
       </div>
       <div class="customservice-num flex">
         <p>您可以从公众号重新点击进入或者拨打客服热线咨询</p>
@@ -14,27 +14,33 @@
         <p>客服热线</p>
         <p>{{hotline}}</p>
       </div>
+      <!-- 提交按钮 -->
+      <div class="div-btn-sub">
+        <router-link to="/send" class="btn-sub">
+          返回首页
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import {hotline} from '../utils/config'
+import {hotline} from '@/utils/config'
 
 export default {
-  name: 'customservice',
+  name: 'errorroute',
   created () {
     this.hotline = hotline
   },
   mounted () {
-    window.document.title = '客服中心'
+    window.document.title = '404错误'
   }
 }
 
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 .customservice {
   background: white;
   height: 100vh;
@@ -55,6 +61,22 @@ export default {
     font-size: 1.5rem;
     &:last-child {
       .btg;
+    }
+  }
+  .div-btn-sub {
+    padding: 2rem 3rem;
+    text-align: center;
+    overflow: hidden;
+    .btn-sub {
+      display: inline-block;
+      color: white;
+      border: none;
+      padding: 1rem 0;
+      font-size: 1.6rem;
+      width: 100%;
+      background-color: @m-yellow;
+      border: none;
+      border-radius: 5px;
     }
   }
 }

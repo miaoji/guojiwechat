@@ -4,8 +4,8 @@
 </template>
 
 <script>
-import { storage } from '../utils'
-import request from '../utils/request'
+import { storage } from '@/utils'
+import request from '@/utils/request'
 
 export default {
   name: 'template',

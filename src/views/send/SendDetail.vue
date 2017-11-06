@@ -117,8 +117,9 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
+
 .scroll-container {
   padding: 0 1rem;
 }

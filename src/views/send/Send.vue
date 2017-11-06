@@ -3,15 +3,15 @@
     <div class="send-container">
       <!-- 顶部寄件列表点击跳转 -->
       <div class="send-container-list">
-        <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+        <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <router-link to="/order/list">
           <div class="send-list">
             <div class="send-list--intro">
-              <img slot="icon" class="send-icon" src="../assets/images/send_list_icon.png" />
+              <img slot="icon" class="send-icon" src="../../assets/images/send_list_icon.png" />
               <span>寄件列表</span>
             </div>
             <div>
-              <img slot="icon" class="send-icon" src="../assets/images/sen_ico_lis.png" />
+              <img slot="icon" class="send-icon" src="../../assets/images/sen_ico_lis.png" />
             </div>
           </div>
         </router-link>
@@ -41,7 +41,7 @@
               </p>
             </div>
             <div class="send-container-address__link">
-                <img src="../assets/images/sen_ico_com.png" alt="地址簿">
+                <img src="../../assets/images/sen_ico_com.png" alt="地址簿">
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@
               </p>
             </div>
             <div class="send-container-address__link">
-              <img src="../assets/images/sen_ico_com.png" alt="地址簿">
+              <img src="../../assets/images/sen_ico_com.png" alt="地址簿">
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@
             @on-change='isofferShowChange'
           >
           </selector>
-          <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
+          <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
           <x-input
             title="保价金额"
             v-model="offer"
@@ -132,7 +132,7 @@
             :options="isBackOption"
           >
           </selector>
-          <div class="float-icon"><span class="float-icon-img" @click='districtPromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
+          <div class="float-icon"><span class="float-icon-img" @click='districtPromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
           <x-textarea
             type="text"
             title="备注"
@@ -147,14 +147,14 @@
           </x-textarea>
         </group>
       </div>
-      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
+      <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
       <!-- 订单包裹展示 -->
       <p  class="intro-p">包裹报关</p>
       <div class="send-container-package">
-        <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+        <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__title">
-            <div> 包裹报关 <span class="question_icon" @click='packagePromptInfoShow = true'><img src="../assets/images/question.png"></span></div>
+            <div> 包裹报关 <span class="question_icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
             <div @click="packageShow = true">
               <button type="" >添加包裹</button>
             </div>
@@ -196,7 +196,7 @@
           </div>
         </div>
       </div>
-      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
+      <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
     <!-- 产品重量体积弹出框 -->
     <div v-transfer-dom>
@@ -309,7 +309,7 @@ import * as productTypeService from '@/services/productType'
 import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
 
-import { storage, cache as cacheUtil } from '../utils'
+import { storage, cache as cacheUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 
 export default {
@@ -1091,8 +1091,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
 
 :global {
@@ -1198,7 +1198,7 @@ export default {
       .purple-border {
         margin: 0 .5rem;
         height: 3px;
-        background: url('../assets/images/border.png');
+        background: url('../../assets/images/border.png');
         background-repeat: no-repeat;
         background-size: 100% 100%;
       }

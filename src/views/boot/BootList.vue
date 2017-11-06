@@ -1,7 +1,7 @@
 <template>
   <div class="bootlist">
     <div class="container">
-      <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+      <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
       <div v-if="error" class="error">
         <div class="error-item">{{error}}</div>
         <button class="pay" @click.stop="goBack">点击返回</button>
@@ -38,7 +38,7 @@
           </div>
         </div>
       </div>
-      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
+      <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
   </div>
 </template>
@@ -81,8 +81,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 
 .bootlist{
   .purple-bg;
@@ -115,7 +115,7 @@ export default {
       margin: 0;
       margin-top: 15px;
       height: 3px;
-      background: url('../assets/images/border.png');
+      background: url('../../assets/images/border.png');
       background-repeat: no-repeat;
       background-size: 100% 100%;
     }

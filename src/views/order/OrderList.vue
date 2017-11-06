@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import { storage } from '../utils'
+import { storage } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -167,8 +167,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 
 .orderlist {
   &-container {

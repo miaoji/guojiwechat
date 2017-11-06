@@ -48,13 +48,13 @@
           v-show="type === 1" 
           v-if="country['name']==='中国'?true:false"
           @click.native="getPosition(3)" 
-          disabled 
+          disabled
           placeholder="请选择市级" 
-          type="text" 
+          type="text"
           v-model="city['name']"
           text-align="right"
         ></x-input>
-        <x-input 
+        <x-input
           title="县区" 
           v-show="type === 1" 
           v-if="country['name']==='中国'?true:false"
@@ -131,12 +131,13 @@
 </template>
 <script>
 import { XInput, XSwitch, XTextarea, XAddress, Picker, Radio } from 'vux'
-import ZextArea from '../components/ZextArea.vue'
 import { mapActions } from 'vuex'
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
-// import * as redisService from '@/services/redis'
-import { reg as regUtil, storage } from '../utils'
+import * as redisService from '@/services/redis'
+import { selectProvCityCounty } from '@/services/geography'
+import { reg as regUtil, storage } from '@/utils'
+import * as map from '@/utils/map'
 
 export default {
   name: 'handleaddress',
@@ -146,8 +147,7 @@ export default {
     XAddress,
     Radio,
     XTextarea,
-    Picker,
-    ZextArea
+    Picker
   },
   data () {
     return {
@@ -204,36 +204,86 @@ export default {
       let localData = storage({
         key: `handle_address_${type}_prop`
       })
-      if (!localData) return
-      localData = JSON.parse(localData)
-      this.name = localData.name || ''
-      this.mobile = localData.mobile || ''
-      this.postcode = localData.postcode || ''
-      this.address = localData.address || ''
-      this.remark = localData.remark || ''
-      this.isDefault = localData.isDefault || false
-      // 定义国家省市区 id 和展示的名称
-      // 如果 localData country 为空 则根据经纬度获取大致位置
-      if (localData.country) {
-        this.country = localData.country
+      localData = JSON.parse(localData) || {
+        country: {
+          name: ''
+        }
+      }
+      if ((!localData || !localData.country.name) && type === 'send') {
+        try {
+          this.$vux.loading.show()
+          const openid = storage({key: 'openid'})
+          const lng = await redisService.query({
+            key: openid
+          })
+          const lnglatXY = []
+          lnglatXY[0] = Number(lng.obj.longitude)
+          lnglatXY[1] = Number(lng.obj.latitude)
+          const address = await map.reGeocoder(lnglatXY)
+          const countyCode = address.regeocode.addressComponent.adcode
+          const resG = await selectProvCityCounty({
+            countyCode
+          })
+          const addressList = resG['0']
+          console.log('add', address)
+          const township = address.regeocode.addressComponent.township || ''
+          const street = address.regeocode.addressComponent.street || ''
+          const streetNumber = address.regeocode.addressComponent.streetNumber || ''
+          this.address = township + street + streetNumber
+          this.country = {
+            id: addressList['countryId'],
+            name: addressList['COUNTRY_CN']
+          }
+          this.province = {
+            id: addressList['pid'],
+            name: addressList['PROVINCE'],
+            code: addressList['PROVINCECODE']
+          }
+          this.city = {
+            id: addressList['cid'],
+            name: addressList['CITY'],
+            code: addressList['CITY_CODE']
+          }
+          this.county = {
+            id: addressList['did'],
+            name: addressList['DISTRICT'],
+            code: addressList['DISTRICT_CODE']
+          }
+          return
+        } catch (err) {
+          console.error(err)
+        } finally {
+          this.$vux.loading.hide()
+        }
       } else {
+        this.name = localData.name || ''
+        this.mobile = localData.mobile || ''
+        this.postcode = localData.postcode || ''
+        this.address = localData.address || ''
+        this.remark = localData.remark || ''
+        this.isDefault = localData.isDefault || false
+        this.country = localData.country || {
+          id: 0,
+          name: '',
+          code: ''
+        }
+        this.province = localData.province || {
+          id: 0,
+          name: '',
+          code: ''
+        }
+        this.city = localData.city || {
+          id: 0,
+          name: '',
+          code: ''
+        }
+        this.county = localData.county || {
+          id: 0,
+          name: '',
+          code: ''
+        }
+        return
       }
-      this.province = localData.province || {
-        id: 0,
-        name: '',
-        code: ''
-      }
-      this.city = localData.city || {
-        id: 0,
-        name: '',
-        code: ''
-      }
-      this.county = localData.county || {
-        id: 0,
-        name: '',
-        code: ''
-      }
-      return
     }
     // 编辑地址时，从url参数中获取所有信息
     if (pagetype === 'edit') {
@@ -591,8 +641,9 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
+
 .addaddress {
   .purple-bg;
   padding: 10px;

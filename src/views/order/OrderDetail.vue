@@ -1,7 +1,7 @@
 <template>
   <div class="orderdetail">
     <div class="container">
-      <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+      <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
       <!-- 寄件收件地址 -->
       <div class="orderdetail-detail">
         <div class="orderdetail-detail-box">
@@ -87,11 +87,11 @@
           <span class="orderdetail-detail-box__content">{{orderInfo.remark || '备注为空'}}</span>
         </div>
       </div>
-      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
+      <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
     <p class="intro-p">物流信息</p>
     <div class="express-container">
-      <img class="bor-top" src="../assets/images/bor_top.png" alt="bor-top">
+      <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
       <!-- 路由信息 -->
       <div class="orderdetail-detail">
         <div class="logisticsresult">
@@ -122,7 +122,7 @@
           </div>
         </div>
       </div>
-      <img class="bor-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
+      <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
     </div>
   </div>
 </template>
@@ -340,8 +340,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 .isfirstPart {
   color: @m-yellow;
   .line {
@@ -379,7 +379,7 @@ export default {
     .purple-border {
       margin: 0;
       height: 3px;
-      background: url('../assets/images/border.png');
+      background: url('../../assets/images/border.png');
       background-repeat: no-repeat;
       background-size: 100% 100%;
     }

@@ -75,3 +75,13 @@ export async function showCounty (data) {
     data
   })
 }
+
+// key: countyCode
+export async function selectProvCityCounty (data) {
+  return request({
+    url: countyApi.selectProvCityCounty,
+    method: 'get',
+    auth: true,
+    data
+  })
+}

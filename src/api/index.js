@@ -6,9 +6,9 @@ switch (NODE_ENV) {
     // 仝舟
     // url = 'http://192.168.1.210:8080/'
     // 测试 app 云端服务 Wechat
-    url = 'http://api.didalive.net/'
+    // url = 'http://api.didalive.net/'
     // 正式 app 云端服务 Wechat
-    // url = 'http://api.mingz-tech.com/'
+    url = 'http://api.mingz-tech.com/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/'
@@ -76,7 +76,8 @@ export const county = {
   save: url + 'api/districts/add',
   show: url + 'api/districts/getDistrictsById',
   update: url + 'api/districts/modDistrictsById',
-  delete: url + 'api/districts/delDistrictsById'
+  delete: url + 'api/districts/delDistrictsById',
+  selectProvCityCounty: url + 'api/country/selectProvCityCounty'
 }
 
 // 微信配置参数，微信支付参数

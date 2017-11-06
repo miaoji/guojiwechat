@@ -55,11 +55,9 @@
 </template>
 <script>
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
-import { storage } from '../utils'
-import { hotline } from '../utils/config'
-import { query } from '../services/redis'
-import * as map from '../utils/map'
-import logoPng from '../assets/images/logo.png'
+import { storage } from '@/utils'
+import { hotline } from '@/utils/config'
+import logoPng from '@/assets/images/logo.png'
 
 export default {
   name: 'usercenter',
@@ -70,17 +68,6 @@ export default {
     this.nickname = storage({key: 'nickname'}) || '未知用户'
     this.mobile = storage({key: 'mobile'})
     this.logoPng = logoPng
-    // 地图定位测试
-    const openid = storage({key: 'openid'})
-    console.log('openid', openid)
-    const lng = await query({
-      key: 'osdH7v8UJRnWajOGBWKHEodcMWFo'
-    })
-    const lnglatXY = []
-    lnglatXY[0] = Number(lng.obj.longitude)
-    lnglatXY[1] = Number(lng.obj.latitude)
-    console.log('asdsa', lnglatXY)
-    map.reGeocoder(lnglatXY)
   },
   directives: {
     TransferDom
@@ -107,22 +94,27 @@ export default {
       nickname: '',
       mobile: '',
       orderfunc: [{
-        src: require('../assets/images/min_ico_add.png'),
+        src: require('../../assets/images/min_ico_add.png'),
         name: '地址管理',
         path: '/address',
         show: true
       }, {
-        src: require('../assets/images/min_ico_kef.png'),
+        src: require('../../assets/images/min_ico_kef.png'),
         name: '客服中心',
         func: 'showDialog',
         show: true
       }, {
-        src: require('../assets/images/min_ico_pac.png'),
+        src: require('../../assets/images/min_ico_pac.png'),
         name: '我的包裹',
         path: '/order/list',
         show: true
       }, {
-        src: require('../assets/images/min_ico_rea.png'),
+        src: require('../../assets/images/coupon.png'),
+        name: '我的卡包',
+        path: '/coupon',
+        show: true
+      }, {
+        src: require('../../assets/images/min_ico_rea.png'),
         name: '实名认证',
         show: false
       }],
@@ -157,8 +149,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
 .dialog-demo {
   .weui-dialog{
@@ -282,7 +274,7 @@ export default {
       .arrow-left {
         flex: 1;
         height: 1.3rem;
-        background: url('../assets/images/sen_ico_arr.png') no-repeat;
+        background: url('../../assets/images/sen_ico_arr.png') no-repeat;
         background-size: 0.9rem 1.3rem;
         background-position-x: 87%;
       }

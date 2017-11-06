@@ -33,7 +33,7 @@
     </div>
     <div class="address-add" @click="goPath('/address/handle', {type: addressType, pagetype: 'add'})">
       <div class="address-add-content">
-        <img src="../assets/images/add_add.png" alt="新增地址">
+        <img src="../../assets/images/add_add.png" alt="新增地址">
         <span>新增地址</span>
       </div>
     </div>
@@ -41,7 +41,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { storage } from '../utils'
+import { storage } from '@/utils'
 import AddressItem from '@/components/AddressItem.vue'
 
 export default {
@@ -118,8 +118,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 .address {
   min-height: 100vh;
   background-color: @bg-grey;
