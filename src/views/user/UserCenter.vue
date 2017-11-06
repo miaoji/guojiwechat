@@ -112,7 +112,7 @@ export default {
         src: require('../../assets/images/coupon.png'),
         name: '我的卡包',
         path: '/coupon',
-        show: true
+        show: false
       }, {
         src: require('../../assets/images/min_ico_rea.png'),
         name: '实名认证',
