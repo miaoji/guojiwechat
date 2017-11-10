@@ -137,6 +137,8 @@ import * as receiveAddrService from '@/services/receiveAddr'
 import * as redisService from '@/services/redis'
 import { selectProvCityCounty } from '@/services/geography'
 import { reg as regUtil, storage } from '@/utils'
+import SelectCountry from './components/SelectCountry'
+import GetPosition from './components/GetPosition'
 import * as map from '@/utils/map'
 
 export default {
@@ -147,7 +149,9 @@ export default {
     XAddress,
     Radio,
     XTextarea,
-    Picker
+    Picker,
+    SelectCountry,
+    GetPosition
   },
   data () {
     return {
@@ -210,46 +214,50 @@ export default {
         }
       }
       if ((!localData || !localData.country.name) && type === 'send') {
+        // 如果本地没有缓存，则根据地理位置定位
         try {
           this.$vux.loading.show()
           const openid = storage({key: 'openid'})
           const lng = await redisService.query({
             key: openid
           })
-          const lnglatXY = []
-          lnglatXY[0] = Number(lng.obj.longitude)
-          lnglatXY[1] = Number(lng.obj.latitude)
-          const address = await map.reGeocoder(lnglatXY)
-          const countyCode = address.regeocode.addressComponent.adcode
-          const resG = await selectProvCityCounty({
-            countyCode
-          })
-          const addressList = resG['0']
-          console.log('add', address)
-          const township = address.regeocode.addressComponent.township || ''
-          const street = address.regeocode.addressComponent.street || ''
-          const streetNumber = address.regeocode.addressComponent.streetNumber || ''
-          this.address = township + street + streetNumber
-          this.country = {
-            id: addressList['countryId'],
-            name: addressList['COUNTRY_CN']
+          if (lng.code === 200 && lng.obj) {
+            let lnglatXY = []
+            lnglatXY[0] = Number(lng.obj.longitude)
+            lnglatXY[1] = Number(lng.obj.latitude)
+            // lnglatXY = [116.30621, 39.976121]
+            const address = await map.reGeocoder(lnglatXY)
+            const countyCode = address.regeocode.addressComponent.adcode
+            const resG = await selectProvCityCounty({
+              countyCode
+            })
+            const addressList = resG['0']
+            const township = address.regeocode.addressComponent.township || ''
+            const street = address.regeocode.addressComponent.street || ''
+            const streetNumber = address.regeocode.addressComponent.streetNumber || ''
+            this.address = township + street + streetNumber
+            this.country = {
+              id: addressList['countryId'],
+              name: addressList['COUNTRY_CN'],
+              code: 'CN'
+            }
+            this.province = {
+              id: addressList['pid'],
+              name: addressList['PROVINCE'],
+              code: addressList['PROVINCECODE']
+            }
+            this.city = {
+              id: addressList['cid'],
+              name: addressList['CITY'],
+              code: addressList['CITY_CODE']
+            }
+            this.county = {
+              id: addressList['did'],
+              name: addressList['DISTRICT'],
+              code: addressList['DISTRICT_CODE']
+            }
+            return
           }
-          this.province = {
-            id: addressList['pid'],
-            name: addressList['PROVINCE'],
-            code: addressList['PROVINCECODE']
-          }
-          this.city = {
-            id: addressList['cid'],
-            name: addressList['CITY'],
-            code: addressList['CITY_CODE']
-          }
-          this.county = {
-            id: addressList['did'],
-            name: addressList['DISTRICT'],
-            code: addressList['DISTRICT_CODE']
-          }
-          return
         } catch (err) {
           console.error(err)
         } finally {
@@ -266,6 +274,9 @@ export default {
           id: 0,
           name: '',
           code: ''
+        }
+        if (!this.country.code) {
+          this.country.code = 'CN'
         }
         this.province = localData.province || {
           id: 0,

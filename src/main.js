@@ -3,21 +3,18 @@
 import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueScroller from 'vue-scroller'
-import { WechatPlugin, Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin, LoadingPlugin } from 'vux'
+import { Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin, LoadingPlugin } from 'vux'
 import { storage } from '@/utils'
-import router from './router'
-import store from './store'
-import App from './App'
-import * as filters from './filters'
-import OrderItem from './components/OrderItem.vue'
-import MJSpinner from './components/MJSpinner.vue'
-import GetPositionMsg from './components/GetPositionMsg.vue'
-import SelectCountry from './components/SelectCountry.vue'
+import router from '@/router'
+import store from '@/store'
+import App from '@/App'
+import * as filters from '@/filters'
+import OrderItem from '@/components/OrderItem.vue'
+import MJSpinner from '@/components/MJSpinner.vue'
 
 FastClick.attach(document.body)
 
 Vue.use(VueScroller)
-Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -30,8 +27,6 @@ Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-spinner', MJSpinner)
 Vue.component('mj-orderitem', OrderItem)
-Vue.component('get-position', GetPositionMsg)
-Vue.component('select-country', SelectCountry)
 
 router.beforeEach(function (to, from, next) {
   // 开发环境跳过验证登录码是否过期

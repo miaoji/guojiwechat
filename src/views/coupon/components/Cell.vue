@@ -60,6 +60,7 @@ export default {
     flex: 1;
   }
   &__ft {
+    font-size: 1.2rem;
     padding-right: 13px;
     position: relative;
   }

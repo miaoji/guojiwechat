@@ -7,8 +7,8 @@
             <div class="coupon-intro-img">
               <img src="../../assets/images/coupon_logo.png" alt="卡券logo">
             </div>
-            <p class="coupon-intro-name">国际快递</p>
-            <p class="coupon-intro-func">10元代金券</p>
+            <p class="coupon-intro-name">{{detailData.coupon_name}}</p>
+            <p class="coupon-intro-func">{{detailData.coupon_value / 100}}元代金券</p>
             <!-- 立即使用 -->
             <div class="div-btn-sub"> 
               <button class="btn-sub" @click="useNow">立即使用</button>
@@ -17,7 +17,7 @@
           <div class="divider">
           </div>
           <div class="coupon-use">
-            <cell title="有效日期" value="2017.11.01-2017.11.20">
+            <cell title="有效日期" :value="validity">
             </cell>
             <cell 
               title="使用须知" 
@@ -36,8 +36,8 @@
             <span class="vux-close"></span>
           </div>
           <div class="package-info">
-            <p>每人限领一张</p>
-            <p>消费满10元使用</p>
+            <p>消费满{{detailData.coupon_minimum / 100}}元使用</p>
+            <p>每次下单最多使用一张</p>
           </div>
         </x-dialog>
       </div>
@@ -46,44 +46,107 @@
 </template>
 
 <script>
-// import { storage } from '@/utils'
-// import request from '@/utils/request'
 import JagContainer from './components/JagContainer'
 import Cell from './components/Cell'
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
+import { time } from '@/utils'
+import { query } from '@/services/coupon'
 
 export default {
   name: 'detail',
   mounted () {
     window.document.title = '卡券详细'
   },
-  data () {
-    return {
-      useInfoShow: false
-    }
-  },
   directives: {
     TransferDom
   },
-  created () {
+  data () {
+    return {
+      useInfoShow: false,
+      queryData: {},
+      coupon: {}
+    }
+  },
+  computed: {
+    detailData () {
+      let res
+      const withData = Number(this.queryData.with_data) || 0
+      switch (withData) {
+        case 1:
+          res = this.queryData
+          break
+        case 0:
+          res = this.coupon
+          break
+        default:
+          res = {
+            coupon_name: '',
+            coupon_value: 0
+          }
+      }
+      return res
+    },
+    validity () {
+      const couponData = this.detailData
+      let beginTime = couponData.begin_time + '000'
+      beginTime = new Date(Number(beginTime))
+      let endTime = couponData.end_time + '000'
+      endTime = new Date(Number(endTime))
+      beginTime = time.format('yyyy.MM.dd', beginTime)
+      endTime = time.format('yyyy.MM.dd', endTime)
+      return beginTime + '-' + endTime
+    }
+  },
+  async created () {
+    const {query} = this.$route
+    this.queryData = query
+    if (Number(query.with_data) !== 1) {
+      const coupon = await this.getCoupon()
+      this.coupon = coupon
+    }
   },
   components: {
     Cell,
     JagContainer,
     XDialog
   },
-  computed: {
-  },
   methods: {
     useNow () {
       this.$router.push({path: '/send'})
+    },
+    async getCoupon () {
+      let res = {
+        coupon_name: '',
+        coupon_value: 0
+      }
+      this.$vux.loading.show()
+      const openid = this.queryData['openid']
+      const couponId = this.queryData['coupon_id']
+      try {
+        const couponRes = await query({
+          openid
+        })
+        if (couponRes.code === 200) {
+          const couponList = couponRes.obj
+          for (let i = 0, len = couponList.length; i < len; i++) {
+            const item = couponList[i]
+            if (item.couponId === couponId) {
+              res = item['resultMap']
+            }
+          }
+        }
+        return res
+      } catch (e) {
+        console.error(e)
+        return res
+      } finally {
+        this.$vux.loading.hide()
+      }
     }
   },
   watch: {
   },
   beforeDestroy () {
-    this.$vux.loading.hide()
-    this.$vux.toast.hide()
   }
 }
 </script>
@@ -121,7 +184,7 @@ export default {
           color: #666;
         }
         &-func {
-          font-size: 2.4rem;
+          font-size: 2.2rem;
         }
         .div-btn-sub {
           padding: 1rem 0rem;
@@ -168,6 +231,8 @@ export default {
       border-radius: 8px;
     }
     .package-info {
+      padding-top: 1rem;
+      font-size: 1.4rem;
       text-align: left;
     }
   }

@@ -11,6 +11,7 @@ export const checkMobile = function (num, type) {
 }
 
 export const checkPostcode = function (num) {
+  num = num.trim()
   // 邮编“数字”+“英文”+“-”共10位
   // 起始数字不能为0，然后是5个数字  [1-9]\d{5} 国内邮编
   const regCN = /^[1-9]\d{5}$/g

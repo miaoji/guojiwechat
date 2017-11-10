@@ -4,7 +4,7 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟
-    // url = 'http://192.168.1.210:8080/'
+    // url = 'http://192.168.1.113:8077/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/'
     // 正式 app 云端服务 Wechat
@@ -135,7 +135,9 @@ export const user = {
   },
   bindPhone: url + 'wx/User/AddUserPhone',
   show: url + 'login/wxLogin',
-  getOpenid: url + 'login/getOpenid'
+  getOpenid: url + 'login/getOpenid',
+  // WxUserId
+  defaultAddress: url + 'api/wxUser/getDefaultAddr'
 }
 
 // 短信发送接口
@@ -156,4 +158,10 @@ export const boot = {
   // 单个
   getLast: url + 'api/closingPrice/getLast',
   getByOrderNo: url + 'api/closingPrice/getByOrderNo'
+}
+
+// 优惠券
+export const coupon = {
+  // ?openid=oPg2ZwgwuALccM_V8UIW4qmhkOwo
+  query: url + 'api/wxCoupon/index'
 }

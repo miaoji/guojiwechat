@@ -78,3 +78,18 @@ export const setDateByMinutes = function (val = 120) {
   let time = new Date()
   return time.setMinutes(time.getMinutes() + Number(val), time.getSeconds(), 0)
 }
+
+/**
+ * [format description]
+ * @param  {[Date]} date [str]
+ * @return {[String]}      [格式化后的时间]
+ */
+
+export const formatCoupon = function (date = '') {
+  let o = [
+    date.substr(0, 4),
+    date.substr(4, 2),
+    date.substr(6, 2)
+  ]
+  return o.join('.')
+}

@@ -114,7 +114,7 @@ export default {
               break
             case 2:
               res = await geographyService.queryProvince({
-                countryCode: this.countryCode
+                countryCode: this.countryCode || 'CN'
               })
               break
             case 3:
@@ -204,8 +204,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../../assets/styles/colors.less';
+@import '../../../assets/styles/helpers.less';
 
 .getpositioninfo {
   position: fixed;

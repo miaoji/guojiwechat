@@ -2,9 +2,9 @@
   <div
     :class="{
       'listitem': true,
-      'listitem--sended': status === 'SENDED',
-      'listitem--used': status === 'USED',
-      'listitem--expired': status === 'EXPIRED'
+      'listitem--sended': realStatus === 'SENDED',
+      'listitem--used': realStatus === 'USED',
+      'listitem--expired': realStatus === 'EXPIRED'
     }"
     @click.stop.prevent="goPath"
   >
@@ -14,22 +14,19 @@
     <div class="listitem-intro">
       <p class="listitem-intro-name">{{name}}</p>
       <p class="listitem-intro-func">
-        {{func}}
+        {{func/100}}元代金券
       </p>
     </div>
   </div>
 </template>
 
 <script>
-
 // 代金券状态：SENDED-可用，USED-已实扣，EXPIRED-已过期
-
 export default {
   name: 'listitem',
   props: {
-    id: {
-      type: Number,
-      default: 1
+    data: {
+      type: Object
     },
     name: {
       type: String,
@@ -40,6 +37,10 @@ export default {
       default: '代金券'
     },
     status: {
+      type: String,
+      default: ''
+    },
+    endtime: {
       type: String,
       default: ''
     }
@@ -54,16 +55,31 @@ export default {
     }
   },
   computed: {
+    realStatus () {
+      let endtime = this.endtime + '000'
+      endtime = Number(endtime)
+      const isExpired = endtime >= new Date().getTime()
+      return isExpired ? this.status : 'EXPIRED'
+    },
     statusTxt () {
-      return this.statusList[this.status] || ''
+      return this.statusList[this.realStatus] || ''
     }
   },
   created () {
   },
   methods: {
     goPath () {
-      const id = this.id
-      this.$router.push({path: '/coupon/detail', query: {id}})
+      if (this.realStatus === 'SENDED') {
+        let query = this.data
+        query.with_data = 1
+        this.$router.push({path: '/coupon/detail', query})
+      } else {
+        this.$vux.toast.show({
+          text: this.statusTxt,
+          width: '16rem',
+          type: 'warn'
+        })
+      }
     }
   }
 }
@@ -82,14 +98,18 @@ export default {
   &--sended {
   }
   &--used {
-    background: white url('../../../assets/images/coupon_used.png') no-repeat;
+    background: url('http://oxou6bzgv.bkt.clouddn.com/coupon_used.png');
+    background-color: white;
     background-size: 20% 80%;
     background-position: 94% 43%;
+    background-repeat: no-repeat;
   }
   &--expired {
-    background: white url('../../../assets/images/coupon_expired.png') no-repeat;
+    background: url('http://oxou6bzgv.bkt.clouddn.com/coupon_expired.png');
+    background-color: white;
     background-size: 20% 80%;
     background-position: 94% 43%;
+    background-repeat: no-repeat;
   }
   &-image {
     img {

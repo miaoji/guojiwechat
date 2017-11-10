@@ -8,7 +8,7 @@
         </tab>
       </div>
       <div class="address-container-list">
-        <scroller 
+        <scroller
           :on-refresh="refresh"
           :on-infinite="infinite"
           ref="my_scroller_address"

@@ -308,6 +308,7 @@ import * as packageTypeService from '@/services/packageType'
 import * as productTypeService from '@/services/productType'
 import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
+import {getDefaultAddr} from '@/services/user'
 
 import { storage, cache as cacheUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
@@ -535,22 +536,29 @@ export default {
         const storageKey = type === 'send' ? 'send_sendaddress' : 'send_pickupaddress'
         const apiService = type === 'send' ? mailingAddrService.show : receiveAddrService.show
         const Local = JSON.parse(storage({key: storageKey}))
-        if (!Local) return false
-        const Address = await apiService({id: Local.id})
-        if (!Address.success) return false
-        if (!Address.obj) return false
-        const addressRes = Address.obj
-        if (Number(addressRes.HIDDEN_STATUS) !== 1) return false
-        return {
-          id: addressRes.ID,
-          name: addressRes.NAME,
-          mobile: addressRes.MOBILE,
-          address: addressRes.ADDRESS || '',
-          country: addressRes.COUNTRY_CN || '',
-          province: addressRes.PROVINCE || '',
-          city: addressRes.cityName || '',
-          county: addressRes.DISTRICT || '',
-          countryId: addressRes.COUNTRY || ''
+        if (Local) {
+          const Address = await apiService({id: Local.id})
+          if (!Address.success || !Address.obj) return false
+          const addressRes = Address.obj
+          if (Number(addressRes.HIDDEN_STATUS) !== 1) return false
+          return {
+            id: addressRes.ID,
+            name: addressRes.NAME,
+            mobile: addressRes.MOBILE,
+            address: addressRes.ADDRESS || '',
+            country: addressRes.COUNTRY_CN || '',
+            province: addressRes.PROVINCE || '',
+            city: addressRes.cityName || '',
+            county: addressRes.DISTRICT || '',
+            countryId: addressRes.COUNTRY || ''
+          }
+        } else {
+          // 如果local为空，则选择默认的地址
+          await getDefaultAddr({
+            WxUserId: storage({
+              key: 'userId'
+            })
+          })
         }
       } catch (e) {
         console.error(e)

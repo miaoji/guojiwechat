@@ -48,3 +48,12 @@ export async function bindPhone (data) {
     data
   })
 }
+
+export async function getDefaultAddr (data) {
+  return request({
+    url: userApi.defaultAddress,
+    method: 'get',
+    auth: true,
+    data
+  })
+}

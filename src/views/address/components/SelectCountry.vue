@@ -49,30 +49,61 @@
           <div class="country-title">热门国家/地区</div>
           <ul class="city-list">
             <li v-for="item in hotNation">
-              <span class="city" @click.stop="onClickCity({name: item.country_cn})">
+              <span class="city" @click.stop="onCountryConfirm(item)">
                 {{item.country_cn}}
               </span>
             </li>
           </ul>
         </div>
 
-        <div class="selectcountry-container-city city-hot">
-          <div class="country-title">所有国家/地区</div>
-          <ul class="city-list">
-            <li v-for="item in allNation">
-              <span class="city" @click.stop="onClickCity({name: item.country_cn})">
-                {{item.country_cn}}
+        <!-- 首字母搜索 -->
+        <div class="selectcountry-container-city city-pinyin">
+          <div class="country-title">试试国家首字母检索</div>
+          <!-- 全部拼音 -->
+          <ul class="city-list" v-show="allPinYin === true">
+            <li v-for="item in allAlphabet">
+              <span class="city" @click.stop="onClickPinyin({pinyin: item})">
+                {{item}}
+              </span>
+            </li>
+          </ul>
+          <!-- 点击拼音后展示 -->
+          <ul class="city-list" v-show="allPinYin === false">
+            <li>
+              <span class="pinyin">
+                {{selectPinyin}}
+              </span>
+            </li>
+            <li>
+              <span class="city" @click.stop="onClickAllPinyin()">
+                A-Z
               </span>
             </li>
           </ul>
         </div>
+
+        <!-- 首字母搜索结果 -->
+        <div class="selectcountry-container-city city-pinyin" v-show="allPinYin === false">
+          <div class="country-title">首字母检索结果</div>
+          <ul class="city-list">
+            <li v-for="item in alphabetResult">
+              <span class="city" @click.stop="onCountryConfirm(item)">
+                {{item.country_cn}}
+              </span>
+            </li>
+          </ul>
+          <p v-show="alphabetResult.length === 0" style="color: white;font-size: 1.6rem;">
+            暂无首字母为 {{selectPinyin}} 的国家或地区
+          </p>
+        </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { storage } from '../utils'
+import { storage } from '@/utils'
 import * as geographyService from '@/services/geography'
 import { XInput, Icon } from 'vux'
 import _ from 'lodash'
@@ -103,17 +134,24 @@ export default {
   },
   data () {
     return {
-      allNation: [],
       hotNation: [],
       inputCountryName: '',
+      selectPinyin: '',
       inSearching: false,
       hotcity: [
         '中国',
         '美国'
       ],
-      alphabet: [ 'A', 'B', 'C', 'D', 'E', 'F' ],
       searchResult: [],
-      recentSearch: []
+      recentSearch: [],
+      allPinYin: true,
+      alphabetResult: [],
+      allAlphabet: [
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+        'Y', 'Z'
+      ]
     }
   },
   async created () {
@@ -123,8 +161,8 @@ export default {
   },
   computed: {
     inputLen () {
-      const len = this.inputCountryName.length
-      if (len > 0) {
+      const nameLen = this.inputCountryName.length
+      if (nameLen > 0) {
         return true
       }
       return false
@@ -134,28 +172,6 @@ export default {
     }
   },
   methods: {
-    /**
-     * [获取所有国家]
-     * @return {[type]} [description]
-     */
-    async getAllNation () {
-      this.$vux.loading.show()
-      try {
-        const res = await geographyService.queryCountry()
-        this.$vux.loading.hide()
-        if (res.code === 200) {
-          let nations = res.obj
-          if (!nations) return
-          // 当type为pickup时，过滤中国这一选项
-          if (this.type === 'pickup') {
-            nations = this.fliterChina(nations)
-          }
-          this.allNation = nations
-        }
-      } catch (e) {
-        console.error(e)
-      }
-    },
     /**
      * [获取热门国家]
      * @return {[type]} [description]
@@ -236,6 +252,38 @@ export default {
       this.inputCountryName = name
     },
     /**
+     * [用户点击拼音时事件]
+     * @param  {String} options.name [description]
+     * @return {[type]}              [description]
+     */
+    onClickPinyin ({pinyin = ''}) {
+      this.selectPinyin = pinyin
+      this.allPinYin = false
+    },
+    /**
+     * [用户点击后展示所有拼音，并清空拼音搜索结果]
+     * @param  {String} options.name [description]
+     * @return {[type]}              [description]
+     */
+    onClickAllPinyin () {
+      this.allPinYin = true
+      this.alphabetResult = []
+    },
+    /**
+     * [确认选择的国家]
+     * @param  {String} options.name [description]
+     * @return {[type]}              [description]
+     */
+    onCountryConfirm (item) {
+      const country = {
+        id: item.id,
+        name: item.country_cn,
+        code: item.country_code
+      }
+      this.$emit('listenCountryConfirm', country)
+      this.$router.go(-1)
+    },
+    /**
      * [用户点击搜索结果的事件，返回新增页面]
      * @param  {[type]} item [description]
      * @return {[type]}      [description]
@@ -287,9 +335,6 @@ export default {
   watch: {
     async show (val) {
       if (!val) return
-      if (this.allNation.length === 0) {
-        this.getAllNation()
-      }
       if (this.hotNation.length === 0) {
         this.getHotNation()
       }
@@ -320,7 +365,7 @@ export default {
         const res = await geographyService.queryCountry({
           name: val,
           page: 1,
-          rows: 20
+          rows: 50
         })
         if (res.code === 200) {
           let searchResult = res.obj
@@ -330,6 +375,37 @@ export default {
           }
           this.searchResult = searchResult || []
           this.changeRecentSearch()
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.inSearching = false
+        this.$vux.loading.hide()
+      }
+    },
+    /**
+     * [监听选择的拼音变化值，变动时获取首字母检索结果]
+     * @param  {[type]} val    [description]
+     * @param  {[type]} oldval [description]
+     */
+    async selectPinyin (val, oldval) {
+      if (!val) return
+      if (this.inSearching) return
+      this.inSearching = true
+      this.$vux.loading.show()
+      try {
+        const res = await geographyService.queryCountry({
+          pinyin: val,
+          page: 1,
+          rows: 50
+        })
+        if (res.code === 200) {
+          let searchResult = res.obj
+          // 当type为pickup时，过滤中国这一选项
+          if (this.type === 'pickup') {
+            searchResult = this.fliterChina(searchResult)
+          }
+          this.alphabetResult = searchResult || []
         }
       } catch (e) {
         console.error(e)
@@ -347,7 +423,7 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
+@import '../../../assets/styles/colors.less';
 @import '~vux/src/styles/close';
 
 .selectcountry {
@@ -476,6 +552,20 @@ export default {
             height: 3rem;
             line-height: 3rem;
             border: 1px solid rgba(255,255,255,.6);
+            border-radius: .3rem;
+            font-size: 1.6rem;
+            text-align: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .pinyin {
+            position: relative;
+            display: block;
+            background: #B883E7;
+            height: 3rem;
+            line-height: 3rem;
             border-radius: .3rem;
             font-size: 1.6rem;
             text-align: center;
