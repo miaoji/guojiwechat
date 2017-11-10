@@ -299,9 +299,8 @@
 </template>
 
 <script>
-import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import { mapGetters, mapActions } from 'vuex'
-
+import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as packageTypeService from '@/services/packageType'
@@ -309,7 +308,6 @@ import * as productTypeService from '@/services/productType'
 import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
 import {getDefaultAddr} from '@/services/user'
-
 import { storage, cache as cacheUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 
@@ -536,29 +534,38 @@ export default {
         const storageKey = type === 'send' ? 'send_sendaddress' : 'send_pickupaddress'
         const apiService = type === 'send' ? mailingAddrService.show : receiveAddrService.show
         const Local = JSON.parse(storage({key: storageKey}))
+        let addrId = ''
         if (Local) {
-          const Address = await apiService({id: Local.id})
-          if (!Address.success || !Address.obj) return false
-          const addressRes = Address.obj
-          if (Number(addressRes.HIDDEN_STATUS) !== 1) return false
-          return {
-            id: addressRes.ID,
-            name: addressRes.NAME,
-            mobile: addressRes.MOBILE,
-            address: addressRes.ADDRESS || '',
-            country: addressRes.COUNTRY_CN || '',
-            province: addressRes.PROVINCE || '',
-            city: addressRes.cityName || '',
-            county: addressRes.DISTRICT || '',
-            countryId: addressRes.COUNTRY || ''
-          }
+          addrId = Local.id
         } else {
           // 如果local为空，则选择默认的地址
-          await getDefaultAddr({
+          const defaultAdrrRes = await getDefaultAddr({
             WxUserId: storage({
               key: 'userId'
             })
           })
+          if (defaultAdrrRes.code === 200 && defaultAdrrRes.obj) {
+            let defaultAdrr = defaultAdrrRes.obj
+            const defaultAdrrType = type === 'send' ? 'mailingAddress' : 'receiveAddresses'
+            if (defaultAdrr[defaultAdrrType] && defaultAdrr[defaultAdrrType].length > 0) {
+              addrId = defaultAdrr[defaultAdrrType][0]['id']
+            }
+          }
+        }
+        const Address = await apiService({id: addrId})
+        if (!Address.success || !Address.obj) return false
+        const addressRes = Address.obj
+        if (Number(addressRes.HIDDEN_STATUS) !== 1) return false
+        return {
+          id: addressRes.ID,
+          name: addressRes.NAME,
+          mobile: addressRes.MOBILE,
+          address: addressRes.ADDRESS || '',
+          country: addressRes.COUNTRY_CN || '',
+          province: addressRes.PROVINCE || '',
+          city: addressRes.cityName || '',
+          county: addressRes.DISTRICT || '',
+          countryId: addressRes.COUNTRY || ''
         }
       } catch (e) {
         console.error(e)
@@ -786,7 +793,8 @@ export default {
         money: total,
         orderNo,
         body: '国际快递包裹',
-        payType: 0
+        payType: 0,
+        closingPriceId: 0
       }
       let successParams = {
         orderNo,
@@ -1084,16 +1092,6 @@ export default {
     // 离开页面时在localStorage中保存产品规格，包裹信息和备注信息
     const dataInCache = this.dataInCache
     cacheUtil.setDataToCache.call(this, dataInCache, 'send_info')
-    // let sendInfo = {}
-    // for (let i = 0, len = dataInCache.length; i < len; i++) {
-    //   let item = dataInCache[i]
-    //   sendInfo[item.name] = this[item.name]
-    // }
-    // storage({
-    //   key: 'send_info',
-    //   val: JSON.stringify(sendInfo),
-    //   type: 'set'
-    // })
   }
 }
 </script>

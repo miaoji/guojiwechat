@@ -7,14 +7,14 @@
   </div>
 </template>
 <script>
-import FeedHeader from '@/components/feed/Header'
+import Header from './components/Header'
 
 export default {
   name: 'feedcontainer',
   created () {
   },
   components: {
-    'feed-header': FeedHeader
+    'feed-header': Header
   },
   data () {
     return {

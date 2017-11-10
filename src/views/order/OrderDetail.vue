@@ -236,7 +236,8 @@ export default {
         money,
         orderNo,
         body: '国际快递包裹',
-        payType: 0
+        payType: 0,
+        closingPriceId: 0
       }
       let successParams = {
         orderNo,

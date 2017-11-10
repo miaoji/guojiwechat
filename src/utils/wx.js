@@ -1,5 +1,5 @@
 import * as wxService from '@/services/wx'
-import { getConfByEnv, storage } from '@/utils'
+import { getConfByEnv } from '@/utils'
 
 /**
  * [初始化wx jssdk]
@@ -70,11 +70,6 @@ export const pay = function ({initParams, successParams}) {
         width: '16rem'
       })
     }
-    const prepayId = wxpayCon.package.replace(/prepay_id=/, '')
-    successParams['prepayId'] = prepayId
-    successParams['wxUserId'] = storage({
-      key: 'userId'
-    })
     window.wx.ready(function () {
       window.wx.chooseWXPay({
         'timestamp': wxpayCon.timeStamp,
@@ -83,22 +78,11 @@ export const pay = function ({initParams, successParams}) {
         'signType': 'MD5',
         'paySign': wxpayCon.paySign,
         success: async function (res) {
-          const successRes = await wxService.updateWxPay({
-            ...successParams
+          resolve({
+            text: '支付成功',
+            type: 'success',
+            width: '16rem'
           })
-          if (successRes.success) {
-            resolve({
-              text: '支付成功',
-              type: 'success',
-              width: '16rem'
-            })
-          } else {
-            reject({
-              text: '支付成功, 保存记录失败',
-              type: 'warn',
-              width: '20rem'
-            })
-          }
         },
         cancel: function () {
           reject({

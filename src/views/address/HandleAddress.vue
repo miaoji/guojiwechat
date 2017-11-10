@@ -17,9 +17,9 @@
         <x-input 
           title="电话" 
           v-model="mobile"
-          type="text" 
+          type="text"
           placeholder="请输入手机号" 
-          required 
+          required
           text-align="right"
         ></x-input>
         <x-input 
