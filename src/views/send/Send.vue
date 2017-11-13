@@ -454,9 +454,9 @@ export default {
   async created () {
     // 1. 创建时将SET_PAGE创建为send
     this.$store.commit('SET_PAGE', {page: 'send'})
-    // 2. 初始化wx jssdk
     try {
       this.$vux.loading.show()
+      // 2. 初始化wx jssdk
       await wxUtil.init()
       // 3. 获取地址
       const sendAddress = await this.getAddress({type: 'send'})
@@ -803,16 +803,26 @@ export default {
         payType: 0
       }
       const _this = this
+      let payStatus = 'success'
       try {
         const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
       } catch (err) {
         console.log('微信支付报错---')
         console.error(err)
-        _this.$vux.toast.show(err)
+        payStatus = 'fail'
+        this.$vux.toast.show(err)
       } finally {
         setTimeout(function () {
-          _this.$router.push({path: '/orderdetail', query: {id: orderId}})
+          _this.$router.push({
+            path: '/payresult',
+            query: {
+              orderid: orderId,
+              status: payStatus,
+              orderno: orderNo,
+              totalfee: money
+            }
+          })
         }, 800)
       }
     },
