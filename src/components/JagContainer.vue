@@ -1,10 +1,10 @@
 <template>
   <div class="jag">
-    <img v-show="top" class="jag-top" src="../../../assets/images/bor_top.png" alt="bor-top">
+    <img v-show="top" class="jag-top" src="../assets/images/bor_top.png" alt="bor-top">
     <div class="jag-content">
       <slot name="content"></slot>
     </div>
-    <img class="jag-bottom" src="../../../assets/images/bor_bot.png" alt="bor-bottom">
+    <img class="jag-bottom" src="../assets/images/bor_bot.png" alt="bor-bottom">
   </div>
 </template>
 

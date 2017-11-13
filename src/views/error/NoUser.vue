@@ -24,9 +24,6 @@ export default {
   name: 'customservice',
   created () {
     this.hotline = hotline
-  },
-  mounted () {
-    window.document.title = '客服中心'
   }
 }
 

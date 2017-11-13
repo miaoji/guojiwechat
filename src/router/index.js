@@ -17,6 +17,7 @@ export default new Router({
       name: 'UserCenter',
       component: require('@/views/user/UserCenter'),
       meta: {
+        intro: '个人中心',
         requiresAuth: true
       }
     }, {
@@ -26,6 +27,14 @@ export default new Router({
       meta: {
         intro: '寄件',
         requiresAuth: true
+      }
+    }, {
+      path: '/consolidation',
+      name: 'Consolidation',
+      component: require('@/views/consolidation/Index'),
+      meta: {
+        intro: '集运',
+        requiresAuth: false
       }
     }]
   }, {
@@ -47,7 +56,11 @@ export default new Router({
   }, {
     path: '/bindphone',
     name: 'BindPhone',
-    component: require('@/views/user/BindPhone')
+    component: require('@/views/user/BindPhone'),
+    meta: {
+      intro: '绑定手机',
+      requiresAuth: false
+    }
   }, {
     path: '/redirect',
     name: 'Redirect',
@@ -59,7 +72,11 @@ export default new Router({
   }, {
     path: '/nouser',
     name: 'NoUser',
-    component: require('@/views/error/NoUser')
+    component: require('@/views/error/NoUser'),
+    meta: {
+      intro: '没有该用户',
+      requiresAuth: false
+    }
   }, {
     path: '/order/list',
     name: 'OrderList',
@@ -73,7 +90,7 @@ export default new Router({
     name: 'OrderDetail',
     component: require('@/views/order/OrderDetail'),
     meta: {
-      intro: '订单详情',
+      intro: '订单明细',
       requiresAuth: true
     }
   }, {
@@ -81,7 +98,7 @@ export default new Router({
     name: 'BootDeal',
     component: require('@/views/boot/BootDeal'),
     meta: {
-      intro: '补价处理页面',
+      intro: '补价处理',
       requiresAuth: false
     }
   }, {
@@ -133,7 +150,7 @@ export default new Router({
     name: 'ErrorRoute',
     component: require('@/views/error/Route'),
     meta: {
-      intro: '错误路由'
+      intro: '404错误'
     }
   }]
 })

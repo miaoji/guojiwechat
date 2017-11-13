@@ -30,9 +30,6 @@ export default {
   name: 'errorroute',
   created () {
     this.hotline = hotline
-  },
-  mounted () {
-    window.document.title = '404错误'
   }
 }
 

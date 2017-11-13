@@ -80,13 +80,12 @@ export default {
     }
   },
   mounted () {
-    window.document.title = '手机绑定'
+    // window.document.title = '手机绑定'
     // canvas 动画效果
     // 定义画布宽高和生成点的个数
     let WIDTH = window.innerWidth
     let HEIGHT = window.innerHeight
     let POINT = 35
-
     let canvas = document.getElementById('Mycanvas')
     canvas.width = WIDTH
     canvas.height = HEIGHT

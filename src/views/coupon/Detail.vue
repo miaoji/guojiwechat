@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import JagContainer from './components/JagContainer'
+import JagContainer from '../../components/JagContainer'
 import Cell from './components/Cell'
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { time } from '@/utils'
@@ -54,9 +54,6 @@ import { query } from '@/services/coupon'
 
 export default {
   name: 'detail',
-  mounted () {
-    window.document.title = '卡券详细'
-  },
   directives: {
     TransferDom
   },

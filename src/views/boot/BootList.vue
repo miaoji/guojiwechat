@@ -69,9 +69,6 @@ export default {
       this.error = '网络错误'
     }
   },
-  mounted () {
-    window.document.title = '补价记录'
-  },
   methods: {
     goBack () {
       this.$router.go(-1)

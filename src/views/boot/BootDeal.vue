@@ -94,9 +94,6 @@ export default {
       console.err(e)
     }
   },
-  mounted () {
-    window.document.title = '补价详情'
-  },
   methods: {
     async submitBoot () {
       const money = this.bootData.priceSpread

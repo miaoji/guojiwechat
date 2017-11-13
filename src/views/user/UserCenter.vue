@@ -84,7 +84,6 @@ export default {
     }
   },
   mounted () {
-    window.document.title = '我的'
   },
   data () {
     return {
@@ -204,8 +203,8 @@ export default {
 .usercenter {
   .purple-bg;
   padding: 10px;
-  padding-top: 21px;
-  min-height: 92vh;
+  padding-top: 4vh;
+  min-height: 94vh;
   overflow: hidden;
   &-info {
     margin: 0;

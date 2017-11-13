@@ -75,6 +75,9 @@ router.beforeEach(function (to, from, next) {
 })
 
 router.afterEach((to, from) => {
+  if (to.meta.intro) {
+    window.document.title = to.meta.intro
+  }
 })
 
 Object.keys(filters).forEach(key => {

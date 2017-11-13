@@ -45,9 +45,6 @@ export default {
     })
     this.show = type || localtype || 'all'
   },
-  mounted () {
-    window.document.title = '寄件列表'
-  },
   computed: {
     ...mapGetters({
       'orderlist': 'getOrderList'

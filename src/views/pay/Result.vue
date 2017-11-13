@@ -36,9 +36,6 @@ import Icon from '@/components/Icon'
 
 export default {
   name: 'payresult',
-  mounted () {
-    window.document.title = '支付结果'
-  },
   data () {
     return {
       status: '',

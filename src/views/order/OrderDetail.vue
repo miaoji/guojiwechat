@@ -200,9 +200,6 @@ export default {
       this.$vux.loading.hide()
     }
   },
-  mounted () {
-    window.document.title = '寄件明细'
-  },
   methods: {
     async getOrderDetail (id) {
       try {

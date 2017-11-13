@@ -7,11 +7,11 @@
         <router-link to="/order/list">
           <div class="send-list">
             <div class="send-list--intro">
-              <img slot="icon" class="send-icon" src="../../assets/images/send_list_icon.png" />
+              <img slot="icon" class="order-icon" src="../../assets/images/send_list_icon.png" />
               <span>寄件列表</span>
             </div>
-            <div>
-              <img slot="icon" class="send-icon" src="../../assets/images/sen_ico_lis.png" />
+            <div class="send-icon">
+              <img slot="icon" src="../../assets/images/sen_ico_lis.png" />
             </div>
           </div>
         </router-link>
@@ -323,9 +323,6 @@ export default {
     Spinner,
     XDialog,
     Cell
-  },
-  async mounted () {
-    window.document.title = '寄件'
   },
   data () {
     return {
@@ -1111,21 +1108,6 @@ export default {
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
 
-:global {
-  .send {
-    .weui-input {
-      text-align: right;
-    }
-  }
-  .weui-cell {
-    .weui-cell__bd {
-      textarea {
-        text-align: end;
-      }
-    }
-  }
-}
-
 .bgblack {
   background-color: #333;
 }
@@ -1185,7 +1167,7 @@ export default {
   &-container {
     .purple-bg;
     padding: 10px;
-    padding-top: 39px;
+    padding-top: 36px;
     padding-bottom: 9rem;
     overflow: hidden;
     &-list {
@@ -1202,8 +1184,12 @@ export default {
             font-size: 1.5rem;
             color: @m-yellow;
           }
+          img {
+            width: auto;
+            height: 2.6rem;
+          }
         }
-        div {
+        .send-icon {
           font-size: 0;
           img {
             width: auto;

@@ -26,9 +26,6 @@ import ListItem from './components/ListItem'
 
 export default {
   name: 'list',
-  mounted () {
-    window.document.title = '卡券列表'
-  },
   data () {
     return {
       coupons: []

@@ -21,6 +21,8 @@ import sendPng from '../assets/images/footer/nav_ivo_nor.png'
 import acsendPng from '../assets/images/footer/nav_ivo_che.png'
 import minePng from '../assets/images/footer/nav_min_nor.png'
 import acminePng from '../assets/images/footer/nav_min_che.png'
+import jyPng from '../assets/images/footer/nav_jiyun_nor.png'
+import acjyPng from '../assets/images/footer/nav_jiyun_che.png'
 
 export default {
   name: 'footer',
@@ -43,6 +45,12 @@ export default {
         icon: sendPng,
         activeicon: acsendPng,
         key: 'send'
+      }, {
+        name: '集运',
+        path: '/consolidation',
+        icon: jyPng,
+        activeicon: acjyPng,
+        key: 'consolidation'
       }, {
         name: '我的',
         path: '/usercenter',
@@ -91,11 +99,11 @@ footer {
         border-right-width: 0;
       }
       p {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         color: #999;
       }
       img {
-        height: 1.9rem;
+        height: 2rem;
         display: block;
         margin: 0 auto;
       }
