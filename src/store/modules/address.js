@@ -108,8 +108,8 @@ export const actions = {
    */
   async updateAddress ({dispatch}, {data, type = 1}) {
     try {
-      if (!data.wx_user_id) {
-        data.wx_user_id = storage({key: 'userId'})
+      if (!data.wxUserId) {
+        data.wxUserId = storage({key: 'userId'})
       }
       let service = type === 1 ? mailingAddrService.update : receiveAddrService.update
       const res = await service(data)

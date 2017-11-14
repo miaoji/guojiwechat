@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <ul>
-      <li v-for="item in foot" @click="goPath(item.path)" :key="item.key">
+      <li v-for="item in foot" @click="goPath(item.path)" :key="item.key" v-show="item.show">
         <div class="footer-active" v-if="item.key === page">
           <img :src="item.activeicon" :alt="item.name">
           <p>{{ item.name }}</p>
@@ -44,19 +44,22 @@ export default {
         path: '/send',
         icon: sendPng,
         activeicon: acsendPng,
-        key: 'send'
+        key: 'send',
+        show: true
       }, {
         name: '集运',
         path: '/consolidation',
         icon: jyPng,
         activeicon: acjyPng,
-        key: 'consolidation'
+        key: 'consolidation',
+        show: true
       }, {
         name: '我的',
         path: '/usercenter',
         icon: minePng,
         activeicon: acminePng,
-        key: 'usercenter'
+        key: 'usercenter',
+        show: true
       }]
     }
   },

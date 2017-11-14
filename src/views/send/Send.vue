@@ -181,12 +181,16 @@
                     <input type="number" v-model="item['unitPrice']">
                   </td>
                   <td>
-                    <input type="text" v-model="item['worth']" disabled>
+                    <input type="text" :value="item['quantity']*item['unitPrice']" disabled>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <p class="tips">
+            <img src="../../assets/images/tips.png" alt="tips">
+            长按删除，价值不可修改
+          </p>
           <div class="send-container-package__money">
             预付运费：￥ <span>{{advance === 'NaN' ? '请先选择产品类型' : advance}}</span>
           </div>
@@ -727,7 +731,14 @@ export default {
         this.$vux.loading.show({
           text: '正在提交'
         })
-        const orderItems = JSON.stringify(this.packageTable)
+        let packageTable = this.packageTable
+        packageTable = await packageTable.map(function (elem) {
+          return {
+            ...elem,
+            worth: elem.quantity * elem.unitPrice + ''
+          }
+        })
+        const orderItems = JSON.stringify(packageTable)
         const orderOptions = this.orderOptions
         const result = await orderInfoService.save({
           ...orderOptions,

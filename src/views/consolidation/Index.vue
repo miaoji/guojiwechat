@@ -74,6 +74,7 @@
                 @on-change="onChange"
                 placeholder="请选择产品类型"
                 :columns="2" 
+                @on-show="onShow"
                 ref="packagePrductPicker"
               >
                 <template slot="title">
@@ -179,31 +180,7 @@ export default {
       pickupCountryId: null,
       // 订单配置 包裹类型&&产品类型
       packagePrductVal: [],
-      packagePrductList: [{
-        name: '中国',
-        value: 'china',
-        parent: 0
-      }, {
-        name: '美国',
-        value: 'USA',
-        parent: 0
-      }, {
-        name: '广东',
-        value: 'china1',
-        parent: 'china'
-      }, {
-        name: '广西',
-        value: 'china002',
-        parent: 'china'
-      }, {
-        name: '美国001',
-        value: 'usa001',
-        parent: 'USA'
-      }, {
-        name: '美国002',
-        value: 'usa002',
-        parent: 'USA'
-      }],
+      packagePrductList: [],
       packageTable: []
     }
   },
@@ -229,6 +206,10 @@ export default {
       if (pickupCountryId) {
         let packagePrductList = await this.getPackageType({countryId: pickupCountryId})
         this.packagePrductList = packagePrductList || []
+        // 当 packagePrductList 只有两个选项时自动选择那两项
+        if (packagePrductList.length === 2) {
+          this.packagePrductVal = [packagePrductList[0]['value'], packagePrductList[1]['value']]
+        }
       }
     } catch (e) {
       console.error(e)
@@ -253,7 +234,11 @@ export default {
           let returnData = []
           for (let i = 0, len = resData.length; i < len; i++) {
             const packageData = resData[i]
-            const parentVal = JSON.stringify({'package': packageData.id})
+            const parentVal = JSON.stringify({
+              'packageId': packageData.id,
+              'maxRange': packageData.maxRange,
+              'minRange': packageData.minRange
+            })
             const packageItem = {
               name: `${packageData.nameCn}[${packageData.minRange}~${packageData.maxRange}kg]`,
               value: parentVal,
@@ -265,7 +250,7 @@ export default {
               let product = productList[j]
               let productItem = {
                 name: product.productName,
-                value: product.id,
+                value: JSON.stringify({'productId': product.id}),
                 parent: parentVal
               }
               returnData.push(productItem)
@@ -273,11 +258,21 @@ export default {
           }
           return returnData
         } else {
-          return false
+          return []
         }
       } catch (e) {
         console.error(e)
-        return false
+        return []
+      }
+    },
+    onShow () {
+      if (!this.pickupCountryId) {
+        this.$refs.packagePrductPicker.onHide()
+        this.$vux.toast.show({
+          text: '请先选择收件地址',
+          type: 'warn',
+          width: '18rem'
+        })
       }
     },
     onChange (val) {
@@ -302,7 +297,7 @@ export default {
     min-height: 92vh;
     padding: 10px;
     padding-top: 4vh;
-    padding-bottom: 8vh;
+    padding-bottom: 9rem;
     overflow: hidden;
     .content {
       background: white;
