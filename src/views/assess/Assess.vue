@@ -5,13 +5,12 @@
         <div class="assess-container-title">估价系统</div>
         <group label-width="8rem" label-align="left">
           <x-input 
-            title="国家/地区" 
-            @click.native="onClickCountry" 
-            disabled 
+            title="国家/地区"
+            @click.native="onClickCountry"
             placeholder="请选择国家/地区" 
             type="text"
-            required 
-            v-model="country['name']" 
+            required
+            v-model="country['name']"
             text-align="right"
           ></x-input>
           <popup-picker
@@ -202,7 +201,7 @@ export default {
       }
     },
     onChange (val) {
-      console.log('valaaa', val)
+      console.log('val', val)
     },
     /**
      * [根据国家id获取包裹类型]
@@ -218,7 +217,6 @@ export default {
           let returnData = []
           for (let i = 0, len = resData.length; i < len; i++) {
             const packageData = resData[i]
-            console.log('product', packageData)
             const parentVal = JSON.stringify({'package': packageData.id, 'minRange': packageData.minRange, 'maxRange': packageData.maxRange})
             const packageItem = {
               name: `${packageData.nameCn}[${packageData.minRange}~${packageData.maxRange}kg]`,
@@ -298,19 +296,11 @@ export default {
         return
       }
       // 检测是否填写产品的重量
-      if (!(JSON.parse(this.packageType).maxRange >= this.weight && JSON.parse(this.packageType).minRange < this.weight)) {
+      if (!(this.weight !== 0 && JSON.parse(this.packageType).maxRange >= this.weight && JSON.parse(this.packageType).minRange <= this.weight)) {
         this.$vux.toast.show({
           type: 'warn',
           text: '请根据产品类型的范围填写重量',
-          width: '15rem'
-        })
-        return
-      }
-      if (this.weight > 20) {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '包裹不能超过20kg',
-          width: '15rem'
+          width: '20rem'
         })
         return
       }
@@ -361,8 +351,6 @@ export default {
   watch: {
     packagePrductVal (val, oldVal) {
       if (!val) return
-      console.log('JSON.parse(val)', JSON.parse(val[0]).package)
-      console.log('JSON.parse(val)', JSON.parse(val[1]).product)
       this.packageType = val[0]
       this.productType = val[1]
     },
@@ -370,9 +358,10 @@ export default {
     async country (val, oldVal) {
       if (!val) return
       const packagePrductList = await this.getPackageType({countryId: this.country.id})
-      console.log('data1', packagePrductList)
       this.packagePrductList = packagePrductList || []
     }
+  },
+  beforeDestroy () {
   }
 }
 </script>
@@ -381,6 +370,7 @@ export default {
 @import '../../assets/styles/colors.less';
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
+
 .assess {
   .purple-bg;
   padding: 10px;

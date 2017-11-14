@@ -29,6 +29,11 @@ body {
   background-color: #efeff4;
 }
 
+.modal-open {
+  overflow: hidden;
+  position: relative;
+}
+
 @media screen and (min-width:321px) and (max-width:375px){html{font-size:10px}}
 @media screen and (min-width:376px) and (max-width:414px){html{font-size:10px}}
 @media screen and (min-width:415px) and (max-width:639px){html{font-size:12px}}
