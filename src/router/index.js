@@ -46,6 +46,14 @@ export default new Router({
       requiresAuth: true
     }
   }, {
+    path: '/assess',
+    name: 'Assess',
+    component: require('@/views/assess/Assess'),
+    meta: {
+      intro: '估价系统',
+      requiresAuth: true
+    }
+  }, {
     path: '/address/handle',
     name: 'HandleAddress',
     component: require('@/views/address/HandleAddress'),
