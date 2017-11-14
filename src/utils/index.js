@@ -4,6 +4,7 @@ import { localPrefix } from './config'
 import * as time from './time'
 import * as reg from './reg'
 import * as cache from './cache'
+import { getDefaultAddr } from '@/services/user'
 
 // 连字符转驼峰
 String.hyphenToHump = function () {
@@ -193,6 +194,55 @@ function getRating (rating) {
   return '★★★★★☆☆☆☆☆'.substring(5 - rating, 10 - rating)
 }
 
+/**
+ * [根据localStorage中数据，获取地址信息,如果没有则获取默认地址]
+ * @param  {[String]} options.type       [send或者pickup]
+ * @param  {[String]} options.storageKey [缓存key值]
+ * @param  {[Func]} options.apiService [api方法]
+ * @return {[Object]}                    [description]
+ */
+async function getAddress ({type, storageKey, apiService}) {
+  try {
+    const Local = JSON.parse(storage({key: storageKey}))
+    let addrId = ''
+    if (Local) {
+      addrId = Local.id
+    } else {
+      // 如果local为空，则选择默认的地址
+      const defaultAdrrRes = await getDefaultAddr({
+        WxUserId: storage({
+          key: 'userId'
+        })
+      })
+      if (defaultAdrrRes.code === 200 && defaultAdrrRes.obj) {
+        let defaultAdrr = defaultAdrrRes.obj
+        const defaultAdrrType = type === 'send' ? 'mailingAddress' : 'receiveAddresses'
+        if (defaultAdrr[defaultAdrrType] && defaultAdrr[defaultAdrrType].length > 0) {
+          addrId = defaultAdrr[defaultAdrrType][0]['id']
+        }
+      }
+    }
+    const Address = await apiService({id: addrId})
+    if (!Address.success || !Address.obj) return false
+    const addressRes = Address.obj
+    if (Number(addressRes.HIDDEN_STATUS) !== 1) return false
+    return {
+      id: addressRes.ID,
+      name: addressRes.NAME,
+      mobile: addressRes.MOBILE,
+      address: addressRes.ADDRESS || '',
+      country: addressRes.COUNTRY_CN || '',
+      province: addressRes.PROVINCE || '',
+      city: addressRes.cityName || '',
+      county: addressRes.DISTRICT || '',
+      countryId: addressRes.COUNTRY || ''
+    }
+  } catch (e) {
+    console.error(e)
+    return false
+  }
+}
+
 export {
   queryURL,
   queryArray,
@@ -203,5 +253,6 @@ export {
   time,
   reg,
   getRating,
-  cache
+  cache,
+  getAddress
 }

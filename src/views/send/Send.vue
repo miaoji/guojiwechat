@@ -307,7 +307,7 @@ import * as packageTypeService from '@/services/packageType'
 import * as productTypeService from '@/services/productType'
 import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
-import {getDefaultAddr} from '@/services/user'
+import { getDefaultAddr } from '@/services/user'
 import { storage, cache as cacheUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 
@@ -1295,7 +1295,7 @@ export default {
         justify-content: space-between;
         display: flex;
         font-size: 1.5rem;
-        color: @greyfont;
+        color: #2c3e50;
         div {
           .question_icon{
             width: 1.5rem;

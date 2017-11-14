@@ -23,6 +23,7 @@
               :item="item"
               :pick="pick"
               :addressType="addressType"
+              :orderType="orderType"
             >
             </address-item>
           </div>
@@ -51,9 +52,10 @@ export default {
   },
   created () {
     window.scrollTo(0, 0)
-    const {type, pick, tabshow} = this.$route.query
+    const {type, pick, tabshow, ordertype} = this.$route.query
     const localtype = storage({key: 'address_page_switch_type'})
     this.addressType = type || localtype || 'send'
+    this.orderType = ordertype || 'send'
     this.pick = pick === '1'
     this.tabshow = Number(tabshow) === 0 ? 0 : 1
   },

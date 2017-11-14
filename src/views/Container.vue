@@ -43,6 +43,7 @@ export default {
 @import '../assets/styles/init/index.less';
 @import '../assets/styles/init/send.less';
 @import '../assets/styles/init/address.less';
+@import '../assets/styles/init/consolidation.less';
 .bounce-enter-active {
   animation: bounce-in .5s;
 }

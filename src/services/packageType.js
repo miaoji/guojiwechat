@@ -13,6 +13,15 @@ export async function query (data) {
   })
 }
 
+export async function queryCascade (data) {
+  return request({
+    url: packageTypeApi.queryCascade,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
 export async function show (data) {
   return request({
     url: packageTypeApi.show,

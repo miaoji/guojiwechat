@@ -46,6 +46,10 @@ export default {
     addressType: {
       type: String,
       default: 'send'
+    },
+    orderType: {
+      type: String,
+      default: 'send'
     }
   },
   computed: {
@@ -65,7 +69,12 @@ export default {
       if (!this.pick) {
         return
       }
-      if (this.addressType === 'send') {
+      if (this.orderType === 'consolidation') {
+        window.localStorage.setItem('mj_consolidation_pickupaddress', JSON.stringify(item))
+        this.$router.push({path: '/consolidation'})
+        return
+      }
+      if (this.orderType === 'send' && this.addressType === 'send') {
         window.localStorage.setItem('mj_send_sendaddress', JSON.stringify(item))
       } else {
         window.localStorage.setItem('mj_send_pickupaddress', JSON.stringify(item))

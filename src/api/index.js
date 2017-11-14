@@ -4,11 +4,11 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟
-    // url = 'http://192.168.1.113:8077/'
+    url = 'http://192.168.1.117:8077/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/'
     // 正式 app 云端服务 Wechat
-    url = 'http://api.mingz-tech.com/'
+    // url = 'http://api.mingz-tech.com/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/'
@@ -95,6 +95,8 @@ export const wx = {
 // 包裹类型
 export const packageType = {
   query: url + 'api/packageType/index',
+  // int countryId
+  queryCascade: url + '/api/packageType/getPackageDetail',
   save: url + 'api/packageType/add',
   show: url + 'api/packageType/getPackageTypeById',
   showByCountry: url + 'api/packageType/getPackageTypeByCountry',

@@ -10,10 +10,6 @@
 export default {
   name: 'line',
   props: {
-    color: {
-      type: Object,
-      default: {}
-    }
   }
 }
 
