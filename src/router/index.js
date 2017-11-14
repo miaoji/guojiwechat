@@ -51,7 +51,7 @@ export default new Router({
     component: require('@/views/assess/Assess'),
     meta: {
       intro: '估价系统',
-      requiresAuth: true
+      requiresAuth: false
     }
   }, {
     path: '/address/handle',

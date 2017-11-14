@@ -4,8 +4,8 @@
       <div class="assess-container-select" >
         <div class="assess-container-title">估价系统</div>
         <group label-width="8rem" label-align="left">
-          <x-input 
-            title="国家/地区" 
+          <x-input
+            title="国家/地区"
             @click.native="onClickCountry" 
             disabled 
             placeholder="请选择国家/地区" 

@@ -156,9 +156,6 @@ export default {
   },
   async created () {
   },
-  mounted () {
-    window.document.title = '选择国家'
-  },
   computed: {
     inputLen () {
       const nameLen = this.inputCountryName.length
@@ -343,6 +340,7 @@ export default {
       // 压入一个新的history
       this.pushHistory()
       const _this = this
+      window.document.title = '选择国家'
       window.addEventListener('popstate', function (e) {
         // 此时的this指的是window, 所以要将_this传入进来
         const vue = _this
