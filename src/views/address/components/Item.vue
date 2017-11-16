@@ -8,20 +8,20 @@
     </div>
     <div class="addressitem-func">
       <span class="is-default" v-show="item.is_default === 1">
-        <img src="../assets/images/add_ico_che.png" alt="默认地址">
+        <img src="../../../assets/images/add_ico_che.png" alt="默认地址">
         <span>默认地址</span>
       </span>
       <span class="not-default" v-show="item.is_default === 0 || !item.is_default" @click.stop="changeChecked(item.id, item.start, item.userid)">
-        <img src="../assets/images/add_ico_nor.png" alt="">
+        <img src="../../../assets/images/add_ico_nor.png" alt="">
         <span>设为默认</span>
       </span>
       <div>
         <span class="edit" @click.stop="goPath('/address/handle', {id: item.id, type: addressType, pagetype: 'edit'})">
-          <img src="../assets/images/add_ico_cha.png" alt="">
+          <img src="../../../assets/images/add_ico_cha.png" alt="">
           <span>编辑</span>
         </span>
         <span class="edit" @click.stop="deleteItem(item.id, addressType)">
-          <img src="../assets/images/add_ico_del.png" alt="删除该地址">
+          <img src="../../../assets/images/add_ico_del.png" alt="删除该地址">
           <span>删除</span>
         </span>
       </div>
@@ -131,8 +131,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../../assets/styles/colors.less';
+@import '../../../assets/styles/helpers.less';
 
 .addressitem {
   padding: 0 .3rem;

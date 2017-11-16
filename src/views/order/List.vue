@@ -18,10 +18,10 @@
           class="orderlist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div class="orderlist-cell-detail" v-for="item in orderlist" :key="item.id" v-show="isShow(item.STATUS)">
-            <mj-orderitem 
+            <order-item 
               :item="item"
             >
-            </mj-orderitem>
+            </order-item>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
           <div class="scroller-fixed">
@@ -34,6 +34,7 @@
 <script>
 import { storage } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
+import OrderItem from './components/Item'
 
 export default {
   name: 'senddetail',
@@ -44,6 +45,9 @@ export default {
       key: 'senddetail_switch_type'
     })
     this.show = type || localtype || 'all'
+  },
+  components: {
+    OrderItem
   },
   computed: {
     ...mapGetters({

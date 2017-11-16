@@ -43,7 +43,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { storage } from '@/utils'
-import AddressItem from '@/components/AddressItem.vue'
+import AddressItem from './components/Item'
 
 export default {
   name: 'address',

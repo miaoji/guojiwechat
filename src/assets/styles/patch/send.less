@@ -18,6 +18,15 @@
       color: #333;
     }
   }
+  .vux-cell-box {
+    &:before {
+      border-top: 0;
+    }
+    .vux-popup-picker-select {
+      font-size: 1.5rem;
+      color: #333;
+    }
+  }
 }
 
 .send-weight-dialog {
@@ -50,14 +59,13 @@
   .send-weight-input {
     .weui-cells {
       &:before {
-        border-top: 2px solid #666 !important;
+        border-top-width: 0;
       }
       &:after {
-        border-top: 2px solid #666 !important;
+        border-top-width: 0;
       }
       .weui-cell {
-        border-left: 1px solid #666;
-        border-right: 1px solid #666;
+        border: 1px solid #666;
       }
     }
   }

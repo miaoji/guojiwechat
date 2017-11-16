@@ -52,7 +52,7 @@ export default {
         icon: jyPng,
         activeicon: acjyPng,
         key: 'consolidation',
-        show: false
+        show: true
       }, {
         name: '我的',
         path: '/usercenter',
@@ -76,6 +76,8 @@ export default {
 
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
+@import '../assets/styles/vars.less';
+
 footer {
   position: fixed;
   bottom: 0;
@@ -91,7 +93,6 @@ footer {
       padding: .6rem .1rem;
       list-style: none;
       text-align: center;
-      font-size: 0.3rem;
       color: #333333;
       margin: 0 auto;
       text-decoration: none;
@@ -102,7 +103,7 @@ footer {
         border-right-width: 0;
       }
       p {
-        font-size: 1.2rem;
+        font-size: @small-size;
         color: #999;
       }
       img {

@@ -35,6 +35,8 @@ export default {
 <style lang="less" scoped>
 
 .jag {
+  display: flex;
+  flex-direction: column;
   &-top {
     width: 100%;
     height: 22px;
@@ -44,7 +46,6 @@ export default {
     height: 22px;
   }
   &-content {
-    margin-top: -5px;
   }
 }
 </style>

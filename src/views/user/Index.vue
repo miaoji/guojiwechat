@@ -20,6 +20,7 @@
         <span class="arrow-left"></span>
       </div>
     </div>
+    <!-- 客服热线 -->
     <div v-transfer-dom>
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service">
@@ -31,7 +32,7 @@
         </div>
       </x-dialog>
     </div>
-
+    <!-- 用户信息展示 -->
     <div v-transfer-dom>
       <x-dialog v-model="usershow" class="user-dialog" hide-on-blur>
         <div class="img-box" :style="'background-image:url(' + userAvar + ')'">
@@ -149,21 +150,17 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 @import '../../assets/styles/colors.less';
+@import '../../assets/styles/vars.less';
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
+
 .dialog-demo {
-  .weui-dialog{
-    padding: 1rem 1rem 8px 1rem;
-    border-radius: 8px;
-  }  .dialog-title {
-    line-height: 30px;
-    color: #666;
-  }
   .customer-service {
     .flex;
     padding: 1rem;
-    font-size: 1.6rem;
+    font-size: @normal-size;
     a {
+      font-size: @normal-size;
       color: @m-yellow;
     }
   }
@@ -187,7 +184,7 @@ export default {
     padding: 15px;
     p {
       color: @m-yellow;
-      font-size: 1.4rem;
+      font-size: @normal-size;
       text-align: left;
     }
   }
@@ -238,7 +235,7 @@ export default {
       p {
         background-color: rgba(57, 58, 63, .5);
         color: white;
-        font-size: 1.6rem;
+        font-size: @middle-size;
         padding: .5rem 0;
         width: 100%;
         text-align: center;
@@ -267,7 +264,7 @@ export default {
           font-size: 0;
         }
         span {
-          font-size: 1.5rem;
+          font-size: @normal-size;
         }
       }
       .arrow-left {
@@ -280,29 +277,4 @@ export default {
     }
   }
 }
-
-
-.roate-change {
-  animation: roate 1s ease both alternate;
-  animation-iteration-count: 1;
-  animation-delay: -0.1s;
-  animation-fill-mode: forwards;
-  // animation-direction: reverse;
-}
-
-@keyframes roate {
-  0% {
-    transform: scale(2.5) rotate(0deg);
-  }
-  50% {
-    transform: scale(1) rotate(36000deg);
-  }
-  70% {
-    transform: scale(1.5) rotate(7200000deg);
-  }
-  100% {
-    transform: scale(1) rotate(720000000deg);
-  }
-}
-
 </style>

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { storage } from './index'
 
 const fetch = (options) => {
   let {
@@ -7,7 +8,8 @@ const fetch = (options) => {
     params,
     url,
     auth,
-    token
+    token,
+    paramkey
   } = options
 
   switch (method.toLowerCase()) {
@@ -28,6 +30,20 @@ const fetch = (options) => {
         timeout: 5000,
         headers: auth ? {'token': token} : {}
       })
+    case 'parampost':
+      let param = new URLSearchParams()
+      param.append(paramkey, data)
+      return axios({
+        url,
+        method: 'post',
+        params,
+        data,
+        timeout: 5000,
+        headers: {
+          'content-Type': 'application/x-www-form-urlencoded',
+          'token': auth ? token : {}
+        }
+      })
     case 'post':
       return axios({
         url,
@@ -47,7 +63,7 @@ const fetch = (options) => {
 }
 
 export default function request (options) {
-  options.token = window.localStorage.getItem('mj_token')
+  options.token = storage({key: 'token'})
   return fetch(options).then((response) => {
     const { status } = response
     let data = response.data

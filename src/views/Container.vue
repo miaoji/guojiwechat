@@ -39,26 +39,4 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-@import '../assets/styles/colors.less';
-@import '../assets/styles/init/index.less';
-@import '../assets/styles/init/send.less';
-@import '../assets/styles/init/address.less';
-@import '../assets/styles/init/consolidation.less';
-.bounce-enter-active {
-  animation: bounce-in .5s;
-}
-.bounce-leave-active {
-  animation: bounce-in .5s reverse;
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.5);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 </style>

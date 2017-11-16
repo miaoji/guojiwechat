@@ -9,7 +9,6 @@ import router from '@/router'
 import store from '@/store'
 import App from '@/App'
 import * as filters from '@/filters'
-import OrderItem from '@/components/OrderItem.vue'
 import MJSpinner from '@/components/MJSpinner.vue'
 
 FastClick.attach(document.body)
@@ -26,7 +25,6 @@ Vue.component('cell', Cell)
 Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-spinner', MJSpinner)
-Vue.component('mj-orderitem', OrderItem)
 
 router.beforeEach(function (to, from, next) {
   // 开发环境跳过验证登录码是否过期

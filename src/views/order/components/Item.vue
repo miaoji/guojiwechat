@@ -68,8 +68,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../assets/styles/colors.less';
-@import '../assets/styles/helpers.less';
+@import '../../../assets/styles/colors.less';
+@import '../../../assets/styles/helpers.less';
 
 .border-bottom-grey {
   border-bottom: 1px solid @borderbt;

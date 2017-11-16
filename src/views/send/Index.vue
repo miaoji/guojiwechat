@@ -75,26 +75,16 @@
       <!-- 订单配置选择 -->
       <div class="send-container-select" >
         <group label-width="8rem" label-align="left">
-          <selector
-            direction="rtl" 
-            v-model="packageType" 
-            :placeholder="packageTypeSelectContrl['placeholder']"
-            title="包裹类型" 
-            name="packageType"
-            :options="packageTypeOption" 
-            @on-change="onPackageTypeChange"
+          <!-- 包裹和产品类型选择，两者为级联关系 -->
+          <PackageProduct
+            title="产品类型"
+            placeholder="请选择产品类型"
+            :countryId="pickupCountryId"
+            :defaultSelect="packageProductCache"
+            @listenValChange="onProductChange"
           >
-          </selector>
-          <selector 
-            direction="rtl" 
-            title="产品类型" 
-            v-model="productType"
-            placeholder="选择产品类型"   
-            name="productionType"
-            :options="productTypeOption" 
-            @on-change="onProduTypeChange"
-          >
-          </selector>
+          </PackageProduct>
+          <!-- 产品规格选择，点击后弹出模态框 -->
           <cell 
             @click.native="dialogshow = true"
             :class="{'office': true, 'isFilled': orderOptions.weight}"
@@ -103,14 +93,14 @@
             :value="showProductSpecs"
             is-link>
           </cell>
-          <selector 
+          <selector
             direction="rtl"
             v-model="isOffer"
             placeholder="是否保价"
             title="是否保价"
             name="isoffer"
             :options="isOfferOption"
-            @on-change='isofferShowChange'
+            @on-change="isofferShowChange"
           >
           </selector>
           <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
@@ -156,7 +146,7 @@
           <div class="send-container-package__title">
             <div> 包裹报关 <span class="question_icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
             <div @click="packageShow = true">
-              <button type="" >添加包裹</button>
+              <button type="" >点击添加</button>
             </div>
           </div>
           <div class="send-container-package__table">
@@ -169,7 +159,7 @@
                   <th>价值/元</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="package-table">
                 <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
                   <td>
                     <input type="text" v-model="item['nameCn']">
@@ -187,12 +177,12 @@
               </tbody>
             </table>
           </div>
-          <p class="tips">
+          <p class="tips" v-show="packageTable.length > 0">
             <img src="../../assets/images/tips.png" alt="tips">
             长按删除，价值不可修改
           </p>
           <div class="send-container-package__money">
-            预付运费：￥ <span>{{advance === 'NaN' ? '请先选择产品类型' : advance}}</span>
+            预付运费：￥ <span>{{advanceShow}}</span>
           </div>
           <!-- 提交按钮 -->
           <div class="div-btn-sub"> 
@@ -304,15 +294,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom, Cell } from 'vux'
+import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
+import PackageProduct from '@/components/PackageProduct'
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
-import * as packageTypeService from '@/services/packageType'
-import * as productTypeService from '@/services/productType'
 import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
-import { getDefaultAddr } from '@/services/user'
-import { storage, cache as cacheUtil } from '@/utils'
+import { storage, cache as cacheUtil, getAddress as getAddressUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 
 export default {
@@ -326,12 +314,14 @@ export default {
     XTextarea,
     Spinner,
     XDialog,
-    Cell
+    PackageProduct
   },
   data () {
     return {
       loading: false,
       dialogshow: false,
+      // 收件国家 id
+      pickupCountryId: 0,
       // 订单重量体积的配置信息
       orderOptions: {
         weight: null,
@@ -362,16 +352,22 @@ export default {
       isofferPromptInfoShow: false,
       // 保价金额输入框是否显示
       isofferShow: false,
+      // 包裹产品类型选择原始val记录 like: ['{}', '{}']
+      packageProductCache: [],
       // 包裹类型
-      packageType: undefined,
-      packageTypeOption: [],
+      packageType: {
+        packageId: 0,
+        maxRange: 0,
+        minRange: 0
+      },
       // 产品类型
-      productType: undefined,
-      productTypeOption: [],
+      productType: {
+        productId: 0
+      },
       // 保价
       // 0 不保价 1 保价
       isOffer: 0,
-      // 报价信息
+      // 保价信息
       offer: 0,
       // 保费
       insuredPrice: 0,
@@ -383,8 +379,8 @@ export default {
         key: 1,
         value: '是'
       }],
-      isBack: 1,
       // 1 不退件 2 退件
+      isBack: 1,
       isBackOption: [{
         key: 1,
         value: '否'
@@ -402,6 +398,11 @@ export default {
       priceId: 0,
       // 预付费用
       advance: 0,
+      // 预付费用获取失败提示
+      advanceStatus: {
+        status: false,
+        text: '请先选择收件地址'
+      },
       sendAddress: {
         name: '',
         mobile: '',
@@ -443,6 +444,9 @@ export default {
           name: 'productType',
           needJudge: 1
         }, {
+          name: 'packageProductCache',
+          needJudge: 0
+        }, {
           name: 'isOffer',
           needJudge: 0
         }, {
@@ -453,28 +457,18 @@ export default {
     }
   },
   async created () {
-    // 1. 创建时将SET_PAGE创建为send
-    this.$store.commit('SET_PAGE', {page: 'send'})
     try {
+      // 1. 创建时将SET_PAGE创建为send
+      this.$store.commit('SET_PAGE', {page: 'send'})
       this.$vux.loading.show()
       // 2. 初始化wx jssdk
       await wxUtil.init()
       // 3. 获取地址
-      const sendAddress = await this.getAddress({type: 'send'})
-      if (sendAddress) {
-        this.sendAddress = sendAddress
-      }
-      const pickupAddress = await this.getAddress({type: 'pickup'})
-      if (pickupAddress) {
-        this.pickupAddress = pickupAddress
-      }
-      // 4. 根据收件国家id获取包裹类型
+      await this.getAddressByType({type: 'send'})
+      await this.getAddressByType({type: 'pickup'})
+      // 4. 将收件国家id赋值给pickupCountryId
       const pickupCountryId = this.pickupAddress['countryId']
       this.pickupCountryId = pickupCountryId
-      if (pickupCountryId) {
-        let packageTypeOption = await this.getPackageType({countryId: pickupCountryId})
-        this.packageTypeOption = packageTypeOption || []
-      }
       // 5. 从localStorage中获取存储的用户习惯信息, 将可以直接赋值的赋值到this
       const dataInCache = this.dataInCache
       let sendInfo = cacheUtil.setCacheToData.apply(this, [dataInCache, 'send_info'])
@@ -494,6 +488,7 @@ export default {
       console.error(e)
     } finally {
       this.$vux.loading.hide()
+      await this.getPrice()
     }
   },
   computed: {
@@ -502,15 +497,6 @@ export default {
       user: 'getUserInfo',
       userid: 'getUserId'
     }),
-    packageTypeSelectContrl () {
-      let placeholder = '选择包裹类型'
-      if (!this.pickupAddress['countryId']) {
-        placeholder = '请先选择收件地址'
-      }
-      return {
-        placeholder
-      }
-    },
     showProductSpecs () {
       const options = this.orderOptions
       if (Number(options.weight) === 0 || !options.weight || Number(options.volume) === 0 || !options.volume) {
@@ -519,6 +505,21 @@ export default {
       let weight = options.weight
       let volumeWeight = options.volumeWeight
       return `重量${weight}kg，体积重${volumeWeight}`
+    },
+    advanceShow () {
+      if (!this.advanceStatus['status']) {
+        return this.advanceStatus['text']
+      }
+      const advance = Number(this.advance)
+      // 将通过后台计算的价格加上本地的保价
+      // 判断如果点击了保价，但是没有输入保价金额，默认保价金额为1元
+      if (this.isOffer === 1 && this.insuredPrice < 1) {
+        this.insuredPrice = 1
+      } else if (this.isOffer === 0) {
+        this.insuredPrice = 0
+      }
+      const insuredPrice = Number(this.insuredPrice)
+      return (advance + insuredPrice).toFixed(2)
     }
   },
   methods: {
@@ -530,71 +531,29 @@ export default {
      * @param  {[type]} options.type [description]
      * @return {[type]}              [description]
      */
-    async getAddress ({type = 'send'}) {
+    async getAddressByType ({type = 'send'}) {
       try {
         const storageKey = type === 'send' ? 'send_sendaddress' : 'send_pickupaddress'
         const apiService = type === 'send' ? mailingAddrService.show : receiveAddrService.show
-        const Local = JSON.parse(storage({key: storageKey}))
-        let addrId = ''
-        if (Local) {
-          addrId = Local.id
-        } else {
-          // 如果local为空，则选择默认的地址
-          const defaultAdrrRes = await getDefaultAddr({
-            WxUserId: storage({
-              key: 'userId'
-            })
-          })
-          if (defaultAdrrRes.code === 200 && defaultAdrrRes.obj) {
-            let defaultAdrr = defaultAdrrRes.obj
-            const defaultAdrrType = type === 'send' ? 'mailingAddress' : 'receiveAddresses'
-            if (defaultAdrr[defaultAdrrType] && defaultAdrr[defaultAdrrType].length > 0) {
-              addrId = defaultAdrr[defaultAdrrType][0]['id']
-            }
-          }
-        }
-        const Address = await apiService({id: addrId})
-        if (!Address.success || !Address.obj) return false
-        const addressRes = Address.obj
-        if (Number(addressRes.HIDDEN_STATUS) !== 1) return false
-        return {
-          id: addressRes.ID,
-          name: addressRes.NAME,
-          mobile: addressRes.MOBILE,
-          address: addressRes.ADDRESS || '',
-          country: addressRes.COUNTRY_CN || '',
-          province: addressRes.PROVINCE || '',
-          city: addressRes.cityName || '',
-          county: addressRes.DISTRICT || '',
-          countryId: addressRes.COUNTRY || ''
-        }
+        const addressData = await getAddressUtil({type, storageKey, apiService})
+        this[`${type}Address`] = addressData
       } catch (e) {
         console.error(e)
-        return false
       }
     },
     /**
-     * [根据国家id获取包裹类型]
-     * @return {[type]} [description]
+     * [产品类型改变时触发方法]
      */
-    async getPackageType ({countryId}) {
+    async onProductChange (val) {
+      if (!val) return
       try {
-        const packageTypeRes = await packageTypeService.showByCountry({
-          countryId
-        })
-        if (!packageTypeRes.success) return false
-        if (packageTypeRes.statusCode !== 200) return false
-        if (!packageTypeRes.obj) return false
-        return packageTypeRes.obj.map(function (elem, index) {
-          let item = {
-            key: JSON.stringify(elem),
-            value: `名称: ${elem.name_cn}，重量范围: ${elem.min_range}~${elem.max_range}kg`
-          }
-          return item
-        })
+        if (val.length < 2) return
+        this.packageProductCache = val
+        this.packageType = JSON.parse(val['0'])
+        this.productType = JSON.parse(val['1'])
+        await this.getPrice()
       } catch (e) {
         console.error(e)
-        return false
       }
     },
     /**
@@ -684,7 +643,7 @@ export default {
           return
         }
         if (this.loading) return
-        // 包裹长度要在小于3，可以为空
+        // 包裹长度要小于等于3，可以为空
         if (!(this.packageTable.length <= 3)) {
           this.$vux.toast.show({
             text: '包裹最多3个',
@@ -816,7 +775,6 @@ export default {
         const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
       } catch (err) {
-        console.log('微信支付报错---')
         console.error(err)
         payStatus = 'fail'
         this.$vux.toast.show(err)
@@ -831,7 +789,7 @@ export default {
               totalfee: money
             }
           })
-        }, 800)
+        }, 700)
       }
     },
     /**
@@ -841,9 +799,10 @@ export default {
     clearForm () {
       this.packageTable = []
       this.remark = ''
-      this.packageTypeOption = []
       this.packageType = undefined
       this.productType = undefined
+      this.packageProductCache = []
+      this.pickupCountryId = 0
       this.orderOptions = {
         weight: null,
         width: null,
@@ -882,7 +841,7 @@ export default {
      * [产品规格确定方法]
      * @return {[type]} [description]
      */
-    volumeConfirm () {
+    async volumeConfirm () {
       if (Number(this.weight) > this.maxWeight || Number(this.weight) < this.minWeight || !this.weight) {
         this.$vux.toast.show({
           text: `重量不能大于${this.maxWeight}kg不能小于${this.minWeight}kg`,
@@ -913,22 +872,7 @@ export default {
       this.length = null
       this.height = null
       this.dialogshow = false
-      this.getPrice()
-    },
-    /**
-     * [包裹类型改变时触发方法]
-     * @param  {[type]} val [description]
-     * @return {[type]}     [description]
-     */
-    onPackageTypeChange (val) {
-      if (!val) return
-    },
-    /**
-     * [产品类型改变时触发方法]
-     */
-    onProduTypeChange (val) {
-      if (!val) return
-      this.getPrice()
+      await this.getPrice()
     },
     /**
      * [保价金额输入按钮显示触发方法]
@@ -940,75 +884,58 @@ export default {
         this.isofferShow = false
         this.offer = null
       }
-      this.getPrice()
     },
     // 在输入报价金额的时候查询订单金额
     offerChange (val) {
       if (Number(val) > 200000 || Number(val) === 200000) {
         this.offer = 200000
       }
-      this.getPrice()
-    },
-    /**
-     * [getPrice 获取预付费用]
-     * @return {[type]} [description]
-     */
-    async getPrice () {
-      try {
-        if (!this.pickupAddress['countryId']) {
-          this.advance = '请先选择收件地址'
-          return
-        }
-        if (!this.packageType) {
-          this.advance = '请先选择包裹类型'
-          return
-        }
-        if (!this.productType) {
-          this.advance = '请先选择产品'
-          return
-        }
-        const orderOptions = this.orderOptions
-        let weight = orderOptions.volumeWeight > orderOptions.weight ? orderOptions.volumeWeight : orderOptions.weight
-        if (!weight) {
-          this.advance = '请先输入重量'
-          return
-        }
-        const price = await priceService.showAdvanced({
-          weight,
-          countryId: this.pickupAddress['countryId'],
-          productTypeId: JSON.parse(this.productType)['id'],
-          packageTypeId: JSON.parse(this.packageType)['id']
-        })
-        this.advance = '获取费用失败'
-        if (!price.success) return
-        if (price.code !== 200) return
-        let data = price.obj
-        this.priceId = data.priceId
-        // console.log('data.finalPrice', data.finalPrice)
-        // 将通过后台计算的价格加上本地的保价
-        // 判断如果点击了保价，但是没有输入保价金额，默认保价金额为1元
-        if (this.isOffer === 1 && this.insuredPrice < 1) {
-          this.insuredPrice = 1
-        } else if (this.isOffer === 0) {
-          this.insuredPrice = 0
-        }
-        data.finalPrice = Number(data.finalPrice) + Number(this.insuredPrice)
-        this.advance = Number(data.finalPrice).toFixed(2)
-        return
-      } catch (err) {
-        console.error(err)
-        this.advance = '获取费用失败'
-      }
-    }
-  },
-  watch: {
-    offer (val, oldval) {
       if (val === null) {
         this.insuredPrice = 0
       } else {
         this.insuredPrice = val * 0.005
       }
     },
+    /**
+     * [getPrice 获取预付费用]
+     * @return {[type]} [description]
+     */
+    async getPrice () {
+      this.advanceStatus['status'] = false
+      try {
+        if (!this.pickupCountryId) {
+          this.advanceStatus['text'] = '请先选择收件地址'
+          return
+        }
+        if (!this.productType['productId']) {
+          this.advanceStatus['text'] = '请先选择产品类型'
+          return
+        }
+        const orderOptions = this.orderOptions
+        let weight = orderOptions.volumeWeight > orderOptions.weight ? orderOptions.volumeWeight : orderOptions.weight
+        if (!weight) {
+          this.advanceStatus['text'] = '请先输入重量'
+          return
+        }
+        const price = await priceService.showAdvanced({
+          weight,
+          countryId: this.pickupAddress['countryId'],
+          productTypeId: this.productType['productId'],
+          packageTypeId: this.packageType['packageId']
+        })
+        let data = price.obj
+        this.priceId = data.priceId
+        this.advanceStatus['status'] = true
+        this.advanceStatus['text'] = '请先输入重量'
+        this.advance = data.finalPrice
+        return
+      } catch (err) {
+        console.error(err)
+        this.advanceStatus['text'] = '请先输入重量'
+      }
+    }
+  },
+  watch: {
     length (val, oldval) {
       const _this = this
       if (val > 120) {
@@ -1077,30 +1004,10 @@ export default {
     async packageType (val, oldval) {
       if (!val) return
       try {
-        let packageType = JSON.parse(val)
-        this.minWeight = packageType['min_range'] || 0
-        this.maxWeight = packageType['max_range'] || 20
-        const proRes = await productTypeService.showByPackage({
-          packageTypeId: packageType['id']
-        })
-        if (proRes.success && proRes.code === 200 && proRes.obj) {
-          this.productTypeOption = proRes.obj.map(function (elem) {
-            let item = {
-              key: JSON.stringify(elem),
-              value: elem.product_name
-            }
-            return item
-          })
-        } else {
-          this.productTypeOption = []
-        }
+        this.minWeight = val['minRange'] || 0
+        this.maxWeight = val['maxRange'] || 20
       } catch (e) {
         console.error(e)
-      }
-    },
-    async productTypeOption (val, oldval) {
-      if (Array.isArray(val) && val.length === 1) {
-        this.productType = val[0]['key']
       }
     }
   },
@@ -1117,6 +1024,7 @@ export default {
 <style lang="less" scoped>
 @import '../../assets/styles/colors.less';
 @import '../../assets/styles/helpers.less';
+@import '../../assets/styles/vars.less';
 @import '~vux/src/styles/close';
 
 .bgblack {
@@ -1149,7 +1057,9 @@ export default {
     }
   }
 }
+
 .send-icon {
+  text-align: right;
   width: 3rem;
 }
 
@@ -1192,7 +1102,7 @@ export default {
           .flex;
           span {
             padding-left: 1rem;
-            font-size: 1.5rem;
+            font-size: @normal-size;
             color: @m-yellow;
           }
           img {
@@ -1227,13 +1137,13 @@ export default {
         justify-content: space-between;
         border-bottom: 1px solid #dedede;
       }
-      font-size: 1.4rem;
+      font-size: @normal-size;
       background: white;
       &__intro {
         flex: 1;
         margin-right: 0.5rem;
         span {
-          font-size: 1.5rem;
+          font-size: @normal-size;
           width: 2.6rem;
           height: 2.6rem;
           line-height: 2.6rem;
@@ -1305,8 +1215,8 @@ export default {
         align-content: center;
         justify-content: space-between;
         display: flex;
-        font-size: 1.5rem;
-        color: #2c3e50;
+        font-size: @normal-size;
+        color: @grey-word;
         div {
           .question_icon{
             width: 1.5rem;
@@ -1323,20 +1233,19 @@ export default {
         }
         button {
           color: @m-yellow;
-          border: 2px solid @m-yellow;
-          border-radius: 5px;
+          border: 1px solid @m-yellow;
+          border-radius: 3px;
           padding: .1rem .3rem;
           background: transparent;
-          font-weight: 600;
         }
       }
       &__table {
-        padding: .5rem 0;
+        padding: .3rem 0;
         border: 1px solid #dedede;
         border-left-width: 0;
         border-right-width: 0;
         table {
-          font-size: 1.5rem;
+          font-size: @normal-size;
           width: 100%;
           thead {
             color: @greyfont;
@@ -1348,7 +1257,7 @@ export default {
             td {
               padding: .3rem 0;
               line-height: 2rem;
-              font-size: 1.2rem;
+              font-size: @normal-size;
               overflow: hidden;
               max-width: 4rem;
               white-space: nowrap;
@@ -1367,7 +1276,7 @@ export default {
         text-align: center;
         color: @greyfont;
         padding-top: 10px;
-        font-size: 1.5rem;
+        font-size: @normal-size;
         span {
           color: @m-yellow;
         }
@@ -1381,7 +1290,7 @@ export default {
         color: white;
         border: none;
         padding: 1rem 0;
-        font-size: 1.6rem;
+        font-size: @normal-size;
         width: 100%;
         background-color: @m-yellow;
         border: none;

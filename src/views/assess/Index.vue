@@ -2,37 +2,27 @@
   <div class="assess">
     <div class="assess-container" v-show="mainContainerShow">
       <div class="assess-container-select" >
-        <div class="assess-container-title">估价系统</div>
+        <div class="assess-container-title">运费估算</div>
         <group label-width="8rem" label-align="left">
-          <x-input 
+          <x-input
             title="国家/地区"
             @click.native="onClickCountry"
-            placeholder="请选择国家/地区" 
+            placeholder="请选择国家/地区"
             type="text"
             required
             v-model="country['name']"
             text-align="right"
           ></x-input>
-          <popup-picker
-            class="popup_picker"
-            :data="packagePrductList"
-            v-model="packagePrductVal"
-            show-name
+          <PackageProduct
+            title="产品类型"
             placeholder="请选择产品类型"
-            :columns="2"
-            :show="packageShow"
-            @on-show="packageClick"
-            @on-change="onChange"
-            ref="packagePrductPicker"
+            showWarningText="请先选择国家"
+            :countryId="country['id']"
+            @listenValChange="onProductChange"
           >
-            <template slot="title">
-              <span>
-                <span style="vertical-align:middle;">产品类型</span>
-              </span>
-            </template>
-          </popup-picker>
+          </PackageProduct>
           <x-input
-            title="包裹重量"
+            title="包裹重量/kg"
             type="number"
             v-model="weight"
             text-align='right'
@@ -64,7 +54,7 @@
         </group>
       </div>
       <div class="div-btn-sub"> 
-        <button class="btn-sub" @click="validateInfo">估算运费</button>
+        <button class="btn-sub" @click="validateInfo">提交</button>
       </div>
       <div style="height:200px"></div>
     </div>
@@ -110,8 +100,8 @@
 <script>
 import { XInput, Selector, PopupPicker, Toast, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import SelectCountry from '@/views/address/components/SelectCountry'
+import PackageProduct from '@/components/PackageProduct'
 import * as priceService from '@/services/price'
-import * as packageTypeService from '@/services/packageType'
 
 export default {
   name: 'assess',
@@ -124,6 +114,7 @@ export default {
     Selector,
     Toast,
     PopupPicker,
+    PackageProduct,
     SelectCountry
   },
   data () {
@@ -173,8 +164,7 @@ export default {
         value: '是'
       }],
       // 订单配置 包裹类型&&产品类型
-      packagePrductVal: [],
-      packagePrductList: []
+      packagePrductVal: []
     }
   },
   computed: {
@@ -200,49 +190,9 @@ export default {
         return
       }
     },
-    onChange (val) {
-      console.log('val', val)
-    },
-    /**
-     * [根据国家id获取包裹类型]
-     * @return {[type]} [description]
-     */
-    async getPackageType ({countryId}) {
-      try {
-        const packageTypeRes = await packageTypeService.queryCascade({
-          countryId
-        })
-        if (packageTypeRes.success && packageTypeRes.statusCode && packageTypeRes.obj) {
-          const resData = packageTypeRes.obj
-          let returnData = []
-          for (let i = 0, len = resData.length; i < len; i++) {
-            const packageData = resData[i]
-            const parentVal = JSON.stringify({'package': packageData.id, 'minRange': packageData.minRange, 'maxRange': packageData.maxRange})
-            const packageItem = {
-              name: `${packageData.nameCn}[${packageData.minRange}~${packageData.maxRange}kg]`,
-              value: parentVal,
-              parent: 0
-            }
-            returnData.push(packageItem)
-            const productList = packageData.productTypeList
-            for (let j = 0, len = productList.length; j < len; j++) {
-              let product = productList[j]
-              let productItem = {
-                name: product.productName,
-                value: JSON.stringify({'product': product.id}),
-                parent: parentVal
-              }
-              returnData.push(productItem)
-            }
-          }
-          return returnData
-        } else {
-          return false
-        }
-      } catch (e) {
-        console.error(e)
-        return false
-      }
+    onProductChange (val) {
+      if (!val) return
+      this.packagePrductVal = val
     },
     onClickCountry () {
       this.mainContainerShow = false
@@ -257,12 +207,6 @@ export default {
       if (val['name'] !== oldName) {
         this.country = val
       }
-    },
-    onPackageTypeChange (val) {
-      if (!val) return
-    },
-    onProduTypeChange (val) {
-      if (!val) return
     },
     /**
      * [保价金额输入按钮显示触发方法]
@@ -318,8 +262,8 @@ export default {
       this.$vux.loading.show()
       const data = await priceService.showAdvanced({
         countryId: this.country.id,
-        packageTypeId: JSON.parse(this.packageType).package,
-        productTypeId: JSON.parse(this.productType).product,
+        packageTypeId: JSON.parse(this.packageType).packageId,
+        productTypeId: JSON.parse(this.productType).productId,
         weight: this.weight
       })
       if (data.code === 200 && data.obj) {
@@ -353,12 +297,6 @@ export default {
       if (!val) return
       this.packageType = val[0]
       this.productType = val[1]
-    },
-    // 监听国家的表单值,当国家的值发生改变的时候,获取包裹类型的值
-    async country (val, oldVal) {
-      if (!val) return
-      const packagePrductList = await this.getPackageType({countryId: this.country.id})
-      this.packagePrductList = packagePrductList || []
     }
   },
   beforeDestroy () {
@@ -377,27 +315,10 @@ export default {
   min-height: 95vh;
   &-container {
     border-radius: 5px;
+    font-size: 1.5rem;
     background: white;
     padding: 10px;
     padding-top: 1px;
-    .weui-cell__bd.weui-cell__primary {
-      input {
-        text-align: right;
-      }
-    }
-    .quyu {
-      font-size: 1.5rem;
-      .weui-label {
-        text-align: left;
-        padding-left: .6rem;
-      }
-      .vux-popup-picker-select {
-        color: #666;
-        span {
-          font-size: 1.5rem;
-        }
-      }
-    }
     &-add {
       margin-top: 3rem;
       padding: 1rem 1rem;
@@ -412,6 +333,7 @@ export default {
     }
   }
 }
+
 .offer-prompt-info {
   font-size: 1.4rem;
   color: #666;
@@ -434,6 +356,7 @@ export default {
     display: block;
   }
 }
+
 .float-icon{
   height: 0px;
   position: relative;
@@ -449,19 +372,12 @@ export default {
     }
   }
 }
-.popup_picker {
-  font-size: 1.5rem;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  -o-text-overflow:ellipsis;
-  overflow:hidden;
-}
+
 .assess {
   &-container {
     .purple-bg;
     padding: 0px;
     padding-top: 39px;
-    // padding-bottom: 9rem;
     overflow: hidden;
     a {
       .send-container-address {
@@ -569,7 +485,7 @@ export default {
             position: relative;
             top: 4px;
             left: 4px;
-            overflow: hidden; 
+            overflow: hidden;
             img{
               width: 1.5rem;
               height: 1.5rem;

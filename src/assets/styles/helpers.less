@@ -1,6 +1,5 @@
 @import './colors.less';
-@normal-size: 1.6rem;
-@second-size: 2.1rem;
+@import './vars.less';
 
 .hide {
 	display: none;
@@ -61,7 +60,8 @@
 }
 
 .tips {
-	font-size: 1.2rem;
+	padding: .3rem 0;
+	font-size: @small-size;
 	color: @m-yellow;
 	text-align: left;
 	img {

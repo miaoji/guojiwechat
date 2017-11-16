@@ -312,9 +312,9 @@ export default {
           company,
           num
         })
-        if (!interTraces.success) {
+        if (interTraces.code !== 200) {
           return this.$vux.toast.show({
-            text: interTraces.message || '网络错误',
+            text: interTraces.msg || '网络错误',
             type: 'warn',
             width: '18rem'
           })

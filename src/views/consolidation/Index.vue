@@ -56,7 +56,7 @@
               >
               </cell>
               <cell
-                value="上海市泰虹路168弄万科时一区1号楼302室"
+                :value="transferDetail"
               >
                 <template slot="title">
                   <span>
@@ -67,22 +67,6 @@
                   </span>
                 </template>
               </cell>
-              <popup-picker
-                :data="packagePrductList"
-                v-model="packagePrductVal"
-                show-name
-                @on-change="onChange"
-                placeholder="请选择产品类型"
-                :columns="2" 
-                @on-show="onShow"
-                ref="packagePrductPicker"
-              >
-                <template slot="title">
-                  <span>
-                    <span style="vertical-align:middle;">产品类型</span>
-                  </span>
-                </template>
-              </popup-picker>
             </group>
           </div>
         </div>
@@ -91,9 +75,9 @@
       <jag-container>
         <div slot="content" class="packages">
           <div class="packages__title">
-            <div> 包裹报关 <span class="question_icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
+            <div> 包裹报关 <span class="question-icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
             <div @click="packageShow = true">
-              <button type="" >添加包裹</button>
+              <button type="" >点击添加</button>
             </div>
           </div>
           <div class="packages__table">
@@ -101,7 +85,7 @@
               <thead>
                 <tr>
                   <th>品名</th>
-                  <th>重量/kg</th>
+                  <th>价值/元</th>
                   <th>快递公司</th>
                   <th>国内段单号</th>
                 </tr>
@@ -112,24 +96,21 @@
                     <input type="text" v-model="item['nameCn']">
                   </td>
                   <td>
-                    <input type="number" v-model="item['quantity']">
+                    <input type="texts" v-model="item['totalFee']">
                   </td>
                   <td>
-                    <input type="number" v-model="item['unitPrice']">
+                    <input type="text" v-model="item['kdCompanyCodeCn']">
                   </td>
                   <td>
-                    <input type="text" v-model="item['worth']" disabled>
+                    <input type="text" v-model="item['cnNo']">
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="packages__money">
-            预付运费：￥ <span>100</span>
-          </div>
           <!-- 提交按钮 -->
-          <div class="submit"> 
-            <button class="submit-btn">提交</button>
+          <div class="submit">
+            <button class="submit-btn" @click.stop="submitOrder">提交</button>
           </div>
         </div>
       </jag-container>
@@ -141,10 +122,10 @@
 import { Selector, XInput, PopupPicker, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import JagContainer from '@/components/JagContainer'
 import Line from './components/Line'
-// import * as wxUtil from '@/utils/wx'
 import { getAddress } from '@/utils'
 import * as receiveAddrService from '@/services/receiveAddr'
-import * as packageTypeService from '@/services/packageType'
+import * as transferAddrService from '@/services/transferAddr'
+import { save as saveCargo } from '@/services/cargo'
 
 export default {
   name: 'consolidation',
@@ -167,6 +148,7 @@ export default {
           needJudge: 0
         }
       ],
+      transferDetail: '',
       pickupAddress: {
         countryId: '',
         name: '',
@@ -178,105 +160,72 @@ export default {
         county: ''
       },
       pickupCountryId: null,
-      // 订单配置 包裹类型&&产品类型
-      packagePrductVal: [],
-      packagePrductList: [],
-      packageTable: []
+      packageTable: [{
+        totalFee: 22,
+        kdCompanyCodeCn: 'asdsa',
+        cnNo: '123456451'
+      }, {
+        totalFee: 22,
+        kdCompanyCodeCn: 'asdsa',
+        cnNo: '123456451'
+      }]
     }
   },
   async created () {
     // 1. 创建时将SET_PAGE创建为consolidation
     this.$store.commit('SET_PAGE', {page: 'consolidation'})
     try {
-      // this.$vux.loading.show()
-      // 2. 初始化wx jssdk
-      // await wxUtil.init()
-      // 3. 获取地址
-      const pickupAddress = await getAddress({
-        type: 'pickup',
-        storageKey: 'consolidation_pickupaddress',
-        apiService: receiveAddrService.show
-      })
-      if (pickupAddress) {
-        this.pickupAddress = pickupAddress
-      }
+      this.$vux.loading.show()
+      // 2. 获取默认中转地址
+      await this.getDefaultTransfer()
+      // 3. 获取收件地址
+      await this.getPickupAddress()
       // 4. 根据收件国家id获取包裹类型
       const pickupCountryId = this.pickupAddress['countryId']
-      this.pickupCountryId = pickupCountryId
-      if (pickupCountryId) {
-        let packagePrductList = await this.getPackageType({countryId: pickupCountryId})
-        this.packagePrductList = packagePrductList || []
-        // 当 packagePrductList 只有两个选项时自动选择那两项
-        if (packagePrductList.length === 2) {
-          this.packagePrductVal = [packagePrductList[0]['value'], packagePrductList[1]['value']]
-        }
-      }
+      this.pickupCountryId = pickupCountryId || 0
     } catch (e) {
       console.error(e)
     } finally {
-      // this.$vux.loading.hide()
+      this.$vux.loading.hide()
     }
   },
   computed: {
   },
   methods: {
-    /**
-     * [根据国家id获取包裹类型]
-     * @return {[type]} [description]
-     */
-    async getPackageType ({countryId}) {
+    // 获取默认中转地址
+    async getDefaultTransfer () {
       try {
-        const packageTypeRes = await packageTypeService.queryCascade({
-          countryId
+        const result = await transferAddrService.query({
+          isDefault: 1
         })
-        if (packageTypeRes.success && packageTypeRes.statusCode && packageTypeRes.obj) {
-          const resData = packageTypeRes.obj
-          let returnData = []
-          for (let i = 0, len = resData.length; i < len; i++) {
-            const packageData = resData[i]
-            const parentVal = JSON.stringify({
-              'packageId': packageData.id,
-              'maxRange': packageData.maxRange,
-              'minRange': packageData.minRange
-            })
-            const packageItem = {
-              name: `${packageData.nameCn}[${packageData.minRange}~${packageData.maxRange}kg]`,
-              value: parentVal,
-              parent: 0
-            }
-            returnData.push(packageItem)
-            const productList = packageData.productTypeList
-            for (let j = 0, len = productList.length; j < len; j++) {
-              let product = productList[j]
-              let productItem = {
-                name: product.productName,
-                value: JSON.stringify({'productId': product.id}),
-                parent: parentVal
-              }
-              returnData.push(productItem)
-            }
-          }
-          return returnData
-        } else {
-          return []
+        const transfer = result.obj['0']
+        const transferDetail = transfer['provinces']['province'] + transfer['transferAddress']
+        this.transferDetail = transferDetail
+      } catch (e) {
+        console.error(e)
+        this.transferDetail = e.msg || '获取中转地址失败'
+      }
+    },
+    // 获取收件地址
+    async getPickupAddress () {
+      try {
+        const pickupAddress = await getAddress({
+          type: 'pickup',
+          storageKey: 'consolidation_pickupaddress',
+          apiService: receiveAddrService.show
+        })
+        if (pickupAddress) {
+          this.pickupAddress = pickupAddress
         }
       } catch (e) {
         console.error(e)
-        return []
       }
     },
-    onShow () {
-      if (!this.pickupCountryId) {
-        this.$refs.packagePrductPicker.onHide()
-        this.$vux.toast.show({
-          text: '请先选择收件地址',
-          type: 'warn',
-          width: '18rem'
-        })
-      }
-    },
-    onChange (val) {
-      console.log('val change', val)
+    async submitOrder () {
+      const saveRes = await saveCargo(this.packageTable, {
+        receiveAddrId: this.pickupCountryId
+      })
+      console.log('saveCargo', saveRes)
     }
   },
   watch: {
@@ -288,8 +237,21 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 @import '../../assets/styles/colors.less';
+@import '../../assets/styles/vars.less';
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
+
+.question-icon{
+  width: 1.5rem;
+  height: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  img{
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
 
 .consolidation {
   &-container {
@@ -310,7 +272,7 @@ export default {
           .flex;
           span {
             padding-left: 1rem;
-            font-size: 1.5rem;
+            font-size: @normal-size;
             color: @m-yellow;
           }
           img {
@@ -334,7 +296,7 @@ export default {
           justify-content: space-between;
           border-bottom: 1px solid #dedede;
         }
-        font-size: 1.4rem;
+        font-size: @normal-size;
         background: white;
         &-icon {
           flex: 1;
@@ -343,7 +305,7 @@ export default {
             background-color: #333;
           }
           span {
-            font-size: 1.5rem;
+            font-size: @normal-size;
             width: 2.6rem;
             height: 2.6rem;
             line-height: 2.6rem;
@@ -356,7 +318,7 @@ export default {
           padding-left: .8rem;
           flex: 9;
           text-align: left;
-          color: #333;
+          color: @grey-word;
           &--line {
             div {
               display: flex;
@@ -422,12 +384,6 @@ export default {
           color: @greyfont;
         }
       }
-      .question-icon {
-        img {
-          width: 20px;
-          vertical-align: bottom;
-        }
-      }
     }
     .packages {
       background: white;
@@ -438,27 +394,12 @@ export default {
         justify-content: space-between;
         font-size: 1.5rem;
         color: #2c3e50;
-        div {
-          .question_icon{
-            width: 1.5rem;
-            height: 1.5rem;
-            position: relative;
-            top: 4px;
-            left: 4px;
-            overflow: hidden; 
-            img{
-              width: 1.5rem;
-              height: 1.5rem;
-            }
-          }
-        }
         button {
           color: @m-yellow;
-          border: 2px solid @m-yellow;
-          border-radius: 5px;
+          border: 1px solid @m-yellow;
+          border-radius: 3px;
           padding: .1rem .3rem;
           background: transparent;
-          font-weight: 600;
         }
       }
       &__table {

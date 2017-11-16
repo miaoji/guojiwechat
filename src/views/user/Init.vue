@@ -1,6 +1,6 @@
 <template>
   <div id="init">
-    <h1>正在跳转。。。</h1>
+    <h2>正在跳转。。。</h2>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
       type: 'text',
       width: '18rem',
       time: '1500',
-      text: '正在为您跳转，请稍候'
+      text: '正在为您跳转, 请稍候'
     })
     // 从localstorage中获取openid
     const openid = storage({key: 'openid'})

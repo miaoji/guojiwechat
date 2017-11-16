@@ -6,6 +6,25 @@ import FeedContainer from '@/views/feed/Container'
 
 Vue.use(Router)
 
+const usercenter = r => require.ensure([], () => r(require('@/views/user')), 'Usercenter')
+const send = r => require.ensure([], () => r(require('@/views/send')), 'Send')
+const consolidation = r => require.ensure([], () => r(require('@/views/consolidation')), 'Consolidation')
+const address = r => require.ensure([], () => r(require('@/views/address')), 'Address')
+const assess = r => require.ensure([], () => r(require('@/views/assess')), 'Assess')
+const handleaddress = r => require.ensure([], () => r(require('@/views/address/Handle')), 'HandleAddress')
+const bindphone = r => require.ensure([], () => r(require('@/views/user/BindPhone')), 'BindPhone')
+const redirect = r => require.ensure([], () => r(require('@/views/user/Redirect')), 'Redirect')
+const init = r => require.ensure([], () => r(require('@/views/user/Init')), 'Init')
+const nouser = r => require.ensure([], () => r(require('@/views/error/NoUser')), 'NoUser')
+const orderlist = r => require.ensure([], () => r(require('@/views/order/List')), 'OrderList')
+const orderdetail = r => require.ensure([], () => r(require('@/views/order/Detail')), 'OrderDetail')
+const bootdeal = r => require.ensure([], () => r(require('@/views/boot/Deal')), 'BootDeal')
+const bootlist = r => require.ensure([], () => r(require('@/views/boot/List')), 'BootList')
+const payresult = r => require.ensure([], () => r(require('@/views/pay/Result')), 'PayResult')
+const feedrecommend = r => require.ensure([], () => r(require('@/views/feed/Recommend')), 'FeedContainer')
+const couponlist = r => require.ensure([], () => r(require('@/views/coupon/List')), 'CouponList')
+const coupondetail = r => require.ensure([], () => r(require('@/views/coupon/Detail')), 'CouponDetail')
+
 export default new Router({
   base: __dirname,
   routes: [{
@@ -15,7 +34,7 @@ export default new Router({
     children: [{
       path: '/usercenter',
       name: 'UserCenter',
-      component: require('@/views/user/UserCenter'),
+      component: usercenter,
       meta: {
         intro: '个人中心',
         requiresAuth: true
@@ -23,7 +42,7 @@ export default new Router({
     }, {
       path: '/send',
       name: 'Send',
-      component: require('@/views/send/Send'),
+      component: send,
       meta: {
         intro: '寄件',
         requiresAuth: true
@@ -31,16 +50,16 @@ export default new Router({
     }, {
       path: '/consolidation',
       name: 'Consolidation',
-      component: require('@/views/consolidation/Index'),
+      component: consolidation,
       meta: {
         intro: '集运',
-        requiresAuth: false
+        requiresAuth: true
       }
     }]
   }, {
     path: '/address',
     name: 'Address',
-    component: require('@/views/address/Address'),
+    component: address,
     meta: {
       intro: '地址簿',
       requiresAuth: true
@@ -48,15 +67,15 @@ export default new Router({
   }, {
     path: '/assess',
     name: 'Assess',
-    component: require('@/views/assess/Assess'),
+    component: assess,
     meta: {
-      intro: '估价系统',
+      intro: '运费估算',
       requiresAuth: true
     }
   }, {
     path: '/address/handle',
     name: 'HandleAddress',
-    component: require('@/views/address/HandleAddress'),
+    component: handleaddress,
     meta: {
       intro: '添加/编辑地址',
       requiresAuth: true
@@ -64,23 +83,31 @@ export default new Router({
   }, {
     path: '/bindphone',
     name: 'BindPhone',
-    component: require('@/views/user/BindPhone'),
+    component: bindphone,
     meta: {
       intro: '绑定手机',
-      requiresAuth: false
+      requiresAuth: true
     }
   }, {
     path: '/redirect',
     name: 'Redirect',
-    component: require('@/views/user/Redirect')
+    component: redirect,
+    meta: {
+      intro: '跳转',
+      requiresAuth: false
+    }
   }, {
     path: '/init',
     name: 'Init',
-    component: require('@/views/user/Init')
+    component: init,
+    meta: {
+      intro: '初始化',
+      requiresAuth: false
+    }
   }, {
     path: '/nouser',
     name: 'NoUser',
-    component: require('@/views/error/NoUser'),
+    component: nouser,
     meta: {
       intro: '没有该用户',
       requiresAuth: false
@@ -88,7 +115,7 @@ export default new Router({
   }, {
     path: '/order/list',
     name: 'OrderList',
-    component: require('@/views/order/OrderList'),
+    component: orderlist,
     meta: {
       intro: '订单列表',
       requiresAuth: true
@@ -96,7 +123,7 @@ export default new Router({
   }, {
     path: '/orderdetail',
     name: 'OrderDetail',
-    component: require('@/views/order/OrderDetail'),
+    component: orderdetail,
     meta: {
       intro: '订单明细',
       requiresAuth: true
@@ -104,15 +131,15 @@ export default new Router({
   }, {
     path: '/bootdeal',
     name: 'BootDeal',
-    component: require('@/views/boot/BootDeal'),
+    component: bootdeal,
     meta: {
       intro: '补价处理',
-      requiresAuth: false
+      requiresAuth: true
     }
   }, {
     path: '/bootlist',
     name: 'BootList',
-    component: require('@/views/boot/BootList'),
+    component: bootlist,
     meta: {
       intro: '补价记录',
       requiresAuth: true
@@ -120,7 +147,7 @@ export default new Router({
   }, {
     path: '/payresult',
     name: 'PayResult',
-    component: require('@/views/pay/Result'),
+    component: payresult,
     meta: {
       intro: '支付结果',
       requiresAuth: true
@@ -132,7 +159,7 @@ export default new Router({
     children: [{
       path: '/feed/recommend',
       name: 'Recommend',
-      component: require('@/views/feed/Recommend'),
+      component: feedrecommend,
       meta: {
         requiresAuth: true
       }
@@ -140,7 +167,7 @@ export default new Router({
   }, {
     path: '/coupon',
     name: 'CouponList',
-    component: require('@/views/coupon/List'),
+    component: couponlist,
     meta: {
       intro: '卡券列表',
       requiresAuth: true
@@ -148,10 +175,10 @@ export default new Router({
   }, {
     path: '/coupon/detail',
     name: 'CouponDetail',
-    component: require('@/views/coupon/Detail'),
+    component: coupondetail,
     meta: {
       intro: '卡券详细',
-      requiresAuth: false
+      requiresAuth: true
     }
   }, {
     path: '*',

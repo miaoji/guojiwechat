@@ -43,6 +43,12 @@ export const receiveAddr = {
   delete: url + 'api/receiveAddr/delReceiveAddressById'
 }
 
+// 中转地址
+export const transferAddr = {
+  // 加参数isDefault=1获取默认中转地址
+  query: url + 'api/transfer/index'
+}
+
 // 国家
 export const country = {
   query: url + 'api/country/index',
@@ -128,6 +134,16 @@ export const orderInfo = {
   show: url + 'api/orderInfo/getOrderInfoById',
   update: url + 'api/orderInfo/modOrderInfoById',
   delete: url + 'api/orderInfo/delOrderInfoById'
+}
+
+// 集运订单
+export const cargo = {
+  query: url + 'api/orderInfo/index',
+  save: url + '/api/orderInfo/addCargo',
+  show: url + 'api/orderInfo/getOrderInfoById',
+  update: url + 'api/orderInfo/modOrderInfoById',
+  delete: url + 'api/orderInfo/delOrderInfoById',
+  test: url + 'test/tt'
 }
 
 // 用户信息等
