@@ -8,9 +8,9 @@ Vue.use(Router)
 
 const usercenter = r => require.ensure([], () => r(require('@/views/user')), 'Usercenter')
 const send = r => require.ensure([], () => r(require('@/views/send')), 'Send')
-const consolidation = r => require.ensure([], () => r(require('@/views/consolidation')), 'Consolidation')
-const address = r => require.ensure([], () => r(require('@/views/address')), 'Address')
+const cargo = r => require.ensure([], () => r(require('@/views/cargo')), 'Cargo')
 const assess = r => require.ensure([], () => r(require('@/views/assess')), 'Assess')
+const address = r => require.ensure([], () => r(require('@/views/address')), 'Address')
 const handleaddress = r => require.ensure([], () => r(require('@/views/address/Handle')), 'HandleAddress')
 const bindphone = r => require.ensure([], () => r(require('@/views/user/BindPhone')), 'BindPhone')
 const redirect = r => require.ensure([], () => r(require('@/views/user/Redirect')), 'Redirect')
@@ -24,6 +24,8 @@ const payresult = r => require.ensure([], () => r(require('@/views/pay/Result'))
 const feedrecommend = r => require.ensure([], () => r(require('@/views/feed/Recommend')), 'FeedContainer')
 const couponlist = r => require.ensure([], () => r(require('@/views/coupon/List')), 'CouponList')
 const coupondetail = r => require.ensure([], () => r(require('@/views/coupon/Detail')), 'CouponDetail')
+const cargolist = r => require.ensure([], () => r(require('@/views/cargo/List')), 'CargoList')
+const cargodetail = r => require.ensure([], () => r(require('@/views/cargo/detail')), 'CargoDetail')
 
 export default new Router({
   base: __dirname,
@@ -48,9 +50,9 @@ export default new Router({
         requiresAuth: true
       }
     }, {
-      path: '/consolidation',
-      name: 'Consolidation',
-      component: consolidation,
+      path: '/cargo',
+      name: 'Cargo',
+      component: cargo,
       meta: {
         intro: '集运',
         requiresAuth: true
@@ -186,6 +188,22 @@ export default new Router({
     component: require('@/views/error/Route'),
     meta: {
       intro: '404错误'
+    }
+  }, {
+    path: '/cargo/list',
+    name: 'CargoList',
+    component: cargolist,
+    meta: {
+      intro: '集运列表',
+      requiresAuth: true
+    }
+  }, {
+    path: '/cargo/detail',
+    name: 'CargoDetail',
+    component: cargodetail,
+    meta: {
+      intro: '集运详情',
+      requiresAuth: true
     }
   }]
 })

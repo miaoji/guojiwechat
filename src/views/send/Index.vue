@@ -566,7 +566,7 @@ export default {
       const _this = this
       function longPress () {
         _this.$vux.confirm.show({
-          title: '确定删除这一行数据吗?',
+          title: `确定删除这一行数据吗? (当前为第${index + 1}行)`,
           onCancel () {
           },
           onConfirm () {
@@ -574,7 +574,7 @@ export default {
           }
         })
       }
-      const longTimer = setTimeout(longPress, 800)
+      const longTimer = setTimeout(longPress, 900)
       $event.target.ontouchend = () => {
         clearTimeout(longTimer)
       }

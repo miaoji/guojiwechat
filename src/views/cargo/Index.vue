@@ -1,6 +1,6 @@
 <template>
-  <div class="consolidation">
-    <div class="consolidation-container">
+  <div class="cargo">
+    <div class="cargo-container" v-show="!selectExpressShow">
       <jag-container>
         <div slot="content" class="content">
           <!-- 顶部寄件列表点击跳转 -->
@@ -17,7 +17,7 @@
           </router-link>
           <purple-line></purple-line>
           <!-- 收件地址选择 -->
-          <router-link to="/address?type=pickup&pick=1&tabshow=0&ordertype=consolidation">
+          <router-link to="/address?type=pickup&pick=1&tabshow=0&ordertype=cargo">
             <div class="address">
               <div class="common-padding">
                 <div class="address-icon">
@@ -76,8 +76,8 @@
         <div slot="content" class="packages">
           <div class="packages__title">
             <div> 包裹报关 <span class="question-icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
-            <div @click="packageShow = true">
-              <button type="" >点击添加</button>
+            <div @click.stop="packageShow = true">
+              <button type="">点击添加</button>
             </div>
           </div>
           <div class="packages__table">
@@ -91,9 +91,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item, index in packageTable">
+                <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
                   <td>
-                    <input type="text" v-model="item['nameCn']">
+                    <input type="text" v-model="item['orderName']">
                   </td>
                   <td>
                     <input type="texts" v-model="item['totalFee']">
@@ -108,6 +108,11 @@
               </tbody>
             </table>
           </div>
+          <tips 
+            v-show="packageTable.length > 0"
+            content="长按删除"
+          >
+          </tips>
           <!-- 提交按钮 -->
           <div class="submit">
             <button class="submit-btn" @click.stop="submitOrder">提交</button>
@@ -115,12 +120,54 @@
         </div>
       </jag-container>
     </div>
+    <!-- 包裹弹框 -->
+    <div v-transfer-dom>
+      <x-dialog v-model="packageShow" class="pdialog">
+        <h1>添加包裹</h1>
+        <div class="package-close" @click="packageShow = false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="pdialog-form">
+          <group label-align="left">
+            <x-input title="品名" type="text" v-model="newPackage['orderName']" required></x-input>
+            <x-input title="价值/元" lang="en" type="tel" name="tel" v-model="newPackage['totalFee']" required></x-input>
+            <cell
+              title="快递公司"
+              :value="newPackage['kdCompanyCodeCn']"
+              @click.native="selectExpressShow = true"
+              is-link
+            >
+            </cell>
+            <x-input title="国内单号" type="number" v-model="newPackage['cnNo']"></x-input>
+          </group>
+          <div class="pdialog-form__confrim">
+            <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">取消</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="addPackge">完成</button>
+          </div>
+        </div>
+        <tips
+          content="您的快递可能合并成普货和特货走不通渠"
+        >
+        </tips>
+      </x-dialog>
+    </div>
+    <!-- 选择快递公司 -->
+    <select-box
+      :show="selectExpressShow"
+      type="pickup"
+      countryName="顺丰"
+      @listenCountryClose="onExpressClose"
+      @listenCountryConfirm="onExpressConfirm"
+    >
+    </select-box>
   </div>
 </template>
 
 <script>
 import { Selector, XInput, PopupPicker, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import JagContainer from '@/components/JagContainer'
+import Tips from '@/components/Tips'
+import SelectBox from '@/components/SelectBox'
 import Line from './components/Line'
 import { getAddress } from '@/utils'
 import * as receiveAddrService from '@/services/receiveAddr'
@@ -128,7 +175,7 @@ import * as transferAddrService from '@/services/transferAddr'
 import { save as saveCargo } from '@/services/cargo'
 
 export default {
-  name: 'consolidation',
+  name: 'cargo',
   directives: {
     TransferDom
   },
@@ -138,6 +185,8 @@ export default {
     XInput,
     XDialog,
     JagContainer,
+    Tips,
+    SelectBox,
     'purple-line': Line
   },
   data () {
@@ -161,28 +210,37 @@ export default {
       },
       pickupCountryId: null,
       packageTable: [{
+        wxUserId: 212,
+        orderName: 'asdasd',
         totalFee: 22,
         kdCompanyCodeCn: 'asdsa',
         cnNo: '123456451'
       }, {
+        orderName: '112a',
+        wxUserId: 212,
         totalFee: 22,
         kdCompanyCodeCn: 'asdsa',
         cnNo: '123456451'
-      }]
+      }],
+      newPackage: {
+        orderName: '',
+        totalFee: '',
+        kdCompanyCodeCn: '',
+        cnNo: ''
+      },
+      packageShow: false,
+      // 控制快递公司选择插件展示
+      selectExpressShow: false
     }
   },
   async created () {
-    // 1. 创建时将SET_PAGE创建为consolidation
-    this.$store.commit('SET_PAGE', {page: 'consolidation'})
     try {
       this.$vux.loading.show()
-      // 2. 获取默认中转地址
+      // 创建时将SET_PAGE创建为consolidation
+      this.$store.commit('SET_PAGE', {page: 'cargo'})
       await this.getDefaultTransfer()
-      // 3. 获取收件地址
       await this.getPickupAddress()
-      // 4. 根据收件国家id获取包裹类型
-      const pickupCountryId = this.pickupAddress['countryId']
-      this.pickupCountryId = pickupCountryId || 0
+      this.pickupCountryId = this.pickupAddress['countryId'] || 0
     } catch (e) {
       console.error(e)
     } finally {
@@ -192,7 +250,10 @@ export default {
   computed: {
   },
   methods: {
-    // 获取默认中转地址
+    /**
+     * [获取默认中转地址, 只做展示用，不允许修改]
+     * no return
+     */
     async getDefaultTransfer () {
       try {
         const result = await transferAddrService.query({
@@ -206,12 +267,15 @@ export default {
         this.transferDetail = e.msg || '获取中转地址失败'
       }
     },
-    // 获取收件地址
+    /**
+     * [从localStorage中获取选取的收件地址，没有的话则获取默认的收件地址]
+     * no return
+     */
     async getPickupAddress () {
       try {
         const pickupAddress = await getAddress({
           type: 'pickup',
-          storageKey: 'consolidation_pickupaddress',
+          storageKey: 'cargo_pickupaddress',
           apiService: receiveAddrService.show
         })
         if (pickupAddress) {
@@ -221,11 +285,75 @@ export default {
         console.error(e)
       }
     },
+    /**
+     * [长按删除]
+     * @param  {[type]} index  [description]
+     * @param  {[type]} $event [description]
+     * @return {[type]}        [description]
+     */
+    longTap (index, $event) {
+      const _this = this
+      function longPress () {
+        _this.$vux.confirm.show({
+          title: `确定删除这一行数据吗? (当前为第${index + 1}行)`,
+          onCancel () {
+          },
+          onConfirm () {
+            _this.packageTable.splice(index, 1)
+          }
+        })
+      }
+      const longTimer = setTimeout(longPress, 700)
+      $event.target.ontouchend = () => {
+        clearTimeout(longTimer)
+      }
+    },
+    /**
+     * [添加包裹]
+     */
+    addPackge () {
+      const _this = this
+      let complete = []
+      Object.keys(_this.newPackage).forEach(function (key) {
+        if (!_this.newPackage[key] && key !== 'cnNo' && key !== 'kdCompanyCodeCn') {
+          complete.push(false)
+        } else {
+          complete.push(true)
+        }
+      })
+      if (complete.includes(false)) {
+        _this.$vux.toast.show({
+          type: 'warn',
+          text: '请将信息填写完整',
+          width: '16rem',
+          time: '600'
+        })
+        return
+      }
+      this.packageTable.push(this.newPackage)
+      this.newPackage = {
+        orderName: '',
+        totalFee: '',
+        kdCompanyCodeCn: '',
+        cnNo: ''
+      }
+      this.packageShow = false
+    },
+    /**
+     * [提交集运订单，成功后跳转到详细页面]
+     * no return
+     */
     async submitOrder () {
       const saveRes = await saveCargo(this.packageTable, {
         receiveAddrId: this.pickupCountryId
       })
       console.log('saveCargo', saveRes)
+    },
+    onExpressClose () {
+      this.selectExpressShow = false
+    },
+    onExpressConfirm () {
+      this.selectExpressShow = false
     }
   },
   watch: {
@@ -253,7 +381,7 @@ export default {
   }
 }
 
-.consolidation {
+.cargo {
   &-container {
     .purple-bg;
     min-height: 92vh;
@@ -366,15 +494,6 @@ export default {
         font-size: 1.4rem;
         text-align: left;
         border-bottom: 1px solid #dedede;
-        .tips {
-          img {
-            width: 1.2rem;
-            vertical-align: text-bottom;
-          }
-          color: @m-yellow;
-          text-align: left;
-          font-size: 1.2rem;
-        }
       }
       .options {
         margin-right: 1rem;

@@ -169,6 +169,12 @@ export const expressRoute = {
   kd100: url + 'api/order/queryByCompany'
 }
 
+// 快递公司
+export const expressCompany = {
+  // 传name进行模糊查询
+  query: url + 'api/kdCompany/index'
+}
+
 // 查询补价
 export const boot = {
   query: url + 'api/closingPrice/index',

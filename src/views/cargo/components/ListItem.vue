@@ -1,17 +1,17 @@
 <template>
-  <div class="senditem">
-    <div class="senditem-detail">
-      <div class="senditem-detail__icon">
+  <div class="listitem">
+    <div class="listitem-detail">
+      <div class="listitem-detail__icon">
         收
       </div>
-      <div class="senditem-detail__address">
-        <p class="senditem-detail__address--detail">{{item.RECEIVER_NAME}}&nbsp;&nbsp;{{item.RECEIVER_MOBILE}}</p>
-        <p class="senditem-detail__address--detail">{{item.RECEIVER_COUNTRY}}{{item.RECEIVER_PROV}}{{item.RECEIVER_CITY}}{{item.RECEIVER_COUNTY}}&nbsp;详细:&nbsp;{{item.RECEIVER_ADDRESS}}</p>
+      <div class="listitem-detail__address">
+        <p class="listitem-detail__address--detail">{{item.RECEIVER_NAME}}&nbsp;&nbsp;{{item.RECEIVER_MOBILE}}</p>
+        <p class="listitem-detail__address--detail">{{item.RECEIVER_COUNTRY}}{{item.RECEIVER_PROV}}{{item.RECEIVER_CITY}}{{item.RECEIVER_COUNTY}}&nbsp;详细:&nbsp;{{item.RECEIVER_ADDRESS}}</p>
       </div>
-      <span class="senditem-detail__state">{{item.STATUS | orderstatus}}</span>
+      <span class="listitem-detail__state">{{item.STATUS | orderstatus}}</span>
     </div>
-    <div class="senditem-edit" style="justify-content: space-between;">
-      <p class="senditem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
+    <div class="listitem-edit" style="justify-content: space-between;">
+      <p class="listitem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
       <div>
         <button v-show="item.STATUS === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
@@ -24,7 +24,7 @@
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'orderitem',
+  name: 'listitem',
   props: {
     item: {
       type: Object,
@@ -98,11 +98,11 @@ export default {
   padding: 2px;
 }
 
-.senditem {
+.listitem {
   padding: 0 .3rem;
   background: white;
   border-radius: 5px;
-  .senditem-box {
+  .listitem-box {
     .flex;
     .border-bottom-grey;
     .item-padding;
@@ -110,7 +110,7 @@ export default {
     text-align: justify;
   }
   &-detail {
-    .senditem-box;
+    .listitem-box;
     &__state {
       font-size: 1.3rem;
       color: @m-yellow;
@@ -154,7 +154,7 @@ export default {
     }
   }
   &-edit {
-    .senditem-box;
+    .listitem-box;
     height: 2.2rem;
     &__time {
       font-size: 1.2rem;

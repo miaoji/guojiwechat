@@ -48,10 +48,10 @@ export default {
         show: true
       }, {
         name: '集运',
-        path: '/consolidation',
+        path: '/cargo',
         icon: jyPng,
         activeicon: acjyPng,
-        key: 'consolidation',
+        key: 'cargo',
         show: true
       }, {
         name: '我的',
@@ -79,6 +79,7 @@ export default {
 @import '../assets/styles/vars.less';
 
 footer {
+  transition: all 1s;
   position: fixed;
   bottom: 0;
   width: 100%;

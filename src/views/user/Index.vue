@@ -109,6 +109,11 @@ export default {
         path: '/order/list',
         show: true
       }, {
+        src: require('../../assets/images/cargo_ico.png'),
+        name: '集运订单',
+        path: '/order/list',
+        show: true
+      }, {
         src: require('../../assets/images/coupon.png'),
         name: '我的卡包',
         path: '/coupon',
@@ -233,6 +238,7 @@ export default {
         }
       }
       p {
+        margin-bottom: -1px;
         background-color: rgba(57, 58, 63, .5);
         color: white;
         font-size: @middle-size;

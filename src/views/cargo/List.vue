@@ -1,7 +1,7 @@
 <template>
-  <div class="orderlist">
-    <div class="orderlist-container">
-      <div class="orderlist-container-tab">
+  <div class="cargolist">
+    <div class="cargolist-container">
+      <div class="cargolist-container-tab">
         <tab active-color='#ffa414'>
           <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
           <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
@@ -9,15 +9,15 @@
           <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
         </tab>
       </div>
-      <div class="orderlist-cell">
+      <div class="cargolist-cell">
         <scroller
           :on-refresh="refresh"
           :on-infinite="infinite"
           :noDataText="scrollerNoDataText"
-          ref="my_scroller_orderlist"
-          class="orderlist-scroller">
+          ref="my_scroller_cargolist"
+          class="cargolist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="orderlist-cell-detail" v-for="item in orderlist" :key="item.id" v-show="isShow(item.STATUS)">
+          <div class="cargolist-cell-detail" v-for="item in orderlist" :key="item.id" v-show="isShow(item.STATUS)">
             <list-item 
               :item="item"
             >
@@ -37,7 +37,7 @@ import { mapGetters, mapActions } from 'vuex'
 import ListItem from './components/ListItem'
 
 export default {
-  name: 'orderlist',
+  name: 'cargolist',
   async created () {
     window.scrollTo(0, 0)
     const { type } = this.$route.query

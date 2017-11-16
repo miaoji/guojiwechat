@@ -1,0 +1,68 @@
+@import '../colors.less';
+
+.cargo {
+
+  .options {
+    .weui-cells{
+      margin-top: 0;
+      &:before {
+        border-top-width: 0;
+      }
+      &:after {
+        border-bottom-width: 0;
+      }
+      .weui-cell__ft {
+        max-height: 4rem;
+        color: @grey-word;
+      }
+    }
+  }
+
+}
+
+.pdialog {
+  .package-close {
+    position: absolute;
+    top: 15px;
+    right: 8px;
+    background: white;
+  }
+  .weui-dialog{
+    padding: 1rem 1rem 8px 1rem;
+    border-radius: 8px;
+  }
+  h1 {
+    color: #7f7f7f;
+    font-size: 1.8rem;
+    font-weight: 100;
+  }
+  &-form {
+    &__confrim {
+      padding: .8rem;
+      button {
+        width: 45%;
+        padding: 0.6rem 0;
+      }
+      &--cancle {
+        background: transparent;
+        margin-right: 4%;
+        color: @m-yellow;
+        border: 1px solid @m-yellow;
+        border-radius: 5px;
+      }
+      &--sure {
+        background: @m-yellow;
+        margin-right: 1rem;
+        color: white;
+        border: 1px solid @m-yellow;
+        border-radius: 5px;
+      }
+    }
+  }
+  &-tips {
+    padding: 0 .6rem;
+    text-align: left;
+    font-size: 1.2rem;
+    color: #999;
+  }
+}
