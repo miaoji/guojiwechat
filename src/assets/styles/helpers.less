@@ -9,6 +9,14 @@
 	height: 0;
 }
 
+.bgblack {
+  background-color: #333;
+}
+
+.bgred {
+  background-color: @red;
+}
+
 .show {
 	display: block;
 }
@@ -71,5 +79,70 @@
 	img {
 		vertical-align: text-top;
 		height: 1.2rem;
+	}
+}
+
+.address-icon {
+	span {
+	  font-size: @normal-size;
+	  width: @huge-size;
+	  height: @huge-size;
+	  line-height: @huge-size;
+	  display: block;
+	  border-radius: 50%;
+	  color: white;
+	}
+}
+
+.address-icon--small {
+	span {
+		text-align: center;
+	  font-size: @small-size;
+	  width: @big-size;
+	  height: @big-size;
+	  line-height: @big-size;
+	  display: block;
+	  border-radius: 50%;
+	  color: white;
+	}
+}
+
+.float-icon{
+  height: 0px;
+  position: relative;
+  &-img{
+    position: absolute;
+    width: @normal-size;
+    height: @normal-size;
+    top: -32px;
+    left: 76px;
+    img {
+      width: inherit;
+      height: inherit;
+    }
+  }
+}
+
+div.question-icon{
+  .flex;
+  img{
+  	margin-left: .3rem;
+    width: @normal-size;
+    height: @normal-size;
+  }
+}
+
+.booklist {
+	.flex;
+	overflow: auto;
+	&-item {
+		min-width: 6rem;
+		min-height: 6rem;
+		padding: .4rem;
+		background: #FCFCE1;
+		margin-right: 1rem;
+		p {
+		  font-size: @small-size;
+		}
 	}
 }

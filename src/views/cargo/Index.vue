@@ -55,16 +55,23 @@
                 value="MZA10240111001"
               >
               </cell>
-              <cell
-                :value="transferDetail"
-              >
+              <cell>
                 <template slot="title">
-                  <span>
+                  <div class="question-icon">
                     <span>中转地址</span>
-                    <span class="question-icon">
-                      <img src="../../assets/images/question.png">
-                    </span>
-                  </span>
+                    <img src="../../assets/images/question.png">
+                  </div>
+                </template>
+                <template slot="value">
+                  <Load-toshow
+                    title="中转地址"
+                    :ajaxFunc="transferService"
+                    :query="{
+                      isDefault: 1
+                    }"
+                    :dataLevel="[['obj', ['0', [['provinces', ['province']], 'transferAddress']]]]"
+                  >
+                  </Load-toshow>
                 </template>
               </cell>
             </group>
@@ -75,7 +82,12 @@
       <jag-container>
         <div slot="content" class="packages">
           <div class="packages__title">
-            <div> 包裹报关 <span class="question-icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
+            <div class="question-icon" @click.stop='packagePromptInfoShow = true'>
+              <span>
+                包裹报关
+              </span>
+              <img src="../../assets/images/question.png" />
+            </div>
             <div @click.stop="packageShow = true">
               <button type="">点击添加</button>
             </div>
@@ -99,7 +111,7 @@
                     <input type="texts" v-model="item['totalFee']">
                   </td>
                   <td>
-                    <input type="text" v-model="item['kdCompanyCodeCn']">
+                    <input type="text" v-model="item['companyName']">
                   </td>
                   <td>
                     <input type="text" v-model="item['cnNo']">
@@ -128,17 +140,17 @@
           <span class="vux-close"></span>
         </div>
         <div class="pdialog-form">
-          <group label-align="left">
-            <x-input title="品名" type="text" v-model="newPackage['orderName']" required></x-input>
-            <x-input title="价值/元" lang="en" type="tel" name="tel" v-model="newPackage['totalFee']" required></x-input>
-            <cell
+          <group label-width="7rem" label-align="left">
+            <x-input title="品名" placeholder="请填写包裹名字" type="text" v-model="newPackage['orderName']" required></x-input>
+            <x-input title="价值/元" placeholder="请填写包裹价值" lang="en" type="tel" name="tel" v-model="newPackage['totalFee']" required></x-input>
+            <x-input
               title="快递公司"
-              :value="newPackage['kdCompanyCodeCn']"
-              @click.native="selectExpressShow = true"
-              is-link
+              placeholder="点击选择快递公司"
+              v-model="newPackage['companyName']"
+              @click.native="onClickExSelect"
             >
-            </cell>
-            <x-input title="国内单号" type="number" v-model="newPackage['cnNo']"></x-input>
+            </x-input>
+            <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
           </group>
           <div class="pdialog-form__confrim">
             <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">取消</button>
@@ -146,7 +158,7 @@
           </div>
         </div>
         <tips
-          content="您的快递可能合并成普货和特货走不通渠"
+          content="您的快递可能合并成普货和特货走不同渠道"
         >
         </tips>
       </x-dialog>
@@ -156,8 +168,8 @@
       :show="selectExpressShow"
       type="pickup"
       countryName="顺丰"
-      @listenCountryClose="onExpressClose"
-      @listenCountryConfirm="onExpressConfirm"
+      @listenBoxClose="onExpressClose"
+      @listenBoxConfirm="onExpressConfirm"
     >
     </select-box>
   </div>
@@ -168,8 +180,9 @@ import { Selector, XInput, PopupPicker, XDialog, TransferDomDirective as Transfe
 import JagContainer from '@/components/JagContainer'
 import Tips from '@/components/Tips'
 import SelectBox from '@/components/SelectBox'
+import LoadToshow from '@/components/LoadToshow'
 import Line from './components/Line'
-import { getAddress } from '@/utils'
+import { getAddress, storage } from '@/utils'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as transferAddrService from '@/services/transferAddr'
 import { save as saveCargo } from '@/services/cargo'
@@ -187,6 +200,7 @@ export default {
     JagContainer,
     Tips,
     SelectBox,
+    LoadToshow,
     'purple-line': Line
   },
   data () {
@@ -197,7 +211,7 @@ export default {
           needJudge: 0
         }
       ],
-      transferDetail: '',
+      isSubmit: false,
       pickupAddress: {
         countryId: '',
         name: '',
@@ -209,23 +223,12 @@ export default {
         county: ''
       },
       pickupCountryId: null,
-      packageTable: [{
-        wxUserId: 212,
-        orderName: 'asdasd',
-        totalFee: 22,
-        kdCompanyCodeCn: 'asdsa',
-        cnNo: '123456451'
-      }, {
-        orderName: '112a',
-        wxUserId: 212,
-        totalFee: 22,
-        kdCompanyCodeCn: 'asdsa',
-        cnNo: '123456451'
-      }],
+      packageTable: [],
       newPackage: {
         orderName: '',
         totalFee: '',
         kdCompanyCodeCn: '',
+        companyName: '',
         cnNo: ''
       },
       packageShow: false,
@@ -238,7 +241,6 @@ export default {
       this.$vux.loading.show()
       // 创建时将SET_PAGE创建为consolidation
       this.$store.commit('SET_PAGE', {page: 'cargo'})
-      await this.getDefaultTransfer()
       await this.getPickupAddress()
       this.pickupCountryId = this.pickupAddress['countryId'] || 0
     } catch (e) {
@@ -248,25 +250,25 @@ export default {
     }
   },
   computed: {
+    transferService () {
+      return transferAddrService.query
+    },
+    packages () {
+      const packageTable = this.packageTable
+      const _this = this
+      return packageTable.map(function (elem) {
+        delete elem.companyName
+        return {
+          ...elem,
+          wxUserId: storage({
+            key: 'userId'
+          }),
+          receiverCountry: _this.pickupAddress['country']
+        }
+      })
+    }
   },
   methods: {
-    /**
-     * [获取默认中转地址, 只做展示用，不允许修改]
-     * no return
-     */
-    async getDefaultTransfer () {
-      try {
-        const result = await transferAddrService.query({
-          isDefault: 1
-        })
-        const transfer = result.obj['0']
-        const transferDetail = transfer['provinces']['province'] + transfer['transferAddress']
-        this.transferDetail = transferDetail
-      } catch (e) {
-        console.error(e)
-        this.transferDetail = e.msg || '获取中转地址失败'
-      }
-    },
     /**
      * [从localStorage中获取选取的收件地址，没有的话则获取默认的收件地址]
      * no return
@@ -344,16 +346,56 @@ export default {
      * no return
      */
     async submitOrder () {
-      const saveRes = await saveCargo(this.packageTable, {
-        receiveAddrId: this.pickupCountryId
-      })
-      console.log('saveCargo', saveRes)
+      try {
+        if (this.packages.length < 1) {
+          this.$vux.toast.show({
+            text: '请填写至少一个包裹',
+            type: 'warn',
+            width: '16rem'
+          })
+          return
+        }
+        if (this.isSubmit) {
+          this.$vux.toast.show({
+            text: '请勿重复提交',
+            type: 'warn',
+            width: '16rem'
+          })
+          return
+        }
+        this.$vux.loading.show()
+        this.isSubmit = true
+        const saveRes = await saveCargo(this.packages, {
+          receiveAddrId: this.pickupCountryId
+        })
+        if (saveRes.code === 200) {
+          this.$router.push({
+            path: '/cargo/list'
+          })
+        } else {
+          this.$vux.toast.show({
+            text: saveRes.msg || '请求失败',
+            type: 'warn',
+            width: '18rem'
+          })
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        this.$vux.loading.hide()
+      }
+    },
+    onClickExSelect () {
+      this.selectExpressShow = true
+      this.packageShow = false
     },
     onExpressClose () {
       this.selectExpressShow = false
+      this.packageShow = true
     },
-    onExpressConfirm () {
-      this.selectExpressShow = false
+    onExpressConfirm (val) {
+      this.newPackage['kdCompanyCodeCn'] = val['companyCode']
+      this.newPackage['companyName'] = val['companyName']
     }
   },
   watch: {
@@ -368,18 +410,6 @@ export default {
 @import '../../assets/styles/vars.less';
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
-
-.question-icon{
-  width: 1.5rem;
-  height: 1.5rem;
-  position: relative;
-  overflow: hidden;
-  vertical-align: middle;
-  img{
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-}
 
 .cargo {
   &-container {
@@ -429,9 +459,6 @@ export default {
         &-icon {
           flex: 1;
           margin-right: 0.5rem;
-          .bgblack {
-            background-color: #333;
-          }
           span {
             font-size: @normal-size;
             width: 2.6rem;
@@ -511,8 +538,7 @@ export default {
         .flex;
         padding-bottom: 1rem;
         justify-content: space-between;
-        font-size: 1.5rem;
-        color: #2c3e50;
+        font-size: @normal-size;
         button {
           color: @m-yellow;
           border: 1px solid @m-yellow;
@@ -527,7 +553,7 @@ export default {
         border-left-width: 0;
         border-right-width: 0;
         table {
-          font-size: 1.5rem;
+          font-size: @normal-size;
           width: 100%;
           thead {
             color: @greyfont;
@@ -539,7 +565,7 @@ export default {
             td {
               padding: .3rem 0;
               line-height: 2rem;
-              font-size: 1.2rem;
+              font-size: @normal-size;
               overflow: hidden;
               max-width: 4rem;
               white-space: nowrap;

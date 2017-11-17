@@ -138,7 +138,7 @@ export const orderInfo = {
 
 // 集运订单
 export const cargo = {
-  query: url + 'api/orderInfo/index',
+  query: url + '/api/orderInfo/listCargoOrder',
   save: url + '/api/orderInfo/addCargo',
   show: url + 'api/orderInfo/getOrderInfoById',
   update: url + 'api/orderInfo/modOrderInfoById',

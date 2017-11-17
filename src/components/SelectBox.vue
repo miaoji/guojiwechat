@@ -4,8 +4,8 @@
       <div class="fix-box">
         <div class="head-box">
           <div class="header">
-            <p>选择快递公司</p> 
-            <div class="header-right" @click.stop="confirmNation">完成</div>
+            <p>选择快递公司</p>
+            <div class="header-right" @click.stop="onClickConfirm">完成</div>
           </div>
         </div>
 
@@ -37,7 +37,7 @@
           <div class="item-title">最近查询</div>
           <ul class="item-list">
             <li v-for="item in recentSearch">
-              <span class="item" @click.stop="onClickCity({name: item})">
+              <span class="item" @click.stop="onClickSearchItem({name: item})">
                 {{item}}
               </span>
             </li>
@@ -50,7 +50,7 @@
           <div class="item-title">热门快递</div>
           <ul class="item-list">
             <li v-for="item in hotExpress">
-              <span class="item" @click.stop="onClickCity({name: item})">
+              <span class="item" @click.stop="onClickSearchItem({name: item})">
                 {{item}}
               </span>
             </li>
@@ -152,43 +152,24 @@ export default {
       })
     },
     /**
-     * [用户点击完成按钮时事件，返回新增地址页面，如果此时搜索结果只有一个值，将改值传递给父组件]
+     * [用户点击完成按钮时事件，返回之前页面，如果此时搜索结果只有一个值，将该值传递给父组件]
      * @return {[type]} [description]
      */
-    confirmNation () {
+    onClickConfirm () {
       const searchResult = this.searchResult
       if (searchResult.length === 1) {
         const item = searchResult[0]
-        const country = {
-          id: item.id,
-          name: item.country_cn,
-          code: item.country_code
-        }
-        this.$emit('listenCountryConfirm', country)
+        this.$emit('listenBoxConfirm', item)
       }
       this.$router.go(-1)
     },
     /**
-     * [用户点击所有国家时事件，跳转到搜索结果UI]
+     * [用户点击搜索单元，跳转到搜索结果UI]
      * @param  {String} options.name [description]
      * @return {[type]}              [description]
      */
-    onClickCity ({name = ''}) {
+    onClickSearchItem ({name = ''}) {
       this.inputCountryName = name
-    },
-    /**
-     * [确认选择的国家]
-     * @param  {String} options.name [description]
-     * @return {[type]}              [description]
-     */
-    onCountryConfirm (item) {
-      const country = {
-        id: item.id,
-        name: item.country_cn,
-        code: item.country_code
-      }
-      this.$emit('listenCountryConfirm', country)
-      this.$router.go(-1)
     },
     /**
      * [用户点击搜索结果的事件，返回新增页面]
@@ -196,12 +177,7 @@ export default {
      * @return {[type]}      [description]
      */
     onClickSearchRes (item) {
-      const country = {
-        id: item.id,
-        name: item.country_cn,
-        code: item.country_code
-      }
-      this.$emit('listenCountryConfirm', country)
+      this.$emit('listenBoxConfirm', item)
       this.$router.go(-1)
     },
     /**
@@ -238,7 +214,7 @@ export default {
       window.addEventListener('popstate', function (e) {
         // 此时的this指的是window, 所以要将_this传入进来
         const vue = _this
-        vue.$emit('listenCountryClose', false)
+        vue.$emit('listenBoxClose', false)
       }, false)
       // 获取最近查询
       this.recentSearch = this.getRecentSearch()

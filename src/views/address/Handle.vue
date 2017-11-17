@@ -463,18 +463,6 @@ export default {
       this.selectCountryShow = false
     },
     onCountryConfirm (val) {
-      // 之前的版本
-      // let oldName = this.country['name']
-      // if (val['name'] !== oldName) {
-      //   this.country = val
-      //   this.provincedataShow = ''
-      //   this.provinceId = 0
-      //   this.citydataShow = ''
-      //   this.cityId = 0
-      //   this.countydataShow = ''
-      //   this.countyId = 0
-      // }
-      // 修改后的版本
       const oldName = this.country['name']
       if (val['name'] !== oldName) {
         this.country = val

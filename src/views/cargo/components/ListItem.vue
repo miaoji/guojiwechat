@@ -1,17 +1,39 @@
 <template>
   <div class="listitem">
-    <div class="listitem-detail">
-      <div class="listitem-detail__icon">
-        收
+    <div class="detail">
+      <div class="detail-address">
+        <div class="detail-address--icon address-icon--small">
+          <span class="bgblack">收</span>
+        </div>
+        <p class="detail-address--detail">{{item.receiverCountry}}{{item.receiverProv}}{{item.receiverCity}}{{item.receiverCounty}}</p>
       </div>
-      <div class="listitem-detail__address">
-        <p class="listitem-detail__address--detail">{{item.RECEIVER_NAME}}&nbsp;&nbsp;{{item.RECEIVER_MOBILE}}</p>
-        <p class="listitem-detail__address--detail">{{item.RECEIVER_COUNTRY}}{{item.RECEIVER_PROV}}{{item.RECEIVER_CITY}}{{item.RECEIVER_COUNTY}}&nbsp;详细:&nbsp;{{item.RECEIVER_ADDRESS}}</p>
-      </div>
-      <span class="listitem-detail__state">{{item.STATUS | orderstatus}}</span>
+      <span class="detail-state" v-show="item.parentId !== 0">{{item.status | orderstatus}}</span>
+      <span class="detail-state" v-show="item.parentId === 0">待合单</span>
     </div>
-    <div class="listitem-edit" style="justify-content: space-between;">
-      <p class="listitem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
+    <div class="package">
+      <div class="package-info">
+        <div class="booklist" v-show="item.parentId !== 0">
+          <div class="booklist-item" v-for="elem in item.orderInfoSubset" :key="item.id">
+            <p>品名: {{elem.orderName}}</p>
+            <p>价值: {{elem.totalFee}}</p>
+          </div>
+        </div>
+        <div class="booklist">
+          <div class="booklist-item">
+            <p>品名: {{item.orderName}}</p>
+            <p>价值: {{item.totalFee}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="package-detail" v-show="item.parentId !== 0">
+        共{{item.orderInfoSubset.length}}条订单&nbsp;实付款:&nbsp;￥2199.00
+      </div>
+      <div class="package-detail" v-show="item.parentId === 0">
+        共1条订单
+      </div>
+    </div>
+    <div class="edit">
+      <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
         <button v-show="item.STATUS === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
@@ -44,7 +66,7 @@ export default {
       'cancleSend'
     ]),
     goPath (item) {
-      const id = item.ID
+      const id = item.id
       this.$router.push({path: '/orderdetail', query: {id}})
     },
     async cancle (item) {
@@ -70,6 +92,7 @@ export default {
 <style lang="less" scoped>
 @import '../../../assets/styles/colors.less';
 @import '../../../assets/styles/helpers.less';
+@import '../../../assets/styles/vars.less';
 
 .border-bottom-grey {
   border-bottom: 1px solid @borderbt;
@@ -78,10 +101,10 @@ export default {
 .normal-btn {
   min-width: 6rem;
   max-width: 6.6rem;
-  font-size: 1.4rem;
+  font-size: @normal-size;
   text-align: center;
-  padding: .4rem .4rem;
-  border-radius: 5px;
+  padding: .2rem .2rem;
+  border-radius: @radius-size;
   box-sizing: border-box;
   white-space: nowrap;
 }
@@ -94,47 +117,29 @@ export default {
   background: @m-yellow;
 }
 
-.order-padding {
-  padding: 2px;
-}
-
 .listitem {
-  padding: 0 .3rem;
   background: white;
-  border-radius: 5px;
+  border-radius: @radius-size;
   .listitem-box {
-    .flex;
-    .border-bottom-grey;
-    .item-padding;
-    background: white;
-    text-align: justify;
+    padding: .5rem .6rem;
   }
-  &-detail {
+  .detail {
+    .flex;
     .listitem-box;
-    &__state {
-      font-size: 1.3rem;
+    justify-content: space-between;
+    &-state {
+      font-size: @normal-size;
       color: @m-yellow;
-      padding-top: .3rem;
-      position: absolute;
-      right: 2.7rem;
     }
-    &__icon {
-      border-radius: 50%;
-      background: @m-receiver;
-      color: white;
-      margin-right: 1rem;
-      width: 3rem;
-      height: 3rem;
-      font-size: 1.3rem;
-      line-height: 3rem;
-      text-align: center;
-    }
-    &__address {
-      font-size: 1.3rem;
+    &-address {
+      .flex;
+      font-size: @normal-size;
+      &--icon {
+        margin-right: .5rem;
+      }
       &--detail {
         &:first-child {
-          font-weight: 600;
-          font-size: 1.4rem;
+          font-size: @normal-size;
         }
         width: 18rem;
         text-align: left;
@@ -153,11 +158,25 @@ export default {
       }
     }
   }
-  &-edit {
+  .package {
+    .border-bottom-grey;
+    &-info {
+      min-height: 5rem;
+      padding: 1rem;
+      background: #ececec;
+    }
+    &-detail {
+      padding: .5rem .6rem;
+      text-align: right;
+    }
+  }
+  .edit {
+    .flex;
     .listitem-box;
     height: 2.2rem;
+    justify-content: space-between;
     &__time {
-      font-size: 1.2rem;
+      font-size: @small-size;
     }
   }
 }

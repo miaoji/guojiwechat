@@ -197,6 +197,7 @@ export default {
       this.route['status'] = true
     } catch (err) {
       console.error(err)
+    } finally {
       this.$vux.loading.hide()
     }
   },

@@ -22,7 +22,7 @@
       <router-link to="/address?type=send&pick=1&tabshow=0">
         <div class="send-container-address">
           <div class="common-padding">
-            <div class="send-container-address__intro">
+            <div class="send-container-address__intro address-icon">
               <span class="bgblack">寄</span>
             </div>
             <div class="send-container-address__info">
@@ -50,7 +50,7 @@
       <router-link to="/address?type=pickup&pick=1&tabshow=0">
         <div class="send-container-address">
           <div class="common-padding">
-            <div class="send-container-address__intro">
+            <div class="send-container-address__intro  address-icon">
               <span class="bgred">收</span>
             </div>
             <div class="send-container-address__info">
@@ -85,13 +85,14 @@
           >
           </PackageProduct>
           <!-- 产品规格选择，点击后弹出模态框 -->
-          <cell 
+          <cell
             @click.native="dialogshow = true"
             :class="{'office': true, 'isFilled': orderOptions.weight}"
             type="number"
             title="产品规格"
             :value="showProductSpecs"
-            is-link>
+            is-link
+          >
           </cell>
           <selector
             direction="rtl"
@@ -103,7 +104,11 @@
             @on-change="isofferShowChange"
           >
           </selector>
-          <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
+          <div class="float-icon">
+            <span class="float-icon-img" @click='isofferPromptInfoShow = true'>
+              <img src="../../assets/images/question.png">
+            </span>
+          </div>
           <x-input
             title="保价金额"
             v-model="offer"
@@ -122,7 +127,10 @@
             :options="isBackOption"
           >
           </selector>
-          <div class="float-icon"><span class="float-icon-img" @click='districtPromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
+          <div class="float-icon">
+            <span class="float-icon-img" @click='districtPromptInfoShow = true'>
+            <img src="../../assets/images/question.png"></span>
+          </div>
           <x-textarea
             type="text"
             title="备注"
@@ -144,7 +152,12 @@
         <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__title">
-            <div> 包裹报关 <span class="question_icon" @click='packagePromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
+            <div class="question-icon" @click.stop='packagePromptInfoShow = true'>
+              <span>
+                包裹报关
+              </span>
+              <img src="../../assets/images/question.png" />
+            </div>
             <div @click="packageShow = true">
               <button type="" >点击添加</button>
             </div>
@@ -458,21 +471,17 @@ export default {
   },
   async created () {
     try {
-      // 1. 创建时将SET_PAGE创建为send
       this.$store.commit('SET_PAGE', {page: 'send'})
       this.$vux.loading.show()
-      // 2. 初始化wx jssdk
       await wxUtil.init()
-      // 3. 获取地址
       await this.getAddressByType({type: 'send'})
       await this.getAddressByType({type: 'pickup'})
-      // 4. 将收件国家id赋值给pickupCountryId
       const pickupCountryId = this.pickupAddress['countryId']
       this.pickupCountryId = pickupCountryId
-      // 5. 从localStorage中获取存储的用户习惯信息, 将可以直接赋值的赋值到this
+      // 从localStorage中获取存储的用户习惯信息, 将可以直接赋值的赋值到this
       const dataInCache = this.dataInCache
       let sendInfo = cacheUtil.setCacheToData.apply(this, [dataInCache, 'send_info'])
-      // 6. 处理需要判断才能赋值的缓存
+      // 处理需要判断才能赋值的缓存
       if (sendInfo) {
         if (this.isOffer === 1) {
           this.offer = sendInfo['offer']
@@ -483,12 +492,13 @@ export default {
           this.productType = sendInfo['productType']
         }
       }
+      await this.getPrice()
       return
     } catch (e) {
       console.error(e)
+      // throw new Error(e.message)
     } finally {
       this.$vux.loading.hide()
-      await this.getPrice()
     }
   },
   computed: {
@@ -1027,35 +1037,11 @@ export default {
 @import '../../assets/styles/vars.less';
 @import '~vux/src/styles/close';
 
-.bgblack {
-  background-color: #333;
-}
-
-.bgred {
-  background-color: @red;
-}
-
 .package-prompt-info {
   font-size: 1.5rem;
   color: #999;
   padding: 20px;
   text-align: left;
-}
-
-.float-icon{
-  height: 0px;
-  position: relative;
-  &-img{
-    position: absolute;
-    width: 1.5rem;
-    height: 1.5rem;
-    top: -32px;
-    left: 76px;
-    img {
-      width: inherit;
-      height: inherit;
-    }
-  }
 }
 
 .send-icon {
@@ -1142,15 +1128,6 @@ export default {
       &__intro {
         flex: 1;
         margin-right: 0.5rem;
-        span {
-          font-size: @normal-size;
-          width: 2.6rem;
-          height: 2.6rem;
-          line-height: 2.6rem;
-          display: block;
-          border-radius: 50%;
-          color: white;
-        }
       }
       &__info {
         padding-left: .8rem;
@@ -1217,20 +1194,6 @@ export default {
         display: flex;
         font-size: @normal-size;
         color: @grey-word;
-        div {
-          .question_icon{
-            width: 1.5rem;
-            height: 1.5rem;
-            position: relative;
-            top: 4px;
-            left: 4px;
-            overflow: hidden; 
-            img{
-              width: 1.5rem;
-              height: 1.5rem;
-            }
-          }
-        }
         button {
           color: @m-yellow;
           border: 1px solid @m-yellow;

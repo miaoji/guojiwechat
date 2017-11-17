@@ -69,9 +69,9 @@ export default {
       if (!this.pick) {
         return
       }
-      if (this.orderType === 'consolidation') {
-        window.localStorage.setItem('mj_consolidation_pickupaddress', JSON.stringify(item))
-        this.$router.push({path: '/consolidation'})
+      if (this.orderType === 'cargo') {
+        window.localStorage.setItem('mj_cargo_pickupaddress', JSON.stringify(item))
+        this.$router.push({path: '/cargo'})
         return
       }
       if (this.orderType === 'send' && this.addressType === 'send') {

@@ -17,7 +17,7 @@
           ref="my_scroller_cargolist"
           class="cargolist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="cargolist-cell-detail" v-for="item in orderlist" :key="item.id" v-show="isShow(item.STATUS)">
+          <div class="cargolist-cell-detail" v-for="item in cargolist" :key="item.id" v-show="isShow(item.STATUS)">
             <list-item 
               :item="item"
             >
@@ -33,7 +33,7 @@
 </template>
 <script>
 import { storage } from '@/utils'
-import { mapGetters, mapActions } from 'vuex'
+import { query } from '@/services/cargo'
 import ListItem from './components/ListItem'
 
 export default {
@@ -50,26 +50,26 @@ export default {
     ListItem
   },
   computed: {
-    ...mapGetters({
-      'orderlist': 'getOrderList'
-    })
   },
   data () {
     return {
+      cargolist: [],
       showList: [],
       show: 'all',
       scrollerNoDataText: '没有更多数据啦~'
     }
   },
   methods: {
-    ...mapActions([
-      'setOrderList'
-    ]),
     async getOrderList () {
       try {
-        const orderlist = await this.setOrderList()
-        if (orderlist.type !== 'success') {
-          return this.$vux.toast.show(orderlist)
+        const res = await query({
+          wxUserId: storage({
+            key: 'userId'
+          })
+        })
+        console.log('res', res)
+        if (res.code === 200 && res.success) {
+          this.cargolist = res.obj
         }
       } catch (e) {
         console.error(e)
@@ -171,7 +171,7 @@ export default {
 @import '../../assets/styles/colors.less';
 @import '../../assets/styles/helpers.less';
 
-.orderlist {
+.cargolist {
   &-container {
     &-tab {
       position: fixed;
