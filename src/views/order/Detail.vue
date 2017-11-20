@@ -353,14 +353,6 @@ export default {
   }
 }
 
-.bgblack {
-  background-color: black;
-}
-
-.bgred {
-  background-color: @red;
-}
-
 .orderdetail {
   .purple-bg;
   overflow-y: auto;

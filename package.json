@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.16.0",
+    "clipboard": "^1.7.1",
     "fastclick": "^1.0.6",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",

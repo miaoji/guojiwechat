@@ -198,7 +198,7 @@ export default new Router({
       requiresAuth: true
     }
   }, {
-    path: '/cargo/detail',
+    path: '/cargodetail',
     name: 'CargoDetail',
     component: cargodetail,
     meta: {

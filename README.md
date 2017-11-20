@@ -20,13 +20,22 @@ npm run build --report
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-
 vux
 
 https://github.com/airyland/vux
 
 https://vux.li/#/zh-CN/README
 
+### dev lib
+
+https://vux.li/#/
+
+https://github.com/zenorocha/clipboard.js
+
 ### Git
 
 git log remotes/origin/master
+
+### cn NO
+
+91002560802, 911002560827

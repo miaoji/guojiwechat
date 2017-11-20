@@ -1,11 +1,11 @@
 <template>
   <div class="loadtoshow">
     <div class="loadtoshow-container" @click.stop="onReload">
-      <img src="../assets/images/load.png" class="loading" alt="loadfail" v-show="state === 0">
+      <img src="../../assets/images/load.png" class="loading" alt="loadfail" v-show="state === 0">
       <span v-show="state !== 0">
         {{showVal}}
       </span>
-      <img src="../assets/images/load.png" class="loadingfail" alt="loadfail" v-show="state === 2">
+      <img src="../../assets/images/load.png" class="loadingfail" alt="loadfail" v-show="state === 2">
     </div>
   </div>
 </template>
@@ -139,8 +139,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../assets/styles/helpers.less';
-@import '../assets/styles/vars.less';
+@import '../../assets/styles/helpers.less';
+@import '../../assets/styles/vars.less';
 
 .loadtoshow {
   &-container {

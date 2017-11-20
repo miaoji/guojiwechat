@@ -67,7 +67,6 @@ export default {
             key: 'userId'
           })
         })
-        console.log('res', res)
         if (res.code === 200 && res.success) {
           this.cargolist = res.obj
         }

@@ -14,19 +14,27 @@
       <div class="package-info">
         <div class="booklist" v-show="item.parentId !== 0">
           <div class="booklist-item" v-for="elem in item.orderInfoSubset" :key="item.id">
-            <p>品名: {{elem.orderName}}</p>
-            <p>价值: {{elem.totalFee}}</p>
+            <div>
+              <colon-span title="品名" :value="elem.orderName"></colon-span>
+            </div>
+            <div>
+              <colon-span title="价值" :value="elem.totalFee"></colon-span>
+            </div>
           </div>
         </div>
-        <div class="booklist">
+        <div class="booklist" v-show="item.parentId === 0">
           <div class="booklist-item">
-            <p>品名: {{item.orderName}}</p>
-            <p>价值: {{item.totalFee}}</p>
+            <div>
+              <colon-span title="品名" :value="item.orderName"></colon-span>
+            </div>
+            <div>
+              <colon-span title="价值" :value="item.totalFee"></colon-span>
+            </div>
           </div>
         </div>
       </div>
       <div class="package-detail" v-show="item.parentId !== 0">
-        共{{item.orderInfoSubset.length}}条订单&nbsp;实付款:&nbsp;￥2199.00
+        共{{item.orderInfoSubset.length}}条订单&nbsp;实付款:&nbsp;￥{{item.orderInfoSubset.totalFee / 100}}
       </div>
       <div class="package-detail" v-show="item.parentId === 0">
         共1条订单
@@ -35,7 +43,7 @@
     <div class="edit">
       <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
-        <button v-show="item.STATUS === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
+        <button v-show="item.status === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
       </div>
     </div>
@@ -44,6 +52,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import ColonSpan from '@/components/ColonSpan'
 
 export default {
   name: 'listitem',
@@ -53,7 +62,8 @@ export default {
       default: {}
     }
   },
-  computed: {
+  components: {
+    ColonSpan
   },
   data () {
     return {
@@ -67,7 +77,7 @@ export default {
     ]),
     goPath (item) {
       const id = item.id
-      this.$router.push({path: '/orderdetail', query: {id}})
+      this.$router.push({path: '/cargodetail', query: {id}})
     },
     async cancle (item) {
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向

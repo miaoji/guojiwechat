@@ -136,13 +136,17 @@ div.question-icon{
 	.flex;
 	overflow: auto;
 	&-item {
-		min-width: 6rem;
-		min-height: 6rem;
+		width: 6rem;
+		min-height: 7rem;
 		padding: .4rem;
-		background: #FCFCE1;
+		background: url('../images/package.png') no-repeat;
+		background-size: 100% 100%;
+		background-color: rgba(255,164,20,.6);
 		margin-right: 1rem;
-		p {
+		overflow: hidden;
+		div {
 		  font-size: @small-size;
+		  color: white;
 		}
 	}
 }

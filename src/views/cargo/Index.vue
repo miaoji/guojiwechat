@@ -180,7 +180,7 @@ import { Selector, XInput, PopupPicker, XDialog, TransferDomDirective as Transfe
 import JagContainer from '@/components/JagContainer'
 import Tips from '@/components/Tips'
 import SelectBox from '@/components/SelectBox'
-import LoadToshow from '@/components/LoadToshow'
+import LoadToshow from '@/components/load/WithService'
 import Line from './components/Line'
 import { getAddress, storage } from '@/utils'
 import * as receiveAddrService from '@/services/receiveAddr'
@@ -222,7 +222,7 @@ export default {
         city: '',
         county: ''
       },
-      pickupCountryId: null,
+      pickupId: null,
       packageTable: [],
       newPackage: {
         orderName: '',
@@ -242,7 +242,7 @@ export default {
       // 创建时将SET_PAGE创建为consolidation
       this.$store.commit('SET_PAGE', {page: 'cargo'})
       await this.getPickupAddress()
-      this.pickupCountryId = this.pickupAddress['countryId'] || 0
+      this.pickupId = this.pickupAddress['id'] || 0
     } catch (e) {
       console.error(e)
     } finally {
@@ -317,7 +317,7 @@ export default {
       const _this = this
       let complete = []
       Object.keys(_this.newPackage).forEach(function (key) {
-        if (!_this.newPackage[key] && key !== 'cnNo' && key !== 'kdCompanyCodeCn') {
+        if (!_this.newPackage[key] && key !== 'cnNo' && key !== 'companyName' && key !== 'kdCompanyCodeCn') {
           complete.push(false)
         } else {
           complete.push(true)
@@ -332,6 +332,7 @@ export default {
         })
         return
       }
+      this.newPackage['totalFee'] = this.newPackage['totalFee'] * 100
       this.packageTable.push(this.newPackage)
       this.newPackage = {
         orderName: '',
@@ -366,7 +367,7 @@ export default {
         this.$vux.loading.show()
         this.isSubmit = true
         const saveRes = await saveCargo(this.packages, {
-          receiveAddrId: this.pickupCountryId
+          receiveAddrId: this.pickupId
         })
         if (saveRes.code === 200) {
           this.$router.push({
@@ -382,6 +383,7 @@ export default {
       } catch (err) {
         console.error(err)
       } finally {
+        this.isSubmit = false
         this.$vux.loading.hide()
       }
     },
