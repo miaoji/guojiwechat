@@ -4,7 +4,7 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟
-    url = 'http://192.168.0.110:8077/'
+    url = 'http://192.168.0.231:8077/'
     // url = 'http://169.254.191.166:8077/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/'
@@ -139,9 +139,9 @@ export const orderInfo = {
 
 // 集运订单
 export const cargo = {
-  query: url + '/api/orderInfo/listCargoOrder',
-  save: url + '/api/orderInfo/addCargo',
-  show: url + 'api/orderInfo/getOrderInfoById',
+  query: url + 'api/orderInfo/listCargoOrder',
+  save: url + 'api/orderInfo/addCargo',
+  show: url + 'api/orderInfo/listCargoOrder',
   update: url + 'api/orderInfo/modOrderInfoById',
   delete: url + 'api/orderInfo/delOrderInfoById',
   test: url + 'test/tt'

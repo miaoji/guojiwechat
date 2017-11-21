@@ -211,7 +211,7 @@ export default {
   &-info {
     margin: 0;
     padding: 0;
-    border-radius: 6px 6px 0 0;
+    border-radius: @radius-size @radius-size 0 0;
     position: relative;
     display: flex;
     flex-direction: column;

@@ -4,7 +4,7 @@
       <jag-container>
         <div slot="content" class="content">
           <!-- 顶部寄件列表点击跳转 -->
-          <router-link to="/order/list">
+          <router-link to="/cargo/list">
             <div class="list">
               <div class="list-intro">
                 <img slot="icon" class="order-icon" src="../../assets/images/send_list_icon.png" />
@@ -27,7 +27,7 @@
                   <div v-show="!pickupAddress['name']" style="color: #666;">
                     点击选择收件地址
                   </div>
-                  <div class="address-info--line">
+                  <div class="address-info--line" v-show="pickupAddress['name']">
                     <div>
                       <span>
                         {{pickupAddress['name']}}&nbsp;&nbsp;
@@ -126,8 +126,8 @@
           >
           </tips>
           <!-- 提交按钮 -->
-          <div class="submit">
-            <button class="submit-btn" @click.stop="submitOrder">提交</button>
+          <div class="submit-btn">
+            <button class="normal" @click.stop="submitOrder">提交</button>
           </div>
         </div>
       </jag-container>
@@ -167,7 +167,7 @@
     <select-box
       :show="selectExpressShow"
       type="pickup"
-      countryName="顺丰"
+      defaultName="顺丰"
       @listenBoxClose="onExpressClose"
       @listenBoxConfirm="onExpressConfirm"
     >
@@ -589,21 +589,6 @@ export default {
         font-size: 1.5rem;
         span {
           color: @m-yellow;
-        }
-      }
-      .submit {
-        padding: 1rem 0rem;
-        text-align: center;
-        overflow: hidden;
-        &-btn {
-          color: white;
-          border: none;
-          padding: 1rem 0;
-          font-size: 1.6rem;
-          width: 100%;
-          background-color: @m-yellow;
-          border: none;
-          border-radius: 5px;
         }
       }
     }

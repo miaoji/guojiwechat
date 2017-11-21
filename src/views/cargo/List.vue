@@ -4,6 +4,7 @@
       <div class="cargolist-container-tab">
         <tab active-color='#ffa414'>
           <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
+          <tab-item :selected="show ==='waitcargo'" @on-item-click="changeShow('waitcargo')">待合单</tab-item>
           <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
           <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
           <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
@@ -17,7 +18,7 @@
           ref="my_scroller_cargolist"
           class="cargolist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="cargolist-cell-detail" v-for="item in cargolist" :key="item.id" v-show="isShow(item.STATUS)">
+          <div class="cargolist-cell-detail" v-for="item in cargolist" :key="item.id" v-show="isShow(item.status)">
             <list-item 
               :item="item"
             >
@@ -42,7 +43,7 @@ export default {
     window.scrollTo(0, 0)
     const { type } = this.$route.query
     const localtype = storage({
-      key: 'senddetail_switch_type'
+      key: 'cargo_switch_type'
     })
     this.show = type || localtype || 'all'
   },
@@ -81,7 +82,7 @@ export default {
     },
     changeShow (type) {
       storage({
-        key: 'senddetail_switch_type',
+        key: 'cargo_switch_type',
         val: type,
         type: 'set'
       })
@@ -135,6 +136,10 @@ export default {
           storageVal = ''
           showList = []
           break
+        case 'waitcargo':
+          storageVal = 7
+          showList = [7, 8]
+          break
         case 'waitpay':
           storageVal = 1
           showList = [1]
@@ -156,7 +161,7 @@ export default {
           showList = []
       }
       storage({
-        key: 'order_type',
+        key: 'cargo_type',
         val: storageVal,
         type: 'set'
       })

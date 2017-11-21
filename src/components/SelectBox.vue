@@ -82,7 +82,7 @@ export default {
       type: String,
       default: 'send'
     },
-    countryName: {
+    defaultName: {
       type: String,
       default: ''
     },
@@ -117,7 +117,7 @@ export default {
       return false
     },
     inputPlaceHolder () {
-      return this.countryName || '输入快递公司名搜索'
+      return this.defaultName || '输入快递公司名搜索'
     }
   },
   methods: {

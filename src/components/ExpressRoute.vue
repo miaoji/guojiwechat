@@ -6,14 +6,15 @@
           :state="state" 
           :msg="msg" 
           @listenReload="getRoute"
-          :isShowSuccess="false"
         >
         </load-toshow>
       </div>
       <!-- 国际路由信息 -->
       <div v-for="part, index in intelTraces" class="expressroute-content" :class="{'is-first': index === 0}">
-        <div class="line expressroute-content--part">
-          <div class="line-div">
+        <div class="timeline expressroute-content--part">
+          <div class="timeline-icon">
+          </div>
+          <div class="timeline-line">
           </div>
         </div>
         <div class="expressroute-content--part">
@@ -23,8 +24,10 @@
       </div>
       <!-- 国内路由信息 -->
       <div v-for="part, index in cnTraces" class="expressroute-content" :class="{'is-first': index === 0 && intelTraces.length === 0}">
-        <div class="line expressroute-content--part">
-          <div class="line-div">
+        <div class="timeline expressroute-content--part">
+          <div class="timeline-icon">
+          </div>
+          <div class="timeline-line">
           </div>
         </div>
         <div class="expressroute-content--part">
@@ -113,7 +116,7 @@ export default {
           company: this.intelCompany,
           num: this.intelNo
         })
-        if (cnRoute.success && intelRoute.success) {
+        if (cnRoute.success || intelRoute.success) {
           this.state = 1
           this.cnTraces = cnRoute.traces
           this.intelTraces = intelRoute.traces
@@ -140,6 +143,7 @@ export default {
         }
         this.msg = cnRoute.msg
       } catch (e) {
+        console.error(e)
         this.state = 2
         this.msg = e.message
       }
@@ -183,7 +187,7 @@ export default {
     },
     async handelIntelRoute () {
       try {
-        const intelRoute = this.getIntelRoute({
+        const intelRoute = await this.getIntelRoute({
           company: this.intelCompany,
           num: this.intelNo
         })
@@ -233,7 +237,13 @@ export default {
     cnNo (val, oldval) {
       this.getRoute()
     },
+    onlycn (val, oldval) {
+      this.getRoute()
+    },
     intelNo (val) {
+      this.getRoute()
+    },
+    onlyintel (val, oldval) {
       this.getRoute()
     }
   }
@@ -243,6 +253,7 @@ export default {
 
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
+@import '../assets/styles/helpers.less';
 @import '../assets/styles/vars.less';
 
 .expressroute {
@@ -250,9 +261,12 @@ export default {
   }
   &-load {
     text-align: center;
+    padding: 10px;
   }
+
   &-content {
     display: flex;
+    margin-bottom: 5px;
     &:first-child {
       p {
         color: @dark-yellow;
@@ -261,6 +275,7 @@ export default {
     .date-intro {
       max-width: 8rem;
     }
+
     &--part {
       text-align: justify;
       padding: 0 1rem;
@@ -271,7 +286,6 @@ export default {
         text-align: center;
         font-size: 1.4rem;
         max-height: 1.4rem;
-        // overflow: hidden;
         white-space: nowrap;
       }
       p.date {
@@ -282,31 +296,31 @@ export default {
         white-space: nowrap;
       }
     }
-    div.line {
-      width: 1rem;
-      &:before {
-        content: ' ';
+    .timeline {
+      .flex;
+      flex-direction: column;
+      &-icon {
+        margin-bottom: 1px;
         display: inline-block;
         width: 12px;
         height: 12px;
-        background: #999;
+        background: #d9d9d9;
         border-radius: 50%;
       }
-      &-div {
+      &-line {
         height: 6rem;
         width: 2px;
-        margin-left: 38%;
-        background: #999;
+        background: #d9d9d9;
       }
     }
   }
   .is-first {
     color: @m-yellow;
-    .line {
-      &:before {
+    .timeline {
+      &-icon {
         background: @m-yellow!important;
       }
-      &-div {
+      &-line {
         background: @m-yellow!important;
       }
     }

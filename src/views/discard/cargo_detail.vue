@@ -4,18 +4,8 @@
       <div class="container">
         <jag-container>
           <div slot="content" class="content">
+            <!-- 收件地址 -->
             <div class="address">
-              <!-- 寄件地址 -->
-              <div class="address-box btg"  v-show="orderType === 0">
-                <div class="address-box__icon">
-                  <span class="bgred">寄</span>
-                </div>
-                <div class="address-box__detail">
-                  <p>{{orderInfo.senderName}}&nbsp;{{orderInfo.senderMobile}}</p>
-                  <p>{{orderInfo.senderCountry}}{{orderInfo.senderProv}}{{orderInfo.senderCity}}{{orderInfo.senderCounty}}&nbsp;{{orderInfo.senderAddress}}</p>
-                </div>
-              </div>
-              <!-- 收件地址 -->
               <div class="address-box">
                 <div class="address-box__icon">
                   <span class="bgblack">收</span>
@@ -28,72 +18,8 @@
               <div class="purple-border">
               </div>
             </div>
-            <!-- 直邮订单状态 -->
-            <div class="detail" v-show="orderInfo['type'] === 0">
-              <div class="detail-box">
-                <colon-span title="订单编号" :value="orderInfo.orderNo"></colon-span>
-              </div>
-              <div class="detail-box">
-                <colon-span title="下单时间" :value="createTime"></colon-span>
-              </div>
-              <div class="detail-box">
-                <colon-span title="订单状态">
-                  <template slot="content">
-                    <div>
-                      {{orderInfo.status | orderstatus}}
-                      <button class="pay" @click.stop="wxPay" v-show="orderInfo.status === 1">立即付款</button>
-                    </div>
-                  </template>
-                </colon-span>
-              </div>
-              <div class="detail-box">
-                <colon-span title="预付金额">
-                  <template slot="content">
-                    <div>
-                      <span class="money">{{totalFee}}</span>元
-                    </div>
-                  </template>
-                </colon-span>
-              </div>
-              <div class="detail-box" v-show='orderInfo.insuredAmount===0?false:true'>
-                <colon-span title="保价金额">
-                  <template slot="content">
-                    <div>
-                      <span class="money">{{orderInfo.insuredAmount}}</span>元
-                    </div>
-                  </template>
-                </colon-span>
-              </div>
-              <div class="detail-box"  v-show='orderInfo.insuredAmount===0?false:true'>
-                <colon-span title="保费">
-                  <template slot="content">
-                    <div>
-                      <span class="money">{{orderInfo.insuredPrice}}</span>元
-                    </div>
-                  </template>
-                </colon-span>
-              </div>
-              <div class="detail-box">
-                <colon-span title="待补价">
-                  <template slot="content">
-                    <load-more v-show="!getBootStatusDone" :show-loading="!getBootStatusDone"></load-more>
-                    <div v-show="getBootStatusDone">
-                      {{bootStatus['val'] === 0 ? '无' : '有'}}
-                      <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
-                    </div>
-                  </template>
-                </colon-span>
-              </div>
-              <div class="detail-box">
-                <colon-span title="补价记录">
-                  <template slot="content">
-                    <button class="pay" @click.stop="goBootList">点击查看</button>
-                  </template>
-                </colon-span>
-              </div>
-            </div>
-            <!-- 集运未合单的状态 -->
-            <div class="detail" v-show="orderInfo['type'] === 1 && orderInfo.parentId === 0">
+            <!-- 未合单的状态 -->
+            <div class="detail" v-show="orderInfo.parentId === 0">
               <div class="detail-box">
                 <colon-span title="订单编号">
                   <template slot="content">
@@ -123,8 +49,8 @@
                 </colon-span>
               </div>
             </div>
-            <!-- 集运合单后的订单状态 -->
-            <div class="detail" v-show="orderInfo['type'] === 1 && orderInfo.parentId !== 0">
+            <!-- 合单后的订单状态 -->
+            <div class="detail" v-show="orderInfo.parentId !== 0">
               <div class="detail-box">
                 <colon-span title="订单编号" :value="orderInfo.orderNo"></colon-span>
               </div>
@@ -190,7 +116,7 @@
           </div>
         </jag-container>
       </div>
-      <div class="container" v-show="orderInfo['type'] === 0 && parentId !== 0">
+      <div class="container" v-show="parentId !== 0">
         <p class="intro-p">包裹信息</p>
         <jag-container>
           <div slot="content" class="content">
@@ -219,16 +145,16 @@
           <div slot="content" class="content">
             <!-- 路由信息 -->
             <div class="express">
-              <p class="add-cnno" v-show="orderInfo['type'] === 1 && parentId === 0" @click.stop="packageShow = true">
+              <p class="add-cnno" v-show="parentId === 0" @click.stop="packageShow = true">
                 <button class="">{{!cnNo ? '立即添加' : '点击修改'}}</button>
               </p>
               <express-route
                 :cnNo="cnNo"
-                :cnCompany="cnCompany || 'zhongtong'"
+                :cnCompany="cnCompany"
                 :intelNo="intelNo"
                 :intelCompany="intelCompany"
-                :onlycn="onlycn"
-                :onlyintel="onlyintel"
+                :onlycn="parentId === 0"
+                :onlyintel="parentId !== 0"
               >
               </express-route>
             </div>
@@ -338,16 +264,6 @@ export default {
     totalFee () {
       return this.orderInfo.totalFee / 100
     },
-    orderType () {
-      // 0 直邮, 1 集运
-      return this.orderInfo['type'] || 0
-    },
-    onlycn () {
-      return this.orderType === 1 ? (this.parentId === 0) : false
-    },
-    onlyintel () {
-      return this.orderType === 1 ? (this.parentId !== 0) : false
-    },
     parentId () {
       return Number(this.orderInfo.parentId)
     }
@@ -395,7 +311,7 @@ export default {
         this.orderInfo = orderInfo
         this.cnNo = orderInfo.cnNo
         this.cnCompany = orderInfo.kdCompanyCodeCn
-        this.intelNo = orderInfo.intlNo
+        this.intlNo = orderInfo.intlNo
         this.intelCompany = orderInfo.kdCompanyCode
         return
       } catch (e) {
@@ -583,12 +499,12 @@ export default {
         .flex;
         padding: 10px 0;
         &__icon {
-          margin-right: 1rem;
+          flex: 1;
           span {
-            font-size: @normal-size;
-            width: 3rem;
-            height: 3rem;
-            line-height: 3rem;
+            font-size: 1.8rem;
+            width: 4rem;
+            height: 4rem;
+            line-height: 4rem;
             display: block;
             border-radius: 50%;
             color: white;
@@ -599,15 +515,12 @@ export default {
           text-align: left;
           p {
             font-size: @normal-size;
-            width: 22rem;
+            width: 20rem;
             overflow: hidden;
             white-space: pre-line;
             text-overflow: ellipsis;
             @media (max-width:320px) {
-              width: 18rem;
-            }
-            @media (min-width:375px) {
-              width: 24rem;
+              width: 16rem;
             }
             @media (min-width:400px) {
               width: 25rem;
@@ -635,11 +548,11 @@ export default {
       padding-bottom: 20px;
     }
     .express {
-      padding: .5rem 0;
+      padding: 1rem 10px;
       .add-cnno {
         position: absolute;
         margin-top: 10px;
-        left: 45%;
+        left: 43%;
         button {
           background: transparent;
           font-size: @small-size;

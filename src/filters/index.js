@@ -249,7 +249,9 @@ export const orderstatus = function (val) {
     3: '待收货',
     4: '已完成',
     5: '异常',
-    6: '已取消'
+    6: '已取消',
+    7: '待合单',
+    8: '待合单'
   }
   return ordersta[val]
 }

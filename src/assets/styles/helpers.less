@@ -71,6 +71,22 @@
 	font-size: 1.5rem;
 }
 
+.submit-btn {
+  padding: 1rem 0rem;
+  text-align: center;
+  overflow: hidden;
+  button.normal {
+    color: white;
+    border: none;
+    padding: 1rem 0;
+    font-size: @normal-size;
+    width: 100%;
+    background-color: @m-yellow;
+    border: none;
+    border-radius: @radius-size;
+  }
+}
+
 .tips {
 	padding: .3rem 0;
 	font-size: @small-size;
@@ -132,12 +148,23 @@ div.question-icon{
   }
 }
 
+.normal-btn {
+  min-width: 6rem;
+  max-width: 6.6rem;
+  font-size: @normal-size;
+  text-align: center;
+  padding: .2rem .2rem;
+  border-radius: @radius-size;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
 .booklist {
 	.flex;
 	overflow: auto;
 	&-item {
 		width: 6rem;
-		min-height: 7rem;
+		height: 7rem;
 		padding: .4rem;
 		background: url('../images/package.png') no-repeat;
 		background-size: 100% 100%;
@@ -147,6 +174,29 @@ div.question-icon{
 		div {
 		  font-size: @small-size;
 		  color: white;
+		}
+	}
+	&-intro {
+		max-width: 68%;
+		max-height: 6rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
+
+.packagelist {
+	&-item {
+		.flex;
+		overflow: hidden;
+		background: #ececec;
+		margin-bottom: 10px;
+		padding: 5px;
+		img {
+			margin-right: 5px;
+			width: 4rem;
+		}
+		&--intro {
+			text-align: left;
 		}
 	}
 }

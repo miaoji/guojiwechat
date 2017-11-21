@@ -2,7 +2,7 @@
   <div class="addressitem">
     <div class="addressitem-detail" @click.stop="selectAddress(item)">
       <div>
-        <p>{{item.name}} {{item.mobile}}</p>
+        <p>{{item.name}}&nbsp;&nbsp;&nbsp;&nbsp;{{item.mobile}}</p>
         <p class="location"><span class="location-remark">{{item.remark}}</span> {{item.address}} </p>
       </div>
     </div>
@@ -137,15 +137,14 @@ export default {
 .addressitem {
   padding: 0 .3rem;
   background: white;
-  border-radius: 5px;
+  border-radius: @radius-size;
   &-detail {
     .flex;
     .item-padding;
     justify-content: space-between;
     border-bottom: 1px solid #f1f1f1;
+    font-size: @normal-size;
     .location {
-      color: #999;
-      font-size: 1.4rem;
       width: 21rem;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -160,13 +159,9 @@ export default {
       @media (min-width:400px) {
         width: 28rem;
       }
-      &-remark {
-        color: @m-yellow;
-      }
     }
     p {
       text-align: left;
-      font-size: 1.6rem;
     }
     img {
       width: 2rem;
@@ -177,19 +172,22 @@ export default {
     .item-padding;
     height: 2.2rem;
     background: #fff;
-    font-size: 1.2rem;
+    font-size: @small-size;
     justify-content: space-between;
     .edit {
       padding: .1rem 1rem;
       img {
-        width: 1.2rem;
+        width: @small-size;
         vertical-align: middle;
+      }
+      span {
+        font-size: @small-size;
       }
     }
     .is-default {
       color: @m-yellow;
       img {
-        width: 1.2rem;
+        width: @small-size;
         vertical-align: text-top;
         *vertical-align: middle;
         font-size: 0;
@@ -198,7 +196,7 @@ export default {
     .not-default {
       color: #999;
       img {
-        width: 1.2rem;
+        width: @small-size;
         vertical-align: text-top;
         *vertical-align: middle;
         font-size: 0;

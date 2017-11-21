@@ -75,17 +75,6 @@ export default {
   border-bottom: 1px solid @borderbt;
 }
 
-.normal-btn {
-  min-width: 6rem;
-  max-width: 6.6rem;
-  font-size: 1.4rem;
-  text-align: center;
-  padding: .4rem .4rem;
-  border-radius: 5px;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-
 .gosend-btn {
   .normal-btn;
   color: white;
@@ -101,7 +90,7 @@ export default {
 .listitem {
   padding: 0 .3rem;
   background: white;
-  border-radius: 5px;
+  border-radius: @radius-size;
   .listitem-box {
     .flex;
     .border-bottom-grey;
@@ -112,7 +101,7 @@ export default {
   &-detail {
     .listitem-box;
     &__state {
-      font-size: 1.3rem;
+      font-size: @normal-size;
       color: @m-yellow;
       padding-top: .3rem;
       position: absolute;
@@ -125,16 +114,15 @@ export default {
       margin-right: 1rem;
       width: 3rem;
       height: 3rem;
-      font-size: 1.3rem;
+      font-size: @normal-size;
       line-height: 3rem;
       text-align: center;
     }
     &__address {
-      font-size: 1.3rem;
+      font-size: @normal-size;
       &--detail {
         &:first-child {
-          font-weight: 600;
-          font-size: 1.4rem;
+          font-size: @normal-size;
         }
         width: 18rem;
         text-align: left;
@@ -157,7 +145,7 @@ export default {
     .listitem-box;
     height: 2.2rem;
     &__time {
-      font-size: 1.2rem;
+      font-size: @small-size;
     }
   }
 }

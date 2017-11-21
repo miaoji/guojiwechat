@@ -25,7 +25,6 @@ const feedrecommend = r => require.ensure([], () => r(require('@/views/feed/Reco
 const couponlist = r => require.ensure([], () => r(require('@/views/coupon/List')), 'CouponList')
 const coupondetail = r => require.ensure([], () => r(require('@/views/coupon/Detail')), 'CouponDetail')
 const cargolist = r => require.ensure([], () => r(require('@/views/cargo/List')), 'CargoList')
-const cargodetail = r => require.ensure([], () => r(require('@/views/cargo/detail')), 'CargoDetail')
 
 export default new Router({
   base: __dirname,
@@ -195,14 +194,6 @@ export default new Router({
     component: cargolist,
     meta: {
       intro: '集运列表',
-      requiresAuth: true
-    }
-  }, {
-    path: '/cargodetail',
-    name: 'CargoDetail',
-    component: cargodetail,
-    meta: {
-      intro: '集运详情',
       requiresAuth: true
     }
   }]

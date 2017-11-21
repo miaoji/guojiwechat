@@ -35,7 +35,7 @@
     <div class="address-add" @click="goPath('/address/handle', {type: addressType, pagetype: 'add'})">
       <div class="address-add-content">
         <img src="../../assets/images/add_add.png" alt="新增地址">
-        <span>新增地址</span>
+        <span>新增{{addressTypeCn}}地址</span>
       </div>
     </div>
   </div>
@@ -82,7 +82,10 @@ export default {
     ...mapGetters({
       userId: 'getUserId',
       addressList: 'getAddress'
-    })
+    }),
+    addressTypeCn () {
+      return this.addressType === 'send' ? '寄件' : '收件'
+    }
   },
   methods: {
     ...mapActions([
@@ -153,16 +156,16 @@ export default {
     background: white;
     &-content {
       border: none;
-      padding: .8rem 0;
+      padding: .6rem 0;
       .flex;
       justify-content: center;
       img {
-        width: 3.3rem;
+        width: 3rem;
         height: auto;
       }
       span {
         padding-left: 1rem;
-        font-size: 1.6rem;
+        font-size: @normal-size;
         color: #666;
       }
     }

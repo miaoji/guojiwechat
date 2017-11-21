@@ -5,36 +5,43 @@
         <div class="detail-address--icon address-icon--small">
           <span class="bgblack">收</span>
         </div>
-        <p class="detail-address--detail">{{item.receiverCountry}}{{item.receiverProv}}{{item.receiverCity}}{{item.receiverCounty}}</p>
+        <p class="detail-address--detail">
+          <span>
+            {{item.receiverCountry}}{{item.receiverProv}}{{item.receiverCity}}{{item.receiverCounty}}&nbsp;
+          </span>
+          <span class="order-no">
+            订单号:&nbsp;{{item.orderNo}}
+          </span>
+        </p>
       </div>
-      <span class="detail-state" v-show="item.parentId !== 0">{{item.status | orderstatus}}</span>
-      <span class="detail-state" v-show="item.parentId === 0">待合单</span>
+      <span class="detail-state">{{item.status | orderstatus}}</span>
     </div>
     <div class="package">
       <div class="package-info">
-        <div class="booklist" v-show="item.parentId !== 0">
+        <div class="booklist" v-show="item.parentId !== 0 && item.orderInfoSubset.length > 1">
           <div class="booklist-item" v-for="elem in item.orderInfoSubset" :key="item.id">
             <div>
-              <colon-span title="品名" :value="elem.orderName"></colon-span>
+              {{elem['orderName']}}
             </div>
-            <div>
-              <colon-span title="价值" :value="elem.totalFee"></colon-span>
-            </div>
+          </div>
+        </div>
+        <div class="booklist" v-show="item.parentId !== 0 && item.orderInfoSubset.length === 1">
+          <div class="booklist-item">
+          </div>
+          <div class="booklist-intro">
+            {{item.orderInfoSubset[0] ? item.orderInfoSubset[0]['orderName'] : ''}}
           </div>
         </div>
         <div class="booklist" v-show="item.parentId === 0">
           <div class="booklist-item">
-            <div>
-              <colon-span title="品名" :value="item.orderName"></colon-span>
-            </div>
-            <div>
-              <colon-span title="价值" :value="item.totalFee"></colon-span>
-            </div>
+          </div>
+          <div class="booklist-intro">
+            {{item['orderName']}}
           </div>
         </div>
       </div>
       <div class="package-detail" v-show="item.parentId !== 0">
-        共{{item.orderInfoSubset.length}}条订单&nbsp;实付款:&nbsp;￥{{item.orderInfoSubset.totalFee / 100}}
+        共{{item.orderInfoSubset.length}}条订单&nbsp;实付款:&nbsp;￥{{item.totalFee / 100}}
       </div>
       <div class="package-detail" v-show="item.parentId === 0">
         共1条订单
@@ -43,7 +50,7 @@
     <div class="edit">
       <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
-        <button v-show="item.status === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
+        <button v-show="item.status === 10" class="cancle-btn" @click="cancle(item)">取消订单</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
       </div>
     </div>
@@ -77,7 +84,7 @@ export default {
     ]),
     goPath (item) {
       const id = item.id
-      this.$router.push({path: '/cargodetail', query: {id}})
+      this.$router.push({path: '/orderdetail', query: {id}})
     },
     async cancle (item) {
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
@@ -108,17 +115,6 @@ export default {
   border-bottom: 1px solid @borderbt;
 }
 
-.normal-btn {
-  min-width: 6rem;
-  max-width: 6.6rem;
-  font-size: @normal-size;
-  text-align: center;
-  padding: .2rem .2rem;
-  border-radius: @radius-size;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-
 .gosend-btn {
   .normal-btn;
   color: white;
@@ -138,29 +134,26 @@ export default {
     .listitem-box;
     justify-content: space-between;
     &-state {
-      font-size: @normal-size;
+      font-size: @small-size;
       color: @m-yellow;
     }
     &-address {
       .flex;
-      font-size: @normal-size;
       &--icon {
         margin-right: .5rem;
       }
       &--detail {
-        &:first-child {
-          font-size: @normal-size;
-        }
-        width: 18rem;
+        width: 20rem;
         text-align: left;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        font-size: @small-size;
         @media (max-width:320px) {
-          width: 14rem;
+          width: 17rem;
         }
-        @media (min-width:360px) {
-          width: 18rem;
+        @media (min-width:370px) {
+          width: 20rem;
         }
         @media (min-width:400px) {
           width: 20rem;
@@ -171,11 +164,13 @@ export default {
   .package {
     .border-bottom-grey;
     &-info {
+      font-size: @small-size;
       min-height: 5rem;
-      padding: 1rem;
+      padding: .5rem .6rem;
       background: #ececec;
     }
     &-detail {
+      font-size: @small-size;
       padding: .5rem .6rem;
       text-align: right;
     }

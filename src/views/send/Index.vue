@@ -198,8 +198,8 @@
             预付运费：￥ <span>{{advanceShow}}</span>
           </div>
           <!-- 提交按钮 -->
-          <div class="div-btn-sub"> 
-            <button class="btn-sub" @click="submitOrderInfo">提交</button>
+          <div class="submit-btn"> 
+            <button class="normal" @click="submitOrderInfo">提交</button>
           </div>
         </div>
       </div>
@@ -1243,21 +1243,6 @@ export default {
         span {
           color: @m-yellow;
         }
-      }
-    }
-    .div-btn-sub {
-      padding: 1rem 0rem;
-      text-align: center;
-      overflow: hidden;
-      .btn-sub {
-        color: white;
-        border: none;
-        padding: 1rem 0;
-        font-size: @normal-size;
-        width: 100%;
-        background-color: @m-yellow;
-        border: none;
-        border-radius: 5px;
       }
     }
   }

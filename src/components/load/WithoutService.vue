@@ -63,6 +63,9 @@ export default {
 .loadtoshow {
   &-container {
     .flex;
+    span {
+      font-size: @normal-size;
+    }
     img.loading {
       height: @big-size;
       transition: all 0.5s ease-in-out;
