@@ -42,8 +42,8 @@
           </selector>
         </div>
      </div>
-     <div class="check" style="padding-top: 4rem;">
-       <button class="button btn-login" @click="submitPhone">确定</button>
+     <div class="submit-btn" style="padding-top: 4rem;">
+       <button class="normal" @click="submitPhone">确定</button>
      </div>
     </div>
   </div>
@@ -335,11 +335,12 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
 @import '../../assets/styles/colors.less';
+@import '../../assets/styles/helpers.less';
 
 .btn-normal {
-  border-radius: 5px;
+  border-radius: @radius-size;
   padding: .3rem .3rem;
-  font-size: 1.4rem;
+  font-size: @normal-size;
 }
 
 .btn-get {
@@ -355,27 +356,17 @@ export default {
   border: 1px solid @greybtn;
 }
 
-.btn-login {
-  font-size: 1.5rem;
-  width: 100%;
-  border-radius: 5px;
-  padding: 1rem;
-  color: white;
-  border: none;
-  background: @m-yellow;
-}
-
 .getcode {
   width: 9rem;
   select {
-    font-size: 13px!important;
+    font-size: @small-size!important;
   }
 }
 
 .getidtype {
   width: 9.9rem;
   select {
-    font-size: 13px!important;
+    font-size: @small-size!important;
   }
 }
 
@@ -411,7 +402,7 @@ export default {
           padding: .4rem;
           border: none;
           height: 2.6rem;
-          font-size: 1.4rem;
+          font-size: @normal-size;
           background: transparent;
         }
       }

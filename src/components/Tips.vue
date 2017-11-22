@@ -32,7 +32,6 @@ export default {
     vertical-align: text-bottom;
   }
   color: @m-yellow;
-  text-align: left;
   font-size: 1.2rem;
 }
 </style>

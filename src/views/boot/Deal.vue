@@ -28,8 +28,8 @@
           <span class="bootdetail-detail-box__content">{{bootData.status | bootstatus}}</span>
         </div>
       </div>
-      <div class="pay-btn" v-show="bootData.status !== 2"> 
-        <button class="btn-sub" @click="submitBoot">提交付款</button>
+      <div class="submit-btn" v-show="bootData.status !== 2"> 
+        <button class="normal" @click="submitBoot">提交付款</button>
       </div>
       <div class="pay-btn linkto" v-show="bootData.status === 2">
         <h1>
@@ -134,9 +134,11 @@ export default {
 .bgblue {
   background-color: @light-blue;
 }
+
 .bgyellow {
   background-color: @red;
 }
+
 .darkyellow {
   color: @red;
 }
@@ -144,6 +146,7 @@ export default {
 .lightyellow {
   color: @red!important;
 }
+
 .bootdetail {
   .purple-bg;
   overflow-y: hidden;
@@ -167,7 +170,7 @@ export default {
         flex: 4;
         text-align: left;
         p {
-          font-size: 1.4rem;
+          font-size: @normal-size;
           width: 20rem;
           overflow: hidden;
           white-space: pre-line;
@@ -181,37 +184,22 @@ export default {
         }
       }
       &__title {
-        font-size: 1.4rem;
+        font-size: @normal-size;
         width: 6rem;
         text-align: left;
       }
       &__yin {
-        font-size: 1.4rem;
+        font-size: @normal-size;
       }
       &__content {
         flex: 2;
         text-align: right;
-        font-size: 1.4rem;
+        font-size: @normal-size;
         color: @m-yellow;
         white-space: nowrap;
         overflow: hidden;
       }
     }
-  }
-}
-.pay-btn {
-  padding: 2rem 0rem;
-  text-align: center;
-  overflow: hidden;
-  .btn-sub {
-    color: white;
-    border: none;
-    padding: 1rem 0;
-    font-size: 1.6rem;
-    width: 92%;
-    background-color: @m-yellow;
-    border: none;
-    border-radius: 5px;
   }
 }
 
@@ -220,7 +208,7 @@ export default {
     font-size: 16px;
     padding: 6px 10px;
     border: 1px solid @red;
-    border-radius: 5px;
+    border-radius: @radius-size;
     color: @red;
   }
 }

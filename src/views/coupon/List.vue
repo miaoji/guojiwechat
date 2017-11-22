@@ -3,7 +3,7 @@
     <div class="list-container">
       <div class="none-coupon" v-show="couponsResultMap.length === 0">
         <img src="../../assets/images/coupon_none.png" alt="">
-        <p>暂时无可用的优惠券</p>
+        <p>暂无可用的优惠券</p>
       </div>
       <div v-for="item in couponsResultMap">
         <list-item

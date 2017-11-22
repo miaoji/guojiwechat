@@ -31,7 +31,14 @@
             <!-- 直邮订单状态 -->
             <div class="detail" v-show="orderInfo['type'] === 0">
               <div class="detail-box">
-                <colon-span title="订单编号" :value="orderInfo.orderNo"></colon-span>
+                <colon-span title="订单编号">
+                  <template slot="content">
+                    <div>
+                      <span id="orderno">{{orderInfo.orderNo}}</span>
+                      <button class="pay" id="copyBtn1" data-clipboard-target="#orderno">复制</button>
+                    </div>
+                  </template>
+                </colon-span>
               </div>
               <div class="detail-box">
                 <colon-span title="下单时间" :value="createTime"></colon-span>
@@ -50,7 +57,7 @@
                 <colon-span title="预付金额">
                   <template slot="content">
                     <div>
-                      <span class="money">{{totalFee}}</span>元
+                      <span class="money">{{totalFee}}</span>
                     </div>
                   </template>
                 </colon-span>
@@ -98,11 +105,14 @@
                 <colon-span title="订单编号">
                   <template slot="content">
                     <div>
-                      <span id="orderno">{{orderInfo.orderNo}}</span>
-                      <button class="pay" id="copyBtn" data-clipboard-target="#orderno">复制</button>
+                      <span id="cargoingOrderno">{{orderInfo.orderNo}}</span>
+                      <button class="pay" id="copyBtn2" data-clipboard-target="#cargoingOrderno">复制</button>
                     </div>
                   </template>
                 </colon-span>
+              </div>
+              <div class="detail-box">
+                <colon-span title="批次单号" :value="orderInfo.batch"></colon-span>
               </div>
               <div class="detail-box">
                 <colon-span title="下单时间" :value="createTime"></colon-span>
@@ -117,7 +127,7 @@
                 <colon-span title="产品价值">
                   <template slot="content">
                     <div>
-                      <span class="money">{{totalFee}}</span>元
+                      <span class="money">{{totalFee}}</span>
                     </div>
                   </template>
                 </colon-span>
@@ -126,7 +136,17 @@
             <!-- 集运合单后的订单状态 -->
             <div class="detail" v-show="orderInfo['type'] === 1 && orderInfo.parentId !== 0">
               <div class="detail-box">
-                <colon-span title="订单编号" :value="orderInfo.orderNo"></colon-span>
+                <colon-span title="订单编号">
+                  <template slot="content">
+                    <div>
+                      <span id="cargoDoneOrderno">{{orderInfo.orderNo}}</span>
+                      <button class="pay" id="copyBtn3" data-clipboard-target="#cargoDoneOrderno">复制</button>
+                    </div>
+                  </template>
+                </colon-span>
+              </div>
+              <div class="detail-box">
+                <colon-span title="批次单号" :value="orderInfo.batch"></colon-span>
               </div>
               <div class="detail-box">
                 <colon-span title="下单时间" :value="createTime"></colon-span>
@@ -145,7 +165,7 @@
                 <colon-span title="预付金额">
                   <template slot="content">
                     <div>
-                      <span class="money">{{totalFee}}</span>元
+                      <span class="money">{{totalFee}}</span>
                     </div>
                   </template>
                 </colon-span>
@@ -336,7 +356,12 @@ export default {
       }
     },
     totalFee () {
-      return this.orderInfo.totalFee / 100
+      let totalFee = Number(this.orderInfo.totalFee)
+      if (totalFee === 0) {
+        return '定价中'
+      }
+      totalFee = totalFee / 100
+      return `￥${totalFee}`
     },
     orderType () {
       // 0 直邮, 1 集运
@@ -376,7 +401,9 @@ export default {
   },
   mounted () {
     /* eslint-disable no-new */
-    new Clipboard('#copyBtn')
+    new Clipboard('#copyBtn1')
+    new Clipboard('#copyBtn2')
+    new Clipboard('#copyBtn3')
   },
   methods: {
     async getOrderDetail (id) {
@@ -426,6 +453,15 @@ export default {
     async wxPay () {
       const orderNo = this.orderInfo.orderNo
       const money = this.orderInfo.totalFee
+      if (Number(money) === 0) {
+        this.$vux.toast.show({
+          text: '正在定价中，定价结束后会有微信模板消息通知',
+          type: 'text',
+          width: '22rem',
+          time: 2500
+        })
+        return
+      }
       let initParams = {
         openid: storage({key: 'openid'}),
         money,
@@ -649,14 +685,6 @@ export default {
           color: @m-yellow;
         }
       }
-    }
-    button.pay {
-      background: transparent;
-      font-size: @normal-size;
-      padding: 1px 5px;
-      border: 1px solid @m-yellow;
-      border-radius: @radius-size;
-      color: @m-yellow;
     }
     .money {
       color: @m-yellow;

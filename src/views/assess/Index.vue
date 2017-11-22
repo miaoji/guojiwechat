@@ -53,8 +53,8 @@
           </x-input>
         </group>
       </div>
-      <div class="div-btn-sub"> 
-        <button class="btn-sub" @click="validateInfo">提交</button>
+      <div class="submit-btn"> 
+        <button class="normal" @click="validateInfo">提交</button>
       </div>
       <div style="height:200px"></div>
     </div>
@@ -69,8 +69,8 @@
         <div class="package-prompt-info">
           运费价格 : {{price}} 元
         </div>
-        <div class="popup-btn-sub"> 
-          <button class="btn-sub" @click="toSend">前往寄件</button>
+        <div class="submit-btn"> 
+          <button class="normal" @click="toSend">前往寄件</button>
         </div>
       </x-dialog>
     </div>
@@ -343,19 +343,6 @@ export default {
   padding: 1rem 0 2rem;
   font-size: 1.4rem;
 }
-.popup-btn-sub{
-  button {
-    width: 15rem;
-    border-radius: 5px;
-    border-width: 0;
-    font-size: 1.6rem;
-    background-color: #ffa414;
-    color: #fff;
-    margin:0 auto 3rem;
-    height: 3.3rem;
-    display: block;
-  }
-}
 
 .float-icon{
   height: 0px;
@@ -509,22 +496,6 @@ export default {
         span {
           color: @m-yellow;
         }
-      }
-    }
-    .div-btn-sub {
-      padding: 1rem 0rem;
-      margin-top: 1rem;
-      text-align: center;
-      overflow: hidden;
-      .btn-sub {
-        color: white;
-        border: none;
-        padding: 1rem 0;
-        font-size: 1.6rem;
-        width: 100%;
-        background-color: @m-yellow;
-        border: none;
-        border-radius: 5px;
       }
     }
   }

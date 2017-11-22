@@ -10,8 +10,8 @@
             <p class="coupon-intro-name">{{detailData.coupon_name}}</p>
             <p class="coupon-intro-func">{{detailData.coupon_value / 100}}元代金券</p>
             <!-- 立即使用 -->
-            <div class="div-btn-sub"> 
-              <button class="btn-sub" @click="useNow">立即使用</button>
+            <div class="use-now"> 
+              <button class="pay" @click="useNow">立即使用</button>
             </div>
           </div>
           <div class="divider">
@@ -157,9 +157,9 @@ export default {
   &-container {
     min-height: 96vh;
     overflow-x: hidden;
-    background: @m-yellow;
     padding: 1rem;
     padding-top: 4rem;
+    .purple-bg;
     .coupon {
       padding: 0 1rem;
       background: white;
@@ -177,26 +177,16 @@ export default {
           }
         }
         &-name {
-          font-size: 1.2rem;
+          font-size: @small-size;
           color: #666;
         }
         &-func {
-          font-size: 2.2rem;
+          font-size: @big-size;
         }
-        .div-btn-sub {
+        .use-now {
           padding: 1rem 0rem;
           text-align: center;
           overflow: hidden;
-          .btn-sub {
-            color: white;
-            border: none;
-            padding: .5rem 0;
-            font-size: 1.4rem;
-            width: 42%;
-            background-color: @m-yellow;
-            border: none;
-            border-radius: 5px;
-          }
         }
       }
       .divider {
@@ -229,7 +219,7 @@ export default {
     }
     .package-info {
       padding-top: 1rem;
-      font-size: 1.4rem;
+      font-size: @normal-size;
       text-align: left;
     }
   }

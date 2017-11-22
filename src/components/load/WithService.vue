@@ -2,7 +2,7 @@
   <div class="loadtoshow">
     <div class="loadtoshow-container" @click.stop="onReload">
       <img src="../../assets/images/load.png" class="loading" alt="loadfail" v-show="state === 0">
-      <span v-show="state !== 0">
+      <span v-show="state !== 0 && mod==='show'">
         {{showVal}}
       </span>
       <img src="../../assets/images/load.png" class="loadingfail" alt="loadfail" v-show="state === 2">
@@ -24,6 +24,10 @@ export default {
     },
     query: {
       type: Object
+    },
+    mod: {
+      type: String,
+      default: 'show'
     },
     dataLevel: {
       type: Array,
@@ -47,7 +51,7 @@ export default {
           val = '请求中'
           break
         case 1:
-          val = this.returnRes.join('')
+          val = this.returnRes.join(',')
           break
         case 2:
           val = `获取${this.title}失败`
@@ -66,11 +70,14 @@ export default {
       try {
         const res = await this.ajaxFunc(this.query)
         if (res.code === 200 && res.success) {
-          this.handleData(this.dataLevel, res)
+          if (this.mod === 'show') {
+            this.handleData(this.dataLevel, res)
+          }
           this.state = 1
         } else {
           this.state = 2
         }
+        this.$emit('listenAjaxDone', res)
       } catch (e) {
         console.error(e)
       }
@@ -114,21 +121,25 @@ export default {
      * data['statusCode']
      * @return {[String]}       [description]
      */
+    // [['obj', ['0', [['provinces', ['province']], 'transferAddress', 'transferName']]]]
     handleData (rules, data) {
-      if (!rules && data) {
-        this.returnRes.push(data)
-        return
-      }
-      for (let i = 0, len = rules.length; i < len; i++) {
+      let len = rules.length
+      for (let i = 0; i < len; i++) {
         const rule1 = rules[i]
         if (typeof rule1 === 'string') {
           this.returnRes.push(data[rule1])
-          return
+          continue
         }
         if (Array.isArray(rule1)) {
           let item = data[rule1[0]]
           for (let j = 1, lenitem = rule1.length; j < lenitem; j++) {
-            this.handleData(rule1[j][1], item[rule1[j][0]])
+            const ruleJ = rule1[j]
+            const data = item[ruleJ[0]]
+            if (typeof data === 'string') {
+              this.returnRes.push(data)
+            } else {
+              this.handleData(ruleJ[1], data)
+            }
           }
         }
       }

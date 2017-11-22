@@ -40,6 +40,7 @@
                   <p class="address-info--detail">
                    {{pickupAddress['country']}}{{pickupAddress['province']}}{{pickupAddress['city']}}{{pickupAddress['county']}}{{pickupAddress['address']}}
                   </p>
+                  <tips content="此为默认地址，系统自动选择" v-show="isDefaultAddr"></tips>
                 </div>
                 <div class="address-link">
                   <img src="../../assets/images/sen_ico_com.png" alt="地址簿">
@@ -49,17 +50,16 @@
           </router-link>
           <!-- 订单配置选择 -->
           <div class="options">
-            <group label-width="8rem" label-align="left">
+            <group label-width="6rem" label-align="left">
               <cell
                 title="客户编号"
-                value="MZA10240111001"
+                :value="customerNo"
               >
               </cell>
               <cell>
                 <template slot="title">
                   <div class="question-icon">
                     <span>中转地址</span>
-                    <img src="../../assets/images/question.png">
                   </div>
                 </template>
                 <template slot="value">
@@ -69,9 +69,25 @@
                     :query="{
                       isDefault: 1
                     }"
-                    :dataLevel="[['obj', ['0', [['provinces', ['province']], 'transferAddress']]]]"
+                    mod="show"
+                    :dataLevel="[
+                      ['obj', 
+                        ['0',
+                          [
+                            ['provinces', ['province']],
+                            'transferAddress', 
+                            'transferName',
+                            'transferMobile'
+                          ]
+                        ]
+                      ]
+                    ]"
+                    @listenAjaxDone="handleTransferAddr"
                   >
                   </Load-toshow>
+                  <div class="transfer-tips">
+                    <tips content="用户电商平台下单地址"></tips>
+                  </div>
                 </template>
               </cell>
             </group>
@@ -82,14 +98,13 @@
       <jag-container>
         <div slot="content" class="packages">
           <div class="packages__title">
-            <div class="question-icon" @click.stop='packagePromptInfoShow = true'>
+            <div class="question-icon">
               <span>
                 包裹报关
               </span>
-              <img src="../../assets/images/question.png" />
             </div>
-            <div @click.stop="packageShow = true">
-              <button type="">点击添加</button>
+            <div @click.stop="handlePackageShow">
+              <button type="" class="pay">点击添加</button>
             </div>
           </div>
           <div class="packages__table">
@@ -120,11 +135,9 @@
               </tbody>
             </table>
           </div>
-          <tips 
-            v-show="packageTable.length > 0"
-            content="长按删除"
-          >
-          </tips>
+          <div v-show="packageTable.length > 0" class="package-tips">
+            <tips :content="'长按删除，' + packageTableLength"></tips>
+          </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">
             <button class="normal" @click.stop="submitOrder">提交</button>
@@ -152,15 +165,19 @@
             </x-input>
             <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
           </group>
+          <tips
+            content="您的快递可能合并成普货和特货走不同渠道，最多添加50件"
+          >
+          </tips>
+          <tips
+            :content="packageTableLength"
+          >
+          </tips>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">取消</button>
-            <button type="" class="pdialog-form__confrim--sure" @click="addPackge">完成</button>
+            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加并继续编辑</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">添加并关闭</button>
           </div>
         </div>
-        <tips
-          content="您的快递可能合并成普货和特货走不同渠道"
-        >
-        </tips>
       </x-dialog>
     </div>
     <!-- 选择快递公司 -->
@@ -182,7 +199,7 @@ import Tips from '@/components/Tips'
 import SelectBox from '@/components/SelectBox'
 import LoadToshow from '@/components/load/WithService'
 import Line from './components/Line'
-import { getAddress, storage } from '@/utils'
+import { getAddress, storage, cache as cacheUtil } from '@/utils'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as transferAddrService from '@/services/transferAddr'
 import { save as saveCargo } from '@/services/cargo'
@@ -207,11 +224,15 @@ export default {
     return {
       dataInCache: [
         {
-          name: 'orderOptions',
+          name: 'newPackage',
+          needJudge: 0
+        }, {
+          name: 'packageTable',
           needJudge: 0
         }
       ],
       isSubmit: false,
+      isDefaultAddr: false,
       pickupAddress: {
         countryId: '',
         name: '',
@@ -222,6 +243,7 @@ export default {
         city: '',
         county: ''
       },
+      customerNo: '',
       pickupId: null,
       packageTable: [],
       newPackage: {
@@ -243,6 +265,12 @@ export default {
       this.$store.commit('SET_PAGE', {page: 'cargo'})
       await this.getPickupAddress()
       this.pickupId = this.pickupAddress['id'] || 0
+      // 从localStorage中获取存储的用户习惯信息, 将可以直接赋值的赋值到this
+      const dataInCache = this.dataInCache
+      cacheUtil.setCacheToData.apply(this, [dataInCache, 'cargo_info'])
+      this.customerNo = storage({
+        key: 'customerNo'
+      })
     } catch (e) {
       console.error(e)
     } finally {
@@ -266,6 +294,10 @@ export default {
           receiverCountry: _this.pickupAddress['country']
         }
       })
+    },
+    packageTableLength () {
+      const len = this.packageTable.length
+      return `当前包裹数量 ${len}`
     }
   },
   methods: {
@@ -282,6 +314,12 @@ export default {
         })
         if (pickupAddress) {
           this.pickupAddress = pickupAddress
+        }
+        const isStorage = storage({
+          key: 'cargo_pickupaddress'
+        })
+        if (!isStorage && pickupAddress) {
+          this.isDefaultAddr = true
         }
       } catch (e) {
         console.error(e)
@@ -310,10 +348,35 @@ export default {
         clearTimeout(longTimer)
       }
     },
+    handleTransferAddr (val) {
+      // console.log('val', val)
+      this.transferAddr = val
+      this.transferAddr['done'] = true
+    },
+    /**
+     * [处理点击添加包裹按钮的方法]
+     */
+    handlePackageShow () {
+      // 超出50个包裹，不允许再加
+      if (this.packageTable.length >= 50) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '集运最多添加50包裹',
+          width: '16rem'
+        })
+        this.packageShow = false
+        return false
+      }
+      this.packageShow = true
+      return true
+    },
     /**
      * [添加包裹]
      */
-    addPackge () {
+    addPackge (isClose = true) {
+      if (!this.handlePackageShow()) {
+        return
+      }
       const _this = this
       let complete = []
       Object.keys(_this.newPackage).forEach(function (key) {
@@ -340,7 +403,7 @@ export default {
         kdCompanyCodeCn: '',
         cnNo: ''
       }
-      this.packageShow = false
+      this.packageShow = !isClose
     },
     /**
      * [提交集运订单，成功后跳转到详细页面]
@@ -370,8 +433,10 @@ export default {
           receiveAddrId: this.pickupId
         })
         if (saveRes.code === 200) {
+          this.clearForm()
           this.$router.push({
-            path: '/cargo/list'
+            path: '/cargo/list',
+            query: {type: 'waitcargo'}
           })
         } else {
           this.$vux.toast.show({
@@ -387,22 +452,53 @@ export default {
         this.$vux.loading.hide()
       }
     },
+    clearForm () {
+      this.packageTable = []
+      this.pickupAddress = {
+        countryId: '',
+        name: '',
+        mobile: '',
+        address: '',
+        country: '',
+        province: '',
+        city: '',
+        county: ''
+      }
+      storage({
+        type: 'remove',
+        key: 'cargo_pickupaddress'
+      })
+    },
     onClickExSelect () {
+      this.footerHide()
       this.selectExpressShow = true
       this.packageShow = false
     },
     onExpressClose () {
+      this.footerShow()
       this.selectExpressShow = false
       this.packageShow = true
     },
     onExpressConfirm (val) {
+      this.footerShow()
       this.newPackage['kdCompanyCodeCn'] = val['companyCode']
       this.newPackage['companyName'] = val['companyName']
+    },
+    footerHide () {
+      const footer = window.document.getElementsByTagName('footer')
+      footer[0].style.height = '0'
+    },
+    footerShow () {
+      const footer = window.document.getElementsByTagName('footer')
+      footer[0].style.height = 'auto'
     }
   },
   watch: {
   },
   beforeDestroy () {
+    // 离开页面时在localStorage中保存产品规格，包裹信息
+    const dataInCache = this.dataInCache
+    cacheUtil.setDataToCache.call(this, dataInCache, 'cargo_info')
   }
 }
 </script>
@@ -541,46 +637,6 @@ export default {
         padding-bottom: 1rem;
         justify-content: space-between;
         font-size: @normal-size;
-        button {
-          color: @m-yellow;
-          border: 1px solid @m-yellow;
-          border-radius: 3px;
-          padding: .1rem .3rem;
-          background: transparent;
-        }
-      }
-      &__table {
-        padding: .5rem 0;
-        border: 1px solid #dedede;
-        border-left-width: 0;
-        border-right-width: 0;
-        table {
-          font-size: @normal-size;
-          width: 100%;
-          thead {
-            color: @greyfont;
-            th {
-              font-weight: 100;
-            }
-          }
-          tr {
-            td {
-              padding: .3rem 0;
-              line-height: 2rem;
-              font-size: @normal-size;
-              overflow: hidden;
-              max-width: 4rem;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              input {
-                width: 3.9rem;
-                text-align: center;
-                border: none;
-                background: transparent;
-              }
-            }
-          }
-        }
       }
       &__money {
         text-align: center;

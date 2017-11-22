@@ -209,6 +209,7 @@ export default {
       this.inputCountryName = ''
       // 压入一个新的history
       this.pushHistory()
+      window.scrollTo(0, 0)
       const _this = this
       window.document.title = '选择快递公司'
       window.addEventListener('popstate', function (e) {

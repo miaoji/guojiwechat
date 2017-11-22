@@ -158,11 +158,11 @@
               </span>
               <img src="../../assets/images/question.png" />
             </div>
-            <div @click="packageShow = true">
-              <button type="" >点击添加</button>
+            <div @click="handlePackageShow">
+              <button type="" class="pay" >点击添加</button>
             </div>
           </div>
-          <div class="send-container-package__table">
+          <div class="packages__table">
             <table>
               <thead>
                 <tr>
@@ -190,9 +190,8 @@
               </tbody>
             </table>
           </div>
-          <p class="tips" v-show="packageTable.length > 0">
-            <img src="../../assets/images/tips.png" alt="tips">
-            长按删除，价值不可修改
+          <p class="tips" v-show="packageTable.length > 0">            
+            <tips :content="'长按删除，价值不可修改，' + packageTableLength"></tips>
           </p>
           <div class="send-container-package__money">
             预付运费：￥ <span>{{advanceShow}}</span>
@@ -236,7 +235,7 @@
           </div>
         </div>
         <p class="dialog-tips">
-          请准确填写重量与体积，若复重出现差异，可能会发生补价差
+          <tips content="请准确填写重量与体积，若复重出现差异，可能会发生补价差"></tips>
         </p>
         <div class="dialog-confirm-btn">
           <button type="" @click.stop="volumeConfirm">确定</button>
@@ -256,19 +255,20 @@
             <x-input title="产品单价" lang="en" type="tel" name="tel" v-model="newPackage['unitPrice']" required></x-input>
             <x-input title="产品数量" type="number" v-model="newPackage['quantity']" required></x-input>
           </group>
-          <div class="send-package-dialog-form__confrim">
-            <button type="" class="send-package-dialog-form__confrim--cancle" @click="packageShow = false">取消</button>
-            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge">完成</button>
+          <div class="package-dialog-tips">
+            <tips content="单次寄件最多可包含三个包裹，超过三个请分批次寄件"></tips>
+            <tips :content="packageTableLength"></tips>
           </div>
-        </div>
-        <div class="package-dialog-tips">
-          注：单次寄件最多可包含三个包裹，超过三个请分批次寄件
+          <div class="send-package-dialog-form__confrim">
+            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加并继续编辑</button>
+            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">添加并关闭</button>
+          </div>
         </div>
       </x-dialog>
     </div>
     <!-- 包裹报关提示信息弹出框 -->
     <div v-transfer-dom>
-      <x-dialog v-model="packagePromptInfoShow" class="send-package-dialog">
+      <x-dialog v-model="packagePromptInfoShow" class="send-package-dialog" hide-on-blur>
         <h1>包裹报关</h1>
         <div class="package-close" @click="packagePromptInfoShow = false">
           <span class="vux-close"></span>
@@ -280,7 +280,7 @@
     </div>
     <!-- 退件提示信息弹出框 -->
     <div v-transfer-dom>
-      <x-dialog v-model="districtPromptInfoShow" class="send-package-dialog">
+      <x-dialog v-model="districtPromptInfoShow" class="send-package-dialog" hide-on-blur>
         <h1>退件说明</h1>
         <div class="package-close" @click="districtPromptInfoShow = false">
           <span class="vux-close"></span>
@@ -292,7 +292,7 @@
     </div>
     <!-- 保价提示信息弹出框 -->
     <div v-transfer-dom>
-      <x-dialog v-model="isofferPromptInfoShow" class="send-package-dialog">
+      <x-dialog v-model="isofferPromptInfoShow" class="send-package-dialog" hide-on-blur>
         <h1>保价说明</h1>
         <div class="package-close" @click="isofferPromptInfoShow = false">
           <span class="vux-close"></span>
@@ -309,6 +309,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import PackageProduct from '@/components/PackageProduct'
+import Tips from '@/components/Tips'
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as priceService from '@/services/price'
@@ -327,7 +328,8 @@ export default {
     XTextarea,
     Spinner,
     XDialog,
-    PackageProduct
+    PackageProduct,
+    Tips
   },
   data () {
     return {
@@ -530,6 +532,10 @@ export default {
       }
       const insuredPrice = Number(this.insuredPrice)
       return (advance + insuredPrice).toFixed(2)
+    },
+    packageTableLength () {
+      const len = this.packageTable.length
+      return `当前包裹数量 ${len}`
     }
   },
   methods: {
@@ -590,9 +596,29 @@ export default {
       }
     },
     /**
+     * [处理点击添加包裹按钮的方法]
+     */
+    handlePackageShow () {
+      // 超出3个包裹，不允许再加
+      if (this.packageTable.length >= 3) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '直邮最多添加三个包裹',
+          width: '15rem'
+        })
+        this.packageShow = false
+        return false
+      }
+      this.packageShow = true
+      return true
+    },
+    /**
      * [添加包裹]
      */
-    addPackge () {
+    addPackge (isClose) {
+      if (!this.handlePackageShow()) {
+        return
+      }
       const _this = this
       let complete = []
       Object.keys(_this.newPackage).forEach(function (key) {
@@ -612,23 +638,13 @@ export default {
         return
       }
       this.newPackage['worth'] = this.newPackage['unitPrice'] * this.newPackage['quantity']
-      // 超出3个包裹，不允许再加
-      if (this.packageTable.length >= 3) {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '最多添加三个包裹',
-          width: '15rem'
-        })
-        this.packageShow = false
-        return
-      }
       this.packageTable.push(this.newPackage)
       this.newPackage = {
         nameCn: '',
         quantity: '',
         unitPrice: ''
       }
-      this.packageShow = false
+      this.packageShow = !isClose
     },
     /**
      * [submitSend 创建订单，成功后调用微信支付接口]
@@ -1194,46 +1210,6 @@ export default {
         display: flex;
         font-size: @normal-size;
         color: @grey-word;
-        button {
-          color: @m-yellow;
-          border: 1px solid @m-yellow;
-          border-radius: 3px;
-          padding: .1rem .3rem;
-          background: transparent;
-        }
-      }
-      &__table {
-        padding: .3rem 0;
-        border: 1px solid #dedede;
-        border-left-width: 0;
-        border-right-width: 0;
-        table {
-          font-size: @normal-size;
-          width: 100%;
-          thead {
-            color: @greyfont;
-            th {
-              font-weight: 100;
-            }
-          }
-          tr {
-            td {
-              padding: .3rem 0;
-              line-height: 2rem;
-              font-size: @normal-size;
-              overflow: hidden;
-              max-width: 4rem;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              input {
-                width: 3.9rem;
-                text-align: center;
-                border: none;
-                background: transparent;
-              }
-            }
-          }
-        }
       }
       &__money {
         text-align: center;

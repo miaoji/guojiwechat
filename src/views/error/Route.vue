@@ -15,8 +15,8 @@
         <p>{{hotline}}</p>
       </div>
       <!-- 提交按钮 -->
-      <div class="div-btn-sub">
-        <router-link to="/send" class="btn-sub">
+      <div class="submit-btn">
+        <router-link to="/send" class="normal">
           返回首页
         </router-link>
       </div>
@@ -44,8 +44,7 @@ export default {
   &-title {
     padding: 5rem;
     p {
-      font-size: 2.8rem;
-      font-weight: 600;
+      font-size: @big-size;
       color: @red;
     }
   }
@@ -55,25 +54,9 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 1rem 3rem;
-    font-size: 1.5rem;
+    font-size: @normal-size;
     &:last-child {
       .btg;
-    }
-  }
-  .div-btn-sub {
-    padding: 2rem 3rem;
-    text-align: center;
-    overflow: hidden;
-    .btn-sub {
-      display: inline-block;
-      color: white;
-      border: none;
-      padding: 1rem 0;
-      font-size: 1.6rem;
-      width: 100%;
-      background-color: @m-yellow;
-      border: none;
-      border-radius: 5px;
     }
   }
 }

@@ -222,6 +222,7 @@ async function getAddress ({type, storageKey, apiService}) {
         }
       }
     }
+    if (!addrId) return false
     const Address = await apiService({id: addrId})
     if (!Address.success || !Address.obj) return false
     const addressRes = Address.obj

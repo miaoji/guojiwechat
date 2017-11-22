@@ -78,9 +78,20 @@
   button.normal {
     color: white;
     border: none;
-    padding: 1rem 0;
+    padding: 1rem 2rem;
     font-size: @normal-size;
     width: 100%;
+    background-color: @m-yellow;
+    border: none;
+    border-radius: @radius-size;
+  }
+  a.normal {
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: @normal-size;
+    width: 100%;
+    min-width: 5rem;
     background-color: @m-yellow;
     border: none;
     border-radius: @radius-size;
@@ -159,6 +170,14 @@ div.question-icon{
   white-space: nowrap;
 }
 
+.gosend-btn {
+  .normal-btn;
+  color: white;
+  border: none;
+  border: 1px solid @m-yellow;
+  background: @m-yellow;
+}
+
 .booklist {
 	.flex;
 	overflow: auto;
@@ -199,4 +218,53 @@ div.question-icon{
 			text-align: left;
 		}
 	}
+}
+
+.packages__table {
+  padding: .8rem 0;
+  border: 1px solid #dedede;
+  border-left-width: 0;
+  border-right-width: 0;
+  table {
+    font-size: @normal-size;
+    width: 100%;
+    border-collapse:collapse;
+    thead {
+      color: @greyfont;
+      th {
+        font-weight: 100;
+      }
+    }
+    tr {
+      .btg;
+      &:last-child {
+        border-bottom-width: 0;
+      }
+      td {
+        padding: .8rem 0;
+        line-height: 2.7rem;
+        font-size: @normal-size;
+        overflow: hidden;
+        max-width: 5rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        input {
+          width: 4rem;
+          font-size: @normal-size;
+          text-align: center;
+          border: none;
+          background: transparent;
+        }
+      }
+    }
+  }
+}
+
+button.pay {
+  background: transparent;
+  font-size: @normal-size;
+  padding: 1px 5px;
+  border: 1px solid @m-yellow;
+  border-radius: @radius-size;
+  color: @m-yellow;
 }

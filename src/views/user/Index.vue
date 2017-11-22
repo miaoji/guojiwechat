@@ -27,7 +27,7 @@
           <p>客服热线:&nbsp;&nbsp;</p>
           <p><a :href="telHotline">{{hotline}}</a></p>
         </div>
-        <div @click="dialogshow = false">
+        <div class="package-close" @click="dialogshow = false">
           <span class="vux-close"></span>
         </div>
       </x-dialog>
@@ -105,7 +105,7 @@ export default {
         show: true
       }, {
         src: require('../../assets/images/min_ico_pac.png'),
-        name: '我的包裹',
+        name: '直邮订单',
         path: '/order/list',
         show: true
       }, {
@@ -168,6 +168,9 @@ export default {
       font-size: @normal-size;
       color: @m-yellow;
     }
+    p {
+      font-size: @normal-size;
+    }
   }
   .vux-close {
     margin-top: 8px;
@@ -206,8 +209,8 @@ export default {
   .purple-bg;
   padding: 10px;
   padding-top: 4vh;
+  padding-bottom: 4vh;
   min-height: 94vh;
-  overflow: hidden;
   &-info {
     margin: 0;
     padding: 0;

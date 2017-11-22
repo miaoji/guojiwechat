@@ -75,14 +75,6 @@ export default {
   border-bottom: 1px solid @borderbt;
 }
 
-.gosend-btn {
-  .normal-btn;
-  color: white;
-  border: none;
-  border: 1px solid @m-yellow;
-  background: @m-yellow;
-}
-
 .order-padding {
   padding: 2px;
 }

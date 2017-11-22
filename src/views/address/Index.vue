@@ -156,7 +156,7 @@ export default {
     background: white;
     &-content {
       border: none;
-      padding: .6rem 0;
+      padding: 1rem 0;
       .flex;
       justify-content: center;
       img {
@@ -166,7 +166,6 @@ export default {
       span {
         padding-left: 1rem;
         font-size: @normal-size;
-        color: #666;
       }
     }
   }

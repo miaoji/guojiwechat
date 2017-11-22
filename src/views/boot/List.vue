@@ -97,14 +97,13 @@ export default {
   .list-main{
     color: @text-color;
     padding: 0 .6rem;
-    border-bottom: 1px solid #dedede;
     .box-title{
       span {
         color: @m-yellow;
         vertical-align: text-bottom;
         padding-right: 3px;
       }
-      font-size: 1.4rem;
+      font-size: @normal-size;
       font-weight: bold;
       padding: 0.5rem 1rem;
     }
@@ -117,14 +116,14 @@ export default {
       background-size: 100% 100%;
     }
     .box-item{
-      font-size: 1.4rem;
+      font-size: @normal-size;
       padding: 0.1rem 1rem;
       &:last-child {
         padding-bottom: 10px;
       }
       .list-box-left{
         display: inline-block;
-        width:5.7rem;
+        width: 5.7rem;
         text-align: left;
       }
       .list-box-ico {
@@ -145,17 +144,9 @@ export default {
   margin-top: 1.17647059em;
   padding: 8rem 2rem;
   text-align: center;
-  font-size: 1.6rem;
-  .error-item{
+  font-size: @middle-size;
+  .error-item {
     margin-bottom: 2rem;
-  }
-  button.pay {
-    background: transparent;
-    font-size: 13px;
-    padding: 5px 10px;
-    border: 1px solid @m-yellow;
-    border-radius: 5px;
-    color: @m-yellow;
   }
 }
 </style>

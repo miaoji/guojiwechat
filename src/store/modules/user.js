@@ -53,7 +53,8 @@ export const actions = {
           userId: user.id,
           mobile: user.mobile,
           headimgurl: user.headimgurl,
-          nickname: user.nickName
+          nickname: user.nickName,
+          customerNo: user.customerNo
         })
         return {
           text: '获取用户信息成功',
@@ -188,13 +189,15 @@ export const mutations = {
     userId = storage({key: 'userId'}),
     mobile = storage({key: 'mobile'}),
     nickname = storage({key: 'nickname'}),
-    headimgurl = storage({key: 'headimgurl'})
+    headimgurl = storage({key: 'headimgurl'}),
+    customerNo = storage({key: 'customerNo'})
   }) {
     storage({key: 'token', val: token, type: 'set'})
     storage({key: 'userId', val: userId, type: 'set'})
     storage({key: 'mobile', val: mobile, type: 'set'})
     storage({key: 'nickname', val: nickname, type: 'set'})
     storage({key: 'headimgurl', val: headimgurl, type: 'set'})
+    storage({key: 'customerNo', val: customerNo, type: 'set'})
   },
   [types.SET_OPENID] (state, { openid }) {
     state.openid = openid

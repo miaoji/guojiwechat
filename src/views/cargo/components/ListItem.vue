@@ -10,7 +10,7 @@
             {{item.receiverCountry}}{{item.receiverProv}}{{item.receiverCity}}{{item.receiverCounty}}&nbsp;
           </span>
           <span class="order-no">
-            订单号:&nbsp;{{item.orderNo}}
+            批次号:&nbsp;{{item.batch}}
           </span>
         </p>
       </div>
@@ -35,16 +35,19 @@
         <div class="booklist" v-show="item.parentId === 0">
           <div class="booklist-item">
           </div>
-          <div class="booklist-intro">
-            {{item['orderName']}}
+          <div>
+            {{item.orderName}}
           </div>
         </div>
       </div>
-      <div class="package-detail" v-show="item.parentId !== 0">
-        共{{item.orderInfoSubset.length}}条订单&nbsp;实付款:&nbsp;￥{{item.totalFee / 100}}
-      </div>
-      <div class="package-detail" v-show="item.parentId === 0">
-        共1条订单
+      <div class="package-detail">
+        <p v-show="item.parentId !== 0">订单号:{{item.orderNo}}</p>
+        <p v-show="item.parentId !== 0">
+          共{{item.orderInfoSubset.length}}条订单&nbsp;集运类型-{{cargoType}}&nbsp;实付款:&nbsp;{{realPay}}
+        </p>
+        <p v-show="item.parentId === 0">
+          共1条订单
+        </p>
       </div>
     </div>
     <div class="edit">
@@ -77,6 +80,31 @@ export default {
     }
   },
   created () {
+  },
+  computed: {
+    cargoType () {
+      const parentId = Number(this.item.parentId)
+      let res = ''
+      switch (parentId) {
+        case -1:
+          res = '普货'
+          break
+        case -2:
+          res = '特货'
+          break
+        default:
+          res = '普货'
+      }
+      return res
+    },
+    realPay () {
+      let totalFee = Number(this.item.totalFee)
+      if (totalFee === 0) {
+        return '正在定价'
+      }
+      totalFee = totalFee / 100
+      return `￥${totalFee}`
+    }
   },
   methods: {
     ...mapActions([
@@ -115,14 +143,6 @@ export default {
   border-bottom: 1px solid @borderbt;
 }
 
-.gosend-btn {
-  .normal-btn;
-  color: white;
-  border: none;
-  border: 1px solid @m-yellow;
-  background: @m-yellow;
-}
-
 .listitem {
   background: white;
   border-radius: @radius-size;
@@ -134,7 +154,7 @@ export default {
     .listitem-box;
     justify-content: space-between;
     &-state {
-      font-size: @small-size;
+      font-size: @normal-size;
       color: @m-yellow;
     }
     &-address {
@@ -145,18 +165,17 @@ export default {
       &--detail {
         width: 20rem;
         text-align: left;
-        overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        font-size: @small-size;
+        font-size: @normal-size;
         @media (max-width:320px) {
           width: 17rem;
         }
         @media (min-width:370px) {
-          width: 20rem;
+          width: 22rem;
         }
         @media (min-width:400px) {
-          width: 20rem;
+          width: 23rem;
         }
       }
     }
@@ -164,13 +183,13 @@ export default {
   .package {
     .border-bottom-grey;
     &-info {
-      font-size: @small-size;
+      font-size: @normal-size;
       min-height: 5rem;
       padding: .5rem .6rem;
       background: #ececec;
     }
     &-detail {
-      font-size: @small-size;
+      font-size: @normal-size;
       padding: .5rem .6rem;
       text-align: right;
     }

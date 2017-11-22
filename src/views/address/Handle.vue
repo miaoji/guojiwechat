@@ -115,8 +115,10 @@
       >
       </get-position>
       <div class="addaddress-container-add">
-        <p class="addaddress-container-add--btn" @click.stop="saveAddress" v-show="pagetype === 'add'">创建</p>
-        <p class="addaddress-container-add--btn" @click.stop="editAddress" v-show="pagetype === 'edit'">确认修改</p>
+        <div class="submit-btn">
+          <button class="normal" @click.stop="saveAddress" v-show="pagetype === 'add'">创建</button>
+          <button class="normal" @click.stop="editAddress" v-show="pagetype === 'edit'">确认修改</button>
+        </div>
       </div>
     </div>
     <select-country
@@ -674,14 +676,6 @@ export default {
     &-add {
       margin-top: 3rem;
       padding: 1rem 1rem;
-      p {
-        font-size: 1.6rem;
-        padding: 1rem 0;
-        width: 100%;
-        color: white;
-        background: @m-yellow;
-        border-radius: 6px;
-      }
     }
   }
 }
