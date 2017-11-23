@@ -59,7 +59,7 @@ export default {
         return
       } else if (userinfo.type === 'success') {
         // 获取用户信息成功, 根据page跳转页面
-        // 获取当前时间14400分钟后时间戳, 并保存
+        // 获取当前时间14400分钟(一天)后时间戳, 并保存
         this.getDate(14400)
         this.$vux.toast.show({
           type: 'success',

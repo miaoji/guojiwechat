@@ -81,7 +81,7 @@
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="待补价">
+                <colon-span title="是否补价">
                   <template slot="content">
                     <load-more v-show="!getBootStatusDone" :show-loading="!getBootStatusDone"></load-more>
                     <div v-show="getBootStatusDone">
@@ -98,15 +98,24 @@
                   </template>
                 </colon-span>
               </div>
+              <div class="detail-box" v-show="orderInfo['remark']">
+                <colon-span title="备注信息">
+                  <template slot="content">
+                    <div class="remark-info">
+                      {{orderInfo['remark']}}
+                    </div>
+                  </template>
+                </colon-span>
+              </div>
             </div>
             <!-- 集运未合单的状态 -->
             <div class="detail" v-show="orderInfo['type'] === 1 && orderInfo.parentId === 0">
               <div class="detail-box">
-                <colon-span title="订单编号">
+                <colon-span title="国内单号">
                   <template slot="content">
                     <div>
-                      <span id="cargoingOrderno">{{orderInfo.orderNo}}</span>
-                      <button class="pay" id="copyBtn2" data-clipboard-target="#cargoingOrderno">复制</button>
+                      <span id="cargoingCnNo">{{orderInfo.cnNo}}</span>
+                      <button class="pay" id="copyBtn2" data-clipboard-target="#cargoingCnNo">复制</button>
                     </div>
                   </template>
                 </colon-span>
@@ -189,7 +198,7 @@
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="待补价">
+                <colon-span title="是否补价">
                   <template slot="content">
                     <load-more v-show="!getBootStatusDone" :show-loading="!getBootStatusDone"></load-more>
                     <div v-show="getBootStatusDone">
@@ -206,11 +215,20 @@
                   </template>
                 </colon-span>
               </div>
+              <div class="detail-box" v-show="orderInfo['remark']">
+                <colon-span title="备注信息">
+                  <template slot="content">
+                    <div class="remark-info">
+                      {{orderInfo['remark']}}
+                    </div>
+                  </template>
+                </colon-span>
+              </div>
             </div>
           </div>
         </jag-container>
       </div>
-      <div class="container" v-show="orderInfo['type'] === 0 && parentId !== 0">
+      <div class="container" v-show="orderInfo['type'] === 1 && parentId !== 0">
         <p class="intro-p">包裹信息</p>
         <jag-container>
           <div slot="content" class="content">
@@ -221,7 +239,7 @@
                   <img src="../../assets/images/package.png" alt="">
                   <div class="packagelist-item--intro">
                     <p>
-                      {{item['orderName']}}, 价值:{{item['totalFee']/100}}
+                      {{item['orderName']}}, 价值:￥{{item['totalFee']/100}}
                     </p>
                     <p>
                       国内段单号:{{item['cnNo']}}
@@ -441,7 +459,8 @@ export default {
           wxUserId: storage({
             key: 'userId'
           }),
-          batch: this.orderInfo.batch
+          batch: this.orderInfo.batch,
+          id: this.orderInfo.id
         })
         if (res.success && res.code === 200) {
           this.batchList = res['obj'][0]['orderInfoSubset'] || []
@@ -693,6 +712,10 @@ export default {
       padding: 0 10px;
       padding-bottom: 2px;
     }
+  }
+  .remark-info {
+    white-space: pre-line;
+    text-align: justify;
   }
 }
 

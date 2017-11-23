@@ -1,14 +1,13 @@
 <template>
-  <div class="template">
+  <div class="userinfo">
+    <h1>asdasd</h1>
   </div>
 </template>
 
 <script>
-import { storage } from '@/utils'
-import request from '@/utils/request'
 
 export default {
-  name: 'template',
+  name: 'userinfo',
   data () {
     return {
     }
@@ -27,10 +26,11 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
-@import '../assets/styles/colors.less';
+@import '../../assets/styles/colors.less';
+@import '../../assets/styles/vars.less';
 @import '~vux/src/styles/close';
 
-.template {
+.userinfo {
 
 }
 </style>

@@ -126,7 +126,7 @@
                     <input type="texts" v-model="item['totalFee']">
                   </td>
                   <td>
-                    <input type="text" v-model="item['companyName']">
+                    {{item['companyName']}}
                   </td>
                   <td>
                     <input type="text" v-model="item['cnNo']">
@@ -136,7 +136,7 @@
             </table>
           </div>
           <div v-show="packageTable.length > 0" class="package-tips">
-            <tips :content="'长按删除，' + packageTableLength"></tips>
+            <tips :content="'长按删除，快递公司不可修改，' + packageTableLength"></tips>
           </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">
@@ -174,8 +174,8 @@
           >
           </tips>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加并继续编辑</button>
-            <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">添加并关闭</button>
+            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">保存</button>
           </div>
         </div>
       </x-dialog>

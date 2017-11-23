@@ -43,15 +43,7 @@ router.beforeEach(function (to, from, next) {
       return next()
     }
     storage({
-      type: 'remove',
-      key: [
-        'token',
-        'nickname',
-        'mobile',
-        'userId',
-        'headimgurl',
-        'openid'
-      ]
+      type: 'clear'
     })
     const redirectUri = to.fullPath
     const {appid} = to.query

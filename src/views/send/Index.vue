@@ -26,7 +26,10 @@
               <span class="bgblack">寄</span>
             </div>
             <div class="send-container-address__info">
-              <div class="send-container-address__info--line">
+              <div v-show="!sendAddress['name']" style="line-height: 3rem;">
+                点击选择地址
+              </div>
+              <div v-show="sendAddress['name']" class="send-container-address__info--line">
                 <div>
                   <span>
                     {{sendAddress['name']}}&nbsp;&nbsp;
@@ -54,7 +57,10 @@
               <span class="bgred">收</span>
             </div>
             <div class="send-container-address__info">
-              <div class="send-container-address__info--line">
+              <div v-show="!pickupAddress['name']" style="line-height: 3rem;">
+                点击选择地址
+              </div>
+              <div v-show="pickupAddress['name']" class="send-container-address__info--line">
                 <div>
                   <span>{{pickupAddress['name']}}&nbsp;&nbsp;</span>
                   <span class="address-info">
@@ -260,8 +266,8 @@
             <tips :content="packageTableLength"></tips>
           </div>
           <div class="send-package-dialog-form__confrim">
-            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加并继续编辑</button>
-            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">添加并关闭</button>
+            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
+            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">保存</button>
           </div>
         </div>
       </x-dialog>
@@ -1149,6 +1155,7 @@ export default {
         padding-left: .8rem;
         flex: 9;
         text-align: left;
+        min-height: 3rem;
         &--line {
           div {
             display: flex;

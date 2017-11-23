@@ -7,6 +7,7 @@ import FeedContainer from '@/views/feed/Container'
 Vue.use(Router)
 
 const usercenter = r => require.ensure([], () => r(require('@/views/user')), 'Usercenter')
+const userinfo = r => require.ensure([], () => r(require('@/views/user/info')), 'UserInfo')
 const send = r => require.ensure([], () => r(require('@/views/send')), 'Send')
 const cargo = r => require.ensure([], () => r(require('@/views/cargo')), 'Cargo')
 const assess = r => require.ensure([], () => r(require('@/views/assess')), 'Assess')
@@ -179,6 +180,14 @@ export default new Router({
     component: coupondetail,
     meta: {
       intro: '卡券详细',
+      requiresAuth: true
+    }
+  }, {
+    path: '/user/info',
+    name: 'UserInfo',
+    component: userinfo,
+    meta: {
+      intro: '用户信息',
       requiresAuth: true
     }
   }, {
