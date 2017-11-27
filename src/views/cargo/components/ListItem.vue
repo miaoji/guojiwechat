@@ -17,19 +17,19 @@
       <span class="detail-state">{{item.status | orderstatus}}</span>
     </div>
     <div class="package">
-      <div class="package-info">
-        <div class="booklist" v-show="item.parentId !== 0 && item.orderInfoSubset.length > 1">
-          <div class="booklist-item" v-for="elem in item.orderInfoSubset" :key="item.id">
+      <div class="package-info" @click.stop="goPath('/orderdetail', {'id': orderId})">
+        <div class="booklist" v-show="item.parentId !== 0 && item.orderDetailList.length > 1">
+          <div class="booklist-item" v-for="elem in item.orderDetailList" :key="item.id">
             <div>
               {{elem['orderName']}}
             </div>
           </div>
         </div>
-        <div class="booklist" v-show="item.parentId !== 0 && item.orderInfoSubset.length === 1">
+        <div class="booklist" v-show="item.parentId !== 0 && item.orderDetailList.length === 1">
           <div class="booklist-item">
           </div>
           <div class="booklist-intro">
-            {{item.orderInfoSubset[0] ? item.orderInfoSubset[0]['orderName'] : ''}}
+            {{item.orderDetailList[0] ? item.orderDetailList[0]['orderName'] : ''}}
           </div>
         </div>
         <div class="booklist" v-show="item.parentId === 0">
@@ -43,7 +43,7 @@
       <div class="package-detail">
         <p v-show="item.parentId !== 0">订单号:{{item.orderNo}}</p>
         <p v-show="item.parentId !== 0">
-          共{{item.orderInfoSubset.length}}条订单&nbsp;集运类型-{{cargoType}}&nbsp;实付款:&nbsp;{{realPay}}
+          共{{item.orderDetailList.length}}条订单&nbsp;集运类型-{{cargoType}}&nbsp;实付款:&nbsp;{{realPay}}
         </p>
         <p v-show="item.parentId === 0">
           共1条订单
@@ -53,16 +53,13 @@
     <div class="edit">
       <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
-        <button v-show="item.status === 10" class="cancle-btn" @click="cancle(item)">取消订单</button>
-        <button class="gosend-btn" @click="goPath(item)">详情</button>
+        <button class="gosend-btn" @click="goPath('/orderroute', {'id': orderId})">查看物流</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import ColonSpan from '@/components/ColonSpan'
 
 export default {
   name: 'listitem',
@@ -72,16 +69,14 @@ export default {
       default: {}
     }
   },
-  components: {
-    ColonSpan
-  },
   data () {
     return {
     }
   },
-  created () {
-  },
   computed: {
+    orderId () {
+      return this.item.id || 0
+    },
     cargoType () {
       const parentId = Number(this.item.parentId)
       let res = ''
@@ -107,27 +102,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
-      'cancleSend'
-    ]),
-    goPath (item) {
-      const id = item.id
-      this.$router.push({path: '/orderdetail', query: {id}})
-    },
-    async cancle (item) {
-      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
-      this.$vux.confirm.show({
-        title: '确定取消这一订单吗?',
-        onCancel () {
-        },
-        async onConfirm () {
-          const res = await _this.cancleSend({
-            id: item.id,
-            type: 5
-          })
-          _this.$vux.toast.show(res)
-        }
-      })
+    goPath (path, query) {
+      this.$router.push({path, query})
     }
   }
 }

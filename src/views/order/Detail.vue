@@ -242,6 +242,7 @@
                       {{item['orderName']}}, 价值:￥{{item['totalFee']/100}}
                     </p>
                     <p>
+                      物流公司:{{item['kdCompany']['companyName']}}
                       国内段单号:{{item['cnNo']}}
                     </p>
                   </div>
@@ -463,7 +464,7 @@ export default {
           id: this.orderInfo.id
         })
         if (res.success && res.code === 200) {
-          this.batchList = res['obj'][0]['orderInfoSubset'] || []
+          this.batchList = res['obj'][0]['orderDetailList'] || []
         }
       } catch (e) {
         console.error(e)

@@ -4,10 +4,10 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟本地
-    // url = 'http://192.168.0.231:8077/'
+    url = 'http://192.168.0.231:8077/'
     // url = 'http://169.254.191.166:8077/'
     // 测试 app 云端服务 Wechat
-    url = 'http://api.didalive.net/mzkd/'
+    // url = 'http://api.didalive.net/mzkd/'
     // 正式 app 云端服务 Wechat
     // url = 'http://api.mingz-tech.com/'
     break

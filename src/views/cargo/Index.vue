@@ -286,6 +286,7 @@ export default {
       const _this = this
       return packageTable.map(function (elem) {
         delete elem.companyName
+        elem.totalFee = elem.totalFee * 100
         return {
           ...elem,
           wxUserId: storage({
@@ -395,7 +396,6 @@ export default {
         })
         return
       }
-      this.newPackage['totalFee'] = this.newPackage['totalFee'] * 100
       this.packageTable.push(this.newPackage)
       this.newPackage = {
         orderName: '',

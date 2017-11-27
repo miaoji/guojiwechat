@@ -19,6 +19,7 @@ const init = r => require.ensure([], () => r(require('@/views/user/Init')), 'Ini
 const nouser = r => require.ensure([], () => r(require('@/views/error/NoUser')), 'NoUser')
 const orderlist = r => require.ensure([], () => r(require('@/views/order/List')), 'OrderList')
 const orderdetail = r => require.ensure([], () => r(require('@/views/order/Detail')), 'OrderDetail')
+const orderroute = r => require.ensure([], () => r(require('@/views/order/Route')), 'OrderRoute')
 const bootdeal = r => require.ensure([], () => r(require('@/views/boot/Deal')), 'BootDeal')
 const bootlist = r => require.ensure([], () => r(require('@/views/boot/List')), 'BootList')
 const payresult = r => require.ensure([], () => r(require('@/views/pay/Result')), 'PayResult')
@@ -128,6 +129,14 @@ export default new Router({
     component: orderdetail,
     meta: {
       intro: '订单明细',
+      requiresAuth: true
+    }
+  }, {
+    path: '/orderroute',
+    name: 'OrderRoute',
+    component: orderroute,
+    meta: {
+      intro: '物流信息',
       requiresAuth: true
     }
   }, {
