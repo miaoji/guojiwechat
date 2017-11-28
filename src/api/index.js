@@ -50,16 +50,15 @@ export const transferAddr = {
   query: url + 'api/transfer/index'
 }
 
-// 国家
 export const country = {
   query: url + 'api/country/index',
   save: url + 'api/country/add',
   show: url + 'api/country/getCountryById',
   update: url + 'api/country/modCountryById',
-  delete: url + 'api/country/delCountryById'
+  delete: url + 'api/country/delCountryById',
+  cascade: url + 'api/country/provCityCountyList'
 }
 
-// 省份
 export const province = {
   query: url + 'api/provinces/index',
   save: url + 'api/provinces/add',

@@ -134,7 +134,7 @@ export default {
       try {
         if (!val) {
           this.pickerVal = []
-          this.pickerVal = []
+          this.pickerData = []
           return
         }
         this.$vux.loading.show()

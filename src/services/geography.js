@@ -4,6 +4,15 @@
 import request from '../utils/request'
 import { country as countryApi, province as provinceApi, city as cityApi, county as countyApi } from '@/api'
 
+export async function queryCascade (data) {
+  return request({
+    url: countryApi.cascade,
+    method: 'get',
+    auth: true,
+    data
+  })
+}
+
 export async function queryCountry (data) {
   return request({
     url: countryApi.query,

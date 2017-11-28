@@ -82,14 +82,14 @@
       <div class="send-container-select" >
         <group label-width="8rem" label-align="left">
           <!-- 包裹和产品类型选择，两者为级联关系 -->
-          <PackageProduct
+          <package-product
             title="产品类型"
             placeholder="请选择产品类型"
             :countryId="pickupCountryId"
             :defaultSelect="packageProductCache"
             @listenValChange="onProductChange"
           >
-          </PackageProduct>
+          </package-product>
           <!-- 产品规格选择，点击后弹出模态框 -->
           <cell
             @click.native="dialogshow = true"
