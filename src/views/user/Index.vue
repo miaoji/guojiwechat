@@ -112,7 +112,7 @@ export default {
         src: require('../../assets/images/cargo_ico.png'),
         name: '集运订单',
         path: '/cargo/list',
-        show: true
+        show: false
       }, {
         src: require('../../assets/images/coupon.png'),
         name: '我的卡包',

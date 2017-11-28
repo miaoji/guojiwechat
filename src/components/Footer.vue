@@ -52,7 +52,7 @@ export default {
         icon: jyPng,
         activeicon: acjyPng,
         key: 'cargo',
-        show: true
+        show: false
       }, {
         name: '我的',
         path: '/usercenter',
