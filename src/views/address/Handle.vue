@@ -22,10 +22,10 @@
           required
           text-align="right"
         ></x-input>
-        <x-input 
-          title="国家/地区" 
-          @click.native="onClickCountry" 
-          disabled 
+        <x-input
+          title="国家/地区"
+          @click.native="onClickCountry"
+          disabled
           placeholder="请选择国家/地区" 
           type="text"
           required 
@@ -52,7 +52,7 @@
           required
           text-align="right"
         ></x-textarea>
-        <x-input 
+        <x-input
           title="邮编"
           type="text"
           required
@@ -61,20 +61,20 @@
           placeholder="请填写邮编" 
           text-align="right"
         ></x-input>
-        <x-textarea 
+        <x-textarea
           title="备注"
           type="text"
           :max="50"
           placeholder="         请添加备注 (限50字)" 
           :show-counter="false" 
           v-model="remark" 
-          :rows="1" 
-          :height="remark.length + 22" 
+          :rows="1"
+          :height="remark.length + 22"
           required
         ></x-textarea>
-        <x-switch 
-          title="设为默认地址" 
-          class="mj-switch" 
+        <x-switch
+          title="设为默认地址"
+          class="mj-switch"
           v-model="isDefault"
         ></x-switch>
       </group>
