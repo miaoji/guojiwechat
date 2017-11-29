@@ -226,9 +226,6 @@ export default {
         {
           name: 'newPackage',
           needJudge: 0
-        }, {
-          name: 'packageTable',
-          needJudge: 0
         }
       ],
       isSubmit: false,
@@ -289,6 +286,7 @@ export default {
         elem.totalFee = elem.totalFee * 100
         return {
           ...elem,
+          type: 1,
           wxUserId: storage({
             key: 'userId'
           }),

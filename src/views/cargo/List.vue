@@ -18,8 +18,8 @@
           ref="my_scroller_cargolist"
           class="cargolist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="cargolist-cell-detail" v-for="item in cargolist" :key="item.id" v-show="isShow(item.status)">
-            <list-item 
+          <div class="cargolist-cell-detail" v-for="item in cargolist" :key="item.id" v-show="isShow(item.status, item.parentId)">
+            <list-item
               :item="item"
             >
             </list-item>
@@ -88,12 +88,14 @@ export default {
       })
       this.show = type
     },
-    isShow (status = 1) {
+    isShow (status = 1, parentId) {
       const showList = this.showList
       if (showList.length === 0) {
         return true
       }
-      if (showList.indexOf(Number(status)) !== -1) {
+      if (parentId === 0 && showList[0] === 'waitcargo') {
+        return true
+      } else if (parentId !== 0 && (showList.indexOf(Number(status)) !== -1)) {
         return true
       }
       return false
@@ -138,7 +140,7 @@ export default {
           break
         case 'waitcargo':
           storageVal = 7
-          showList = [7, 8]
+          showList = ['waitcargo']
           break
         case 'waitpay':
           storageVal = 1

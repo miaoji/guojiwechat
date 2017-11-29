@@ -14,7 +14,8 @@
           </span>
         </p>
       </div>
-      <span class="detail-state">{{item.status | orderstatus}}</span>
+      <span class="detail-state" v-show="item.parentId !== 0">{{item.status | orderstatus}}</span>
+      <span class="detail-state" v-show="item.parentId === 0">待合单</span>
     </div>
     <div class="package">
       <div class="package-info" @click.stop="goPath('/orderdetail', {'id': orderId})">

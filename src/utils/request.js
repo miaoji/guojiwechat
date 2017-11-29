@@ -9,7 +9,8 @@ const fetch = (options) => {
     url,
     auth,
     token,
-    paramkey
+    paramkey,
+    timeout = 8000
   } = options
 
   switch (method.toLowerCase()) {
@@ -18,7 +19,7 @@ const fetch = (options) => {
         url,
         method: 'get',
         params: data,
-        timeout: 5000,
+        timeout,
         headers: auth ? {'token': token} : {}
       })
     case 'delete':
@@ -27,7 +28,7 @@ const fetch = (options) => {
         method: 'delete',
         data,
         params,
-        timeout: 5000,
+        timeout,
         headers: auth ? {'token': token} : {}
       })
     case 'parampost':
@@ -38,7 +39,7 @@ const fetch = (options) => {
         method: 'post',
         params,
         data,
-        timeout: 5000,
+        timeout,
         headers: {
           'content-Type': 'application/x-www-form-urlencoded',
           'token': auth ? token : {}
@@ -50,7 +51,7 @@ const fetch = (options) => {
         method: 'post',
         data,
         params,
-        timeout: 5000,
+        timeout,
         headers: auth ? {'token': token} : {}
       })
     case 'put':

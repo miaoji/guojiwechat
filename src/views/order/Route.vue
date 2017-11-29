@@ -6,6 +6,10 @@
           <div slot="content" class="content">
             <!-- 路由信息 -->
             <div class="express">
+              <div class="express-info" v-show="orderInfo['type'] === 1">
+                <p>批次号: {{orderInfo['batch']}}</p>
+                <p>国内段单号: {{orderInfo['cnNo']}}</p>
+              </div>
               <p class="add-cnno" v-show="orderInfo['type'] === 1 && parentId === 0" @click.stop="packageShow = true">
                 <button class="">{{!cnNo ? '立即添加' : '点击修改'}}</button>
               </p>
@@ -32,6 +36,8 @@
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
+            <x-input title="产品名称" type="text" v-model="orderInfo.orderName" disabled></x-input>
+            <x-input title="产品价值" type="text" :value="totalFee" disabled></x-input>
             <x-input
               title="快递公司"
               placeholder="点击选择快递公司"
@@ -66,8 +72,6 @@ import ExpressRoute from '@/components/ExpressRoute'
 import LoadToshow from '@/components/load/WithService'
 import SelectBox from '@/components/SelectBox'
 import { show, update } from '@/services/orderInfo'
-import { show as cargoShow } from '@/services/cargo'
-import { storage, time } from '@/utils'
 
 export default {
   name: 'orderroute',
@@ -95,8 +99,6 @@ export default {
       cnNo: '',
       intelNo: '',
       intelCompany: '',
-      // 同一批次号订单集合
-      batchList: [],
       packageShow: false,
       newPackage: {
         kdCompanyCodeCn: '',
@@ -108,15 +110,6 @@ export default {
     }
   },
   computed: {
-    createTime () {
-      try {
-        const date = new Date(this.orderInfo.createTime)
-        return time.format('yyyy-MM-dd hh:mm:ss', date)
-      } catch (e) {
-        console.error(e)
-        return '000:000'
-      }
-    },
     totalFee () {
       let totalFee = Number(this.orderInfo.totalFee)
       if (totalFee === 0) {
@@ -124,10 +117,6 @@ export default {
       }
       totalFee = totalFee / 100
       return `￥${totalFee}`
-    },
-    orderType () {
-      // 0 直邮, 1 集运
-      return this.orderInfo['type'] || 0
     },
     onlycn () {
       return this.orderType === 1 ? (this.parentId === 0) : false
@@ -146,9 +135,6 @@ export default {
       this.orderId = id
       await this.getOrderDetail(id)
       this.$vux.loading.hide()
-      if (this.orderInfo['batch']) {
-        await this.getBatchList()
-      }
     } catch (err) {
       console.error(err)
       this.$vux.loading.hide()
@@ -181,23 +167,6 @@ export default {
           type: 'warn',
           width: '18rem'
         })
-      }
-    },
-    async getBatchList (batch) {
-      // 查询批次下订单
-      try {
-        const res = await cargoShow({
-          wxUserId: storage({
-            key: 'userId'
-          }),
-          batch: this.orderInfo.batch,
-          id: this.orderInfo.id
-        })
-        if (res.success && res.code === 200) {
-          this.batchList = res['obj'][0]['orderDetailList'] || []
-        }
-      } catch (e) {
-        console.error(e)
       }
     },
     onClickExSelect () {
@@ -299,6 +268,11 @@ export default {
     }
     .express {
       padding: .5rem 0;
+      &-info {
+        text-align: left;
+        font-size: @normal-size;
+        padding: 0 10px;
+      }
       .add-cnno {
         position: absolute;
         margin-top: 10px;
