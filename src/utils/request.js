@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { storage } from './index'
+import router from '@/router'
 
 const fetch = (options) => {
   let {
@@ -81,6 +82,28 @@ export default function request (options) {
     if (response && response instanceof Object) {
       const { data, statusText } = response
       statusCode = response.status
+      if (Number(statusCode) === 401) {
+        storage({
+          type: 'clear'
+        })
+        const fromPath = router.history.current
+        const redirectUri = fromPath.fullPath
+        const {appid} = fromPath.query
+        console.log('redirectUri', redirectUri)
+        storage({
+          key: 'redirect_uri',
+          val: redirectUri,
+          type: 'set'
+        })
+        storage({
+          key: 'appid',
+          val: appid || 'typeisappidis00000000',
+          type: 'set'
+        })
+        return router.push({
+          path: '/init'
+        })
+      }
       msg = data.message || statusText
     } else {
       statusCode = 600

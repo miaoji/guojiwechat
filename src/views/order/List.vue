@@ -3,10 +3,22 @@
     <div class="orderlist-container">
       <div class="orderlist-container-tab">
         <tab active-color='#ffa414'>
-          <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
-          <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
-          <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
-          <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
+          <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">
+            <span class="tab-info">全部</span>
+            <span class="tab-num">{{countList['all']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">
+            <span class="tab-info">待付款</span>
+            <span class="tab-num">{{countList['waitpay']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">
+            <span class="tab-info">待收货</span>
+            <span class="tab-num">{{countList['waitdelivery']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">
+            <span class="tab-info">已完成</span>
+            <span class="tab-num">{{countList['done']}}</span>
+          </tab-item>
         </tab>
       </div>
       <div class="orderlist-cell">
@@ -52,7 +64,29 @@ export default {
   computed: {
     ...mapGetters({
       'orderlist': 'getOrderList'
-    })
+    }),
+    countList () {
+      const orderlist = this.orderlist
+      const len = orderlist.length
+      let list = {
+        'all': len,
+        'waitpay': 0,
+        'waitdelivery': 0,
+        'done': 0
+      }
+      for (let i = 0; i < len; i++) {
+        const item = orderlist[i]
+        const status = item.STATUS
+        if (status === 1 || status === 0) {
+          list['waitpay']++
+        } else if (status === 2 || status === 3) {
+          list['waitdelivery']++
+        } else if (status === 4) {
+          list['done']++
+        }
+      }
+      return list
+    }
   },
   data () {
     return {
@@ -177,6 +211,13 @@ export default {
       position: fixed;
       width: 100%;
       z-index: 1000;
+      .tab-info {
+        font-size: @normal-size;
+      }
+      .tab-num {
+        position:relative;
+        font-size: @small-size;
+      }
     }
   }
   &-cell {

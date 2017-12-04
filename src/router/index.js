@@ -47,7 +47,7 @@ export default new Router({
       name: 'Send',
       component: send,
       meta: {
-        intro: '寄件',
+        intro: '直邮',
         requiresAuth: true
       }
     }, {

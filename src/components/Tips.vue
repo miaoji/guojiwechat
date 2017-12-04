@@ -1,9 +1,11 @@
 <template>
   <div class="tips">
-    <p>
-      <img src="../assets/images/tips.png" alt="tips">
-      {{content}}
-    </p>
+    <slot name="content">
+      <p>
+        <img src="../assets/images/tips.png" alt="tips">
+        {{content}}
+      </p>
+    </slot>
   </div>
 </template>
 

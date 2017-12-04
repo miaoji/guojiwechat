@@ -36,10 +36,8 @@ router.beforeEach(function (to, from, next) {
     const openid = storage({key: 'openid'})
     const userid = storage({key: 'userId'})
     const token = storage({key: 'token'})
-    const expire = storage({key: 'expire'}) || JSON.stringify({'expire': '0'})
-    const nowDate = new Date().getTime()
-    // 如果token未过期，而且openid、userid、token等参数都存在，则直接进入页面
-    if (JSON.parse(expire)['expire'] >= nowDate && openid && userid && token) {
+    // openid、userid、token等参数都存在，则直接进入页面
+    if (openid && userid && token) {
       return next()
     }
     storage({

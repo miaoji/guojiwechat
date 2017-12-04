@@ -25,7 +25,8 @@ export default {
       window.localStorage.setItem('mj_mobile', '')
       // window.localStorage.setItem('mj_userId', '18')
       window.localStorage.setItem('mj_userId', '212')
-      window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MTgsIm9wZW5pZCI6Im9zZEg3dnc3NFBqS2w0eDhqdnhwbHJhQy10aUUifQ.LeKzLIibWbRdWHxPpYoRrqzDS0Uvl8YQzjhIcIAZtx0')
+      // window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MTgsIm9wZW5pZCI6Im9zZEg3dnc3NFBqS2w0eDhqdnhwbHJhQy10aUUifQ.LeKzLIibWbRdWHxPpYoRrqzDS0Uvl8YQzjhIcIAZtx0')
+      window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVUaW1lIjoxNTEyMzc4MTMyOTA4LCJ1c2VyaWQiOjF9.sDZPzMN-UApwXRRCPGh0tEx9WIvRFdeyMDyJrp6-654')
       return
     }
   },

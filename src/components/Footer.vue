@@ -40,7 +40,7 @@ export default {
   data () {
     return {
       foot: [{
-        name: '寄件',
+        name: '直邮',
         path: '/send',
         icon: sendPng,
         activeicon: acsendPng,

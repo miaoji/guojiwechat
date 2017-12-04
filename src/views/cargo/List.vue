@@ -3,11 +3,26 @@
     <div class="cargolist-container">
       <div class="cargolist-container-tab">
         <tab active-color='#ffa414'>
-          <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">全部</tab-item>
-          <tab-item :selected="show ==='waitcargo'" @on-item-click="changeShow('waitcargo')">待合单</tab-item>
-          <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">待付款</tab-item>
-          <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">待收货</tab-item>
-          <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">已完成</tab-item>
+          <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">
+            <span class="tab-info">全部</span>
+            <span class="tab-num">{{countList['all']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='waitcargo'" @on-item-click="changeShow('waitcargo')">
+            <span class="tab-info">待合单</span>
+            <span class="tab-num">{{countList['waitcargo']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">
+            <span class="tab-info">待付款</span>
+            <span class="tab-num">{{countList['waitpay']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">
+            <span class="tab-info">待收货</span>
+            <span class="tab-num">{{countList['waitdelivery']}}</span>
+          </tab-item>
+          <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">
+            <span class="tab-info">已完成</span>
+            <span class="tab-num">{{countList['done']}}</span>
+          </tab-item>
         </tab>
       </div>
       <div class="cargolist-cell">
@@ -51,6 +66,32 @@ export default {
     ListItem
   },
   computed: {
+    countList () {
+      const cargolist = this.cargolist
+      const len = cargolist.length
+      let list = {
+        'all': len,
+        'waitcargo': 0,
+        'waitpay': 0,
+        'waitdelivery': 0,
+        'done': 0
+      }
+      for (let i = 0; i < len; i++) {
+        const item = cargolist[i]
+        const status = item.status
+        const parentId = item.parentId
+        if (parentId === 0) {
+          list['waitcargo']++
+        } else if (parentId !== 0 && (status === 1 || status === 0)) {
+          list['waitpay']++
+        } else if (parentId !== 0 && status === 2) {
+          list['waitdelivery']++
+        } else if (parentId !== 0 && status === 4) {
+          list['done']++
+        }
+      }
+      return list
+    }
   },
   data () {
     return {
@@ -183,6 +224,13 @@ export default {
       position: fixed;
       width: 100%;
       z-index: 1000;
+      .tab-info {
+        font-size: @normal-size;
+      }
+      .tab-num {
+        position:relative;
+        font-size: @small-size;
+      }
     }
   }
   &-cell {

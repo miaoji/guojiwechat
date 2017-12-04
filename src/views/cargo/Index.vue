@@ -86,7 +86,16 @@
                   >
                   </Load-toshow>
                   <div class="transfer-tips">
-                    <tips content="用户电商平台下单地址"></tips>
+                    <p id="transferAddr" style="height: 0;width: 0;font-size: 0;">{{transferAddr}}</p>
+                    <tips>
+                      <template slot="content">
+                        <p>
+                          <img src="../../assets/images/tips.png" alt="tips">
+                          用户电商平台下单地址
+                          <span class="copyTransfer" id="copyTransfer" data-clipboard-target="#transferAddr">点击复制</span>
+                        </p>
+                      </template>
+                    </tips>
                   </div>
                 </template>
               </cell>
@@ -154,8 +163,9 @@
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
-            <x-input title="品名" placeholder="请填写包裹名字" type="text" v-model="newPackage['orderName']" required></x-input>
-            <x-input title="价值/元" placeholder="请填写包裹价值" lang="en" type="tel" name="tel" v-model="newPackage['totalFee']" required></x-input>
+            <x-input title="品名" placeholder="请填写品名" type="text" v-model="newPackage['orderName']" required></x-input>
+            <!-- 2000以内 -->
+            <x-input title="价值/元" placeholder="请填写价值" lang="en" type="tel" name="tel" v-model="newPackage['totalFee']" required></x-input>
             <x-input
               title="快递公司"
               placeholder="点击选择快递公司"
@@ -163,6 +173,7 @@
               @click.native="onClickExSelect"
             >
             </x-input>
+            <!-- 9~23位 -->
             <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
           </group>
           <tips
@@ -174,8 +185,8 @@
           >
           </tips>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
             <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">保存</button>
+            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
           </div>
         </div>
       </x-dialog>
@@ -203,6 +214,7 @@ import { getAddress, storage, cache as cacheUtil } from '@/utils'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as transferAddrService from '@/services/transferAddr'
 import { save as saveCargo } from '@/services/cargo'
+import Clipboard from 'clipboard'
 
 export default {
   name: 'cargo',
@@ -220,6 +232,10 @@ export default {
     LoadToshow,
     'purple-line': Line
   },
+  mounted () {
+    /* eslint-disable no-new */
+    new Clipboard('#copyTransfer')
+  },
   data () {
     return {
       dataInCache: [
@@ -230,6 +246,7 @@ export default {
       ],
       isSubmit: false,
       isDefaultAddr: false,
+      transferRes: {},
       pickupAddress: {
         countryId: '',
         name: '',
@@ -277,6 +294,16 @@ export default {
   computed: {
     transferService () {
       return transferAddrService.query
+    },
+    transferAddr () {
+      try {
+        const transferRes = this.transferRes
+        let res = transferRes['obj'][0]
+        res = res['provinces']['province'] + res['cities']['city'] + res['districts']['district'] + res['transferAddress'] + res['transferName'] + res['transferMobile']
+        return res
+      } catch (err) {
+        return ''
+      }
     },
     packages () {
       const packageTable = this.packageTable
@@ -348,9 +375,8 @@ export default {
       }
     },
     handleTransferAddr (val) {
-      // console.log('val', val)
-      this.transferAddr = val
-      this.transferAddr['done'] = true
+      this.transferRes = val
+      this.transferRes['done'] = true
     },
     /**
      * [处理点击添加包裹按钮的方法]
@@ -608,15 +634,10 @@ export default {
         text-align: left;
         border-bottom: 1px solid #dedede;
       }
-      .transfer {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: 1rem 0;
-        margin: 0 1rem;
-        font-size: 1.4rem;
-        text-align: left;
-        border-bottom: 1px solid #dedede;
+      .transfer-tips {
+        .copyTransfer {
+          text-decoration: underline;
+        }
       }
       .options {
         margin-right: 1rem;

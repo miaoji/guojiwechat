@@ -285,7 +285,7 @@
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
             <x-input title="产品名称" type="text" v-model="orderInfo.orderName" disabled></x-input>
-            <x-input title="产品价值" type="text" v-model="totalFee" disabled></x-input>
+            <x-input title="产品价值" type="text" :value="totalFee" disabled></x-input>
             <x-input
               title="快递公司"
               placeholder="点击选择快递公司"
