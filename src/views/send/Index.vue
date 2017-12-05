@@ -262,12 +262,12 @@
             <x-input title="产品数量" type="number" v-model="newPackage['quantity']" required></x-input>
           </group>
           <div class="package-dialog-tips">
-            <tips content="单次寄件最多可包含三个包裹，超过三个请分批次寄件"></tips>
             <tips :content="packageTableLength"></tips>
+            <tips content="单次寄件最多可包含三个包裹，超过三个请分批次寄件"></tips>
           </div>
           <div class="send-package-dialog-form__confrim">
-            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
             <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">保存</button>
+            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
           </div>
         </div>
       </x-dialog>

@@ -13,7 +13,6 @@
     <div class="listitem-edit" style="justify-content: space-between;">
       <p class="listitem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
       <div>
-        <button v-show="item.STATUS === 7" class="cancle-btn" @click="cancle(item)">取消订单</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
       </div>
     </div>

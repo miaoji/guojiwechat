@@ -165,7 +165,7 @@
           <group label-width="7rem" label-align="left">
             <x-input title="品名" placeholder="请填写品名" type="text" v-model="newPackage['orderName']" required></x-input>
             <!-- 2000以内 -->
-            <x-input title="价值/元" placeholder="请填写价值" lang="en" type="tel" name="tel" v-model="newPackage['totalFee']" required></x-input>
+            <x-input title="价值/元" type="number" placeholder="请填写价值" lang="en" name="tel" v-model="newPackage['totalFee']" required></x-input>
             <x-input
               title="快递公司"
               placeholder="点击选择快递公司"
@@ -177,11 +177,11 @@
             <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
           </group>
           <tips
-            content="您的快递可能合并成普货和特货走不同渠道，最多添加50件"
+            :content="packageTableLength"
           >
           </tips>
           <tips
-            :content="packageTableLength"
+            content="您的快递可能合并成普货和特货走不同渠道，最多添加50件"
           >
           </tips>
           <div class="pdialog-form__confrim">
@@ -233,8 +233,24 @@ export default {
     'purple-line': Line
   },
   mounted () {
-    /* eslint-disable no-new */
-    new Clipboard('#copyTransfer')
+    const clipboard = new Clipboard('#copyTransfer')
+    const _this = this
+    clipboard.on('success', function (e) {
+      _this.$vux.toast.show({
+        text: '复制成功',
+        type: 'success',
+        time: 600,
+        width: '18rem'
+      })
+      e.clearSelection()
+    })
+    clipboard.on('error', function (e) {
+      _this.$vux.toast.show({
+        text: '复制失败',
+        type: 'warn',
+        width: '18rem'
+      })
+    })
   },
   data () {
     return {
@@ -401,6 +417,45 @@ export default {
     addPackge (isClose = true) {
       if (!this.handlePackageShow()) {
         return
+      }
+      // 价值不能低于0
+      const totalFee = Number(this.newPackage['totalFee'])
+      if (isNaN(totalFee)) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '包裹价值出错',
+          width: '19rem'
+        })
+        return
+      }
+      if (totalFee < 0) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '包裹价值不能小于0',
+          width: '19rem'
+        })
+        return
+      }
+      // 价值不能超过2000
+      if (totalFee > 2000) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '包裹价值不能超过2000',
+          width: '19rem'
+        })
+        return
+      }
+      // 单号为9到30位
+      if (this.newPackage['cnNo']) {
+        const cnNoLen = this.newPackage['cnNo'].length
+        if (cnNoLen <= 9 || cnNoLen <= 30) {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: '单号长度要在9~之间30',
+            width: '19rem'
+          })
+          return
+        }
       }
       const _this = this
       let complete = []

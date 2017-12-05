@@ -127,7 +127,13 @@
                 <colon-span title="下单时间" :value="createTime"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="订单状态" value="正在合单"></colon-span>
+                <colon-span title="订单状态" value="待填写单号">
+                  <template slot="content">
+                    <div>
+                      <span class="money">{{cargoStatus | cargostatus}}</span>
+                    </div>
+                  </template>
+                </colon-span>
               </div>
               <div class="detail-box">
                 <colon-span title="产品名称" :value="orderInfo.orderName"></colon-span>
@@ -223,6 +229,16 @@
                     </div>
                   </template>
                 </colon-span>
+              </div>
+              <div class="detail-box" v-show="WarehouseManagementExpenses > 0">
+                <colon-span title="仓管费用">
+                  <template slot="content">
+                    <div>
+                      <span class="money">{{WarehouseManagementExpenses}}</span>元
+                    </div>
+                  </template>
+                </colon-span>
+                <tips content="仓库管理费用，货物在仓库中超过21天时收取，每天1元"></tips>
               </div>
             </div>
           </div>
@@ -320,6 +336,7 @@ import ColonSpan from '@/components/ColonSpan'
 import ExpressRoute from '@/components/ExpressRoute'
 import LoadToshow from '@/components/load/WithService'
 import SelectBox from '@/components/SelectBox'
+import Tips from '@/components/Tips'
 import { show, update } from '@/services/orderInfo'
 import { getLast as getLastBootByOrderNo } from '@/services/boot'
 import { show as cargoShow } from '@/services/cargo'
@@ -337,7 +354,8 @@ export default {
     ColonSpan,
     ExpressRoute,
     LoadToshow,
-    SelectBox
+    SelectBox,
+    Tips
   },
   data () {
     return {
@@ -396,6 +414,27 @@ export default {
     },
     parentId () {
       return Number(this.orderInfo.parentId)
+    },
+    cargoStatus () {
+      const cargoStatus = this.orderInfo.cargoStatus
+      const cn = this.orderInfo.cnNo
+      if (!cn && cargoStatus === 0) {
+        return 0
+      } else if (cn && cargoStatus === 0) {
+        return 1
+      } else if (cargoStatus === 1) {
+        return 2
+      }
+    },
+    WarehouseManagementExpenses () {
+      const createTime = this.orderInfo.createTime
+      const nowDay = new Date()
+      const dayReduce = createTime - nowDay.getTime()
+      const keepDays = Math.floor(dayReduce / (24 * 3600 * 1000)) - 21
+      if (keepDays > 0) {
+        return keepDays * 1
+      }
+      return 0
     }
   },
   async created () {

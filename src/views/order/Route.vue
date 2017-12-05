@@ -8,7 +8,7 @@
             <div class="express">
               <div class="express-info" v-show="orderInfo['type'] === 1">
                 <p>批次号: {{orderInfo['batch']}}</p>
-                <p>国内段单号: {{orderInfo['cnNo']}}</p>
+                <p v-show="orderInfo['parentId'] === 0">国内段单号: {{orderInfo['cnNo']}}</p>
               </div>
               <p class="add-cnno" v-show="orderInfo['type'] === 1 && parentId === 0" @click.stop="packageShow = true">
                 <button class="">{{!cnNo ? '立即添加' : '点击修改'}}</button>

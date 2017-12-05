@@ -79,7 +79,7 @@ export default {
         const status = item.STATUS
         if (status === 1 || status === 0) {
           list['waitpay']++
-        } else if (status === 2 || status === 3) {
+        } else if (status === 2 || status === 3 || status === 7) {
           list['waitdelivery']++
         } else if (status === 4) {
           list['done']++
@@ -176,7 +176,7 @@ export default {
           break
         case 'waitdelivery':
           storageVal = 2
-          showList = [2, 3]
+          showList = [2, 3, 7]
           break
         case 'done':
           storageVal = 4

@@ -243,12 +243,21 @@ export const paytype = function (key) {
 /**
  * 集运状态：
  *   客户下单 - 未填写单号 => 待填写单号
- *   客户下单 - 已填写单号 => 商家已以发货
+ *   客户下单 - 已填写单号 => 商家已发货
  *   到件 => 已抵达中转仓
  *   定价 => 待付款
  *   客户付款 => 已付款
  *   后台发货 => 发往机场
  */
+export const cargostatus = function (val) {
+  const cargoList = {
+    0: '待填写单号',
+    1: '商家已发货',
+    2: '已抵达中转仓'
+  }
+  return cargoList[val] || '待填写单号'
+}
+
 export const orderstatus = function (val) {
   // 状态 0 刚创建 1待付款，2付款完成，3国内完成，4国外完成，5异常订单，6取消订单
   const ordersta = {
@@ -259,8 +268,7 @@ export const orderstatus = function (val) {
     4: '已完成',
     5: '异常',
     6: '已取消',
-    7: '待合单',
-    8: '待合单'
+    7: '发往机场'
   }
   return ordersta[val]
 }
