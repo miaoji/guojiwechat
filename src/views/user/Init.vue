@@ -30,6 +30,7 @@ export default {
       let state = storage({
         key: 'appid'
       })
+      /* eslint-disable no-unused-vars */
       const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirectUri + '&response_type=code&scope=snsapi_userinfo&state=' + state + '#wechat_redirect'
       window.location.href = url
       return

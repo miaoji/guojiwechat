@@ -132,6 +132,15 @@ const storage = function ({key = '', val = '', prefix = true, type = 'get'}) {
         localStorage.removeItem(key)
       }
       break
+    case 'removeexcept':
+      if (Array.isArray(key)) {
+        Object.keys(localStorage).forEach(lkey => {
+          if (!key.some(item => (localPrefix + item) === lkey)) {
+            localStorage.removeItem(lkey)
+          }
+        })
+      }
+      break
     case 'clear':
       localStorage.clear()
       break

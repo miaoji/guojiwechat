@@ -84,22 +84,24 @@ export default function request (options) {
       statusCode = response.status
       if (Number(statusCode) === 401) {
         storage({
-          type: 'clear'
+          key: ['redirect_uri', 'appid'],
+          type: 'removeexcept'
         })
         const fromPath = router.history.current
         const redirectUri = fromPath.fullPath
         const {appid} = fromPath.query
-        console.log('redirectUri', redirectUri)
-        storage({
-          key: 'redirect_uri',
-          val: redirectUri,
-          type: 'set'
-        })
-        storage({
-          key: 'appid',
-          val: appid || 'typeisappidis00000000',
-          type: 'set'
-        })
+        if (redirectUri !== '/init') {
+          storage({
+            key: 'redirect_uri',
+            val: redirectUri,
+            type: 'set'
+          })
+          storage({
+            key: 'appid',
+            val: appid || 'typeisappidis00000000',
+            type: 'set'
+          })
+        }
         return router.push({
           path: '/init'
         })

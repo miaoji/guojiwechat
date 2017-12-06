@@ -126,26 +126,30 @@
                   <th>国内段单号</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
+              <tbody class="packageitem">
+                <tr v-for="item, index in packageTable">
                   <td>
-                    <input type="text" v-model="item['orderName']">
+                    {{item['orderName']}}
                   </td>
                   <td>
-                    <input type="texts" v-model="item['totalFee']">
+                    {{item['totalFee']}}
                   </td>
                   <td>
                     {{item['companyName']}}
                   </td>
                   <td>
-                    <input type="text" v-model="item['cnNo']">
+                    {{item['cnNo']}}
+                  </td>
+                  <td class="tools">
+                    <button type="" class="pay" @click="delTableItem(index)">删除</button>
+                    <button type="" class="pay" @click="editTableItem(item, index)">编辑</button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div v-show="packageTable.length > 0" class="package-tips">
-            <tips :content="'长按删除，快递公司不可修改，' + packageTableLength"></tips>
+            <tips :content="'左滑删除/编辑，快递公司不可修改，' + packageTableLength"></tips>
           </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">
@@ -154,7 +158,7 @@
         </div>
       </jag-container>
     </div>
-    <!-- 包裹弹框 -->
+    <!-- 包裹弹框 新增 -->
     <div v-transfer-dom>
       <x-dialog v-model="packageShow" class="pdialog">
         <h1>添加包裹</h1>
@@ -187,6 +191,34 @@
           <div class="pdialog-form__confrim">
             <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">保存</button>
             <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
+          </div>
+        </div>
+      </x-dialog>
+    </div>
+    <!-- 包裹弹框 修改新增 -->
+    <div v-transfer-dom>
+      <x-dialog v-model="packageShowEdit" class="pdialog">
+        <h1>修改包裹</h1>
+        <div class="package-close" @click="packageShowEdit = false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="pdialog-form">
+          <group label-width="7rem" label-align="left">
+            <x-input title="品名" placeholder="请填写品名" type="text" v-model="editPackage['orderName']" required></x-input>
+            <!-- 2000以内 -->
+            <x-input title="价值/元" type="number" placeholder="请填写价值" lang="en" name="tel" v-model="editPackage['totalFee']" required></x-input>
+            <x-input
+              title="快递公司"
+              placeholder="点击选择快递公司"
+              v-model="editPackage['companyName']"
+              @click.native="onClickExSelect"
+            >
+            </x-input>
+            <!-- 9~23位 -->
+            <x-input title="国内单号" type="text" v-model="editPackage['cnNo']"></x-input>
+          </group>
+          <div class="pdialog-form__confrim">
+            <button type="" class="pdialog-form__confrim--sure" @click="editSave">保存修改</button>
           </div>
         </div>
       </x-dialog>
@@ -233,8 +265,9 @@ export default {
     'purple-line': Line
   },
   mounted () {
-    const clipboard = new Clipboard('#copyTransfer')
+    // 复制按钮
     const _this = this
+    const clipboard = new Clipboard('#copyTransfer')
     clipboard.on('success', function (e) {
       _this.$vux.toast.show({
         text: '复制成功',
@@ -284,6 +317,16 @@ export default {
         cnNo: ''
       },
       packageShow: false,
+      packageShowEdit: false,
+      dialogType: 'add',
+      editPackage: {
+        index: '',
+        orderName: '',
+        totalFee: '',
+        kdCompanyCodeCn: '',
+        companyName: '',
+        cnNo: ''
+      },
       // 控制快递公司选择插件展示
       selectExpressShow: false
     }
@@ -390,6 +433,120 @@ export default {
         clearTimeout(longTimer)
       }
     },
+    delTableItem (index) {
+      this.packageTable.splice(index, 1)
+    },
+    editTableItem (item, index) {
+      this.editPackage = {...item, index}
+      this.packageShowEdit = true
+      this.dialogType = 'edit'
+    },
+    editSave () {
+      // 价值不能低于0
+      const totalFee = Number(this.editPackage['totalFee'])
+      if (isNaN(totalFee)) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '包裹价值出错',
+          width: '19rem'
+        })
+        return
+      }
+      if (totalFee < 0) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '包裹价值不能小于0',
+          width: '19rem'
+        })
+        return
+      }
+      // 价值不能超过2000
+      if (totalFee > 2000) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '包裹价值不能超过2000',
+          width: '19rem'
+        })
+        return
+      }
+      // 单号为9到30位
+      if (this.editPackage['cnNo']) {
+        const cnNoLen = this.editPackage['cnNo'].length
+        if (cnNoLen < 9 || cnNoLen > 30) {
+          this.$vux.toast.show({
+            type: 'warn',
+            text: '单号长度要在9~30之间',
+            width: '19rem'
+          })
+          return
+        }
+      }
+      const _this = this
+      let complete = []
+      Object.keys(_this.editPackage).forEach(function (key) {
+        if (!_this.editPackage[key] && key !== 'cnNo' && key !== 'index' && key !== 'companyName' && key !== 'kdCompanyCodeCn') {
+          complete.push(false)
+        } else {
+          complete.push(true)
+        }
+      })
+      if (complete.includes(false)) {
+        _this.$vux.toast.show({
+          type: 'warn',
+          text: '请将信息填写完整',
+          width: '16rem',
+          time: '600'
+        })
+        return
+      }
+      const index = this.editPackage['index']
+      delete this.editPackage['index']
+      this.packageTable[index] = this.editPackage
+      this.editPackage = {
+        orderName: '',
+        totalFee: '',
+        kdCompanyCodeCn: '',
+        cnNo: ''
+      }
+      this.packageShowEdit = false
+    },
+    /**
+     * [添加左滑事件]
+     * @param  {[type]} val [description]
+     * @return {[type]}     [description]
+     */
+    swiperEvent () {
+      // 左滑删除
+      const _this = this
+      const container = document.querySelectorAll('.packageitem tr')
+      console.log(container)
+      // 为每个特定DOM元素绑定 touchstart
+      for (let i = 0; i < container.length; i++) {
+        console.log(i)
+        // touchmove时间监听 判断滑动方向
+        let startX
+        let endX
+        // 记录初始触控点横坐标
+        container[i].addEventListener('touchstart', function (event) {
+          startX = event.changedTouches[0].pageX
+        })
+        container[i].addEventListener('touchmove', function (event) {
+          // 记录当前触控点横坐标
+          endX = event.changedTouches[0].pageX
+          // 右滑
+          if (endX - startX > 10) {
+            // 右滑收起
+            this.className = ''
+          }
+          // 左滑
+          if (startX - endX > 10) {
+            // 左滑展开
+            this.className = 'swipeleft'
+            _this.expansion = this
+          }
+        })
+      }
+    },
     handleTransferAddr (val) {
       this.transferRes = val
       this.transferRes['done'] = true
@@ -448,10 +605,10 @@ export default {
       // 单号为9到30位
       if (this.newPackage['cnNo']) {
         const cnNoLen = this.newPackage['cnNo'].length
-        if (cnNoLen <= 9 || cnNoLen <= 30) {
+        if (cnNoLen < 9 || cnNoLen > 30) {
           this.$vux.toast.show({
             type: 'warn',
-            text: '单号长度要在9~之间30',
+            text: '单号长度要在9~30之间',
             width: '19rem'
           })
           return
@@ -483,6 +640,9 @@ export default {
         cnNo: ''
       }
       this.packageShow = !isClose
+      setTimeout(function () {
+        _this.swiperEvent()
+      }, 500)
     },
     /**
      * [提交集运订单，成功后跳转到详细页面]
@@ -551,17 +711,30 @@ export default {
     onClickExSelect () {
       this.footerHide()
       this.selectExpressShow = true
-      this.packageShow = false
+      if (this.dialogType === 'add') {
+        this.packageShow = false
+      } else {
+        this.packageShowEdit = false
+      }
     },
     onExpressClose () {
       this.footerShow()
       this.selectExpressShow = false
-      this.packageShow = true
+      if (this.dialogType === 'add') {
+        this.packageShow = true
+      } else {
+        this.packageShowEdit = true
+      }
     },
     onExpressConfirm (val) {
       this.footerShow()
-      this.newPackage['kdCompanyCodeCn'] = val['companyCode']
-      this.newPackage['companyName'] = val['companyName']
+      if (this.dialogType === 'add') {
+        this.newPackage['kdCompanyCodeCn'] = val['companyCode']
+        this.newPackage['companyName'] = val['companyName']
+      } else {
+        this.editPackage['kdCompanyCodeCn'] = val['companyCode']
+        this.editPackage['companyName'] = val['companyName']
+      }
     },
     footerHide () {
       const footer = window.document.getElementsByTagName('footer')

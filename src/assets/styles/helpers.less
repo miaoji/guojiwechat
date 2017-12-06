@@ -229,6 +229,7 @@ div.question-icon{
     font-size: @normal-size;
     width: 100%;
     border-collapse:collapse;
+    transition:all 2s;
     thead {
       color: @greyfont;
       th {
@@ -240,12 +241,13 @@ div.question-icon{
       &:last-child {
         border-bottom-width: 0;
       }
+      transition:width 2s;
       td {
         padding: .8rem 0;
         line-height: 2.7rem;
         font-size: @normal-size;
         overflow: hidden;
-        max-width: 5rem;
+        max-width: 6.5rem;
         white-space: nowrap;
         text-overflow: ellipsis;
         input {
@@ -267,4 +269,18 @@ button.pay {
   border: 1px solid @m-yellow;
   border-radius: @radius-size;
   color: @m-yellow;
+}
+
+td.tools {
+  transition: all 2s;
+  width: 0;
+  display: block;
+}
+
+.swipeleft {
+  td.tools {
+    transition: all 2s;
+    width: auto;
+    display: table-cell;
+  }
 }

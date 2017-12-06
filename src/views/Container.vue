@@ -13,7 +13,6 @@ export default {
   name: 'container',
   created () {
     if (process.env.NODE_ENV === 'development') {
-      window.localStorage.setItem('mj_init', 'done')
       window.localStorage.setItem('mj_headimgurl', '//wx.qlogo.cn/mmopen/x9caeaMpHoWcicDmIZs0Ovicuibe1H0icp57ndKcmv4Rz0xB6khyCeSbN3miagPMuyHpia1JHraN9btZDAZibEBlaKJKkYiaGnDjic0Gic/0')
       window.localStorage.setItem('mj_nickname', '明华')
       window.localStorage.setItem('mj_customerNo', 'MZA10235400')
