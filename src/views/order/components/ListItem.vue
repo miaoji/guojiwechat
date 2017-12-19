@@ -13,6 +13,7 @@
     <div class="listitem-edit" style="justify-content: space-between;">
       <p class="listitem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
       <div>
+        <button class="gosend-btn" @click="checkRoute('/orderroute', {'id': item.ID})">查询物流</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
       </div>
     </div>
@@ -42,6 +43,9 @@ export default {
     ...mapActions([
       'cancleSend'
     ]),
+    checkRoute (path, query) {
+      this.$router.push({path, query})
+    },
     goPath (item) {
       const id = item.ID
       this.$router.push({path: '/orderdetail', query: {id}})

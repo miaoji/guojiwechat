@@ -216,6 +216,9 @@ div.question-icon{
 		}
 		&--intro {
 			text-align: left;
+      p {
+        font-size: @small-size;
+      }
 		}
 	}
 }
@@ -225,6 +228,8 @@ div.question-icon{
   border: 1px solid #dedede;
   border-left-width: 0;
   border-right-width: 0;
+  max-height: 24rem;
+  overflow: auto;
   table {
     font-size: @normal-size;
     width: 100%;
@@ -247,7 +252,7 @@ div.question-icon{
         line-height: 2.7rem;
         font-size: @normal-size;
         overflow: hidden;
-        max-width: 6.5rem;
+        max-width: 8rem;
         white-space: nowrap;
         text-overflow: ellipsis;
         input {

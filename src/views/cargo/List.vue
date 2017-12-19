@@ -48,8 +48,8 @@
   </div>
 </template>
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import { storage } from '@/utils'
-import { query } from '@/services/cargo'
 import ListItem from './components/ListItem'
 
 export default {
@@ -66,6 +66,12 @@ export default {
     ListItem
   },
   computed: {
+    ...mapGetters({
+      'cargolistData': 'getCargoList'
+    }),
+    cargolist () {
+      return this.cargolistData.data || []
+    },
     countList () {
       const cargolist = this.cargolist
       const len = cargolist.length
@@ -84,7 +90,7 @@ export default {
           list['waitcargo']++
         } else if (parentId !== 0 && (status === 1 || status === 0)) {
           list['waitpay']++
-        } else if (parentId !== 0 && status === 2) {
+        } else if (parentId !== 0 && (status === 2 || status === 7)) {
           list['waitdelivery']++
         } else if (parentId !== 0 && status === 4) {
           list['done']++
@@ -95,23 +101,23 @@ export default {
   },
   data () {
     return {
-      cargolist: [],
+      page: 1,
+      rows: 150,
       showList: [],
       show: 'all',
       scrollerNoDataText: '没有更多数据啦~'
     }
   },
   methods: {
-    async getOrderList () {
+    ...mapActions([
+      'setCargoList'
+    ]),
+    async getList ({page, rows}) {
       try {
-        const res = await query({
-          wxUserId: storage({
-            key: 'userId'
-          })
+        this.setCargoList({
+          page,
+          rows
         })
-        if (res.code === 200 && res.success) {
-          this.cargolist = res.obj
-        }
       } catch (e) {
         console.error(e)
         return this.$vux.toast.show({
@@ -157,15 +163,28 @@ export default {
     },
     refresh (done) {
       const _this = this
+      this.page = 1
+      this.rows = 10
+      const page = this.page
+      const rows = this.rows
       setTimeout(async function () {
-        _this.getOrderList()
+        _this.getList({
+          page,
+          rows
+        })
         done(true)
       }, 1200)
     },
     infinite (done) {
       const _this = this
+      this.rows = this.rows + 10
+      const page = this.page
+      const rows = this.rows
       setTimeout(async function () {
-        _this.getOrderList()
+        _this.getList({
+          page,
+          rows
+        })
         done(true)
       }, 1500)
     }
@@ -189,7 +208,7 @@ export default {
           break
         case 'waitdelivery':
           storageVal = 2
-          showList = [2, 3]
+          showList = [2, 3, 7]
           break
         case 'done':
           storageVal = 4

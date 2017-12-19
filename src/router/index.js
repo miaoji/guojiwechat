@@ -17,6 +17,7 @@ const bindphone = r => require.ensure([], () => r(require('@/views/user/BindPhon
 const redirect = r => require.ensure([], () => r(require('@/views/user/Redirect')), 'Redirect')
 const init = r => require.ensure([], () => r(require('@/views/user/Init')), 'Init')
 const nouser = r => require.ensure([], () => r(require('@/views/error/NoUser')), 'NoUser')
+const notwechat = r => require.ensure([], () => r(require('@/views/error/NotWechat')), 'notwechat')
 const orderlist = r => require.ensure([], () => r(require('@/views/order/List')), 'OrderList')
 const orderdetail = r => require.ensure([], () => r(require('@/views/order/Detail')), 'OrderDetail')
 const orderroute = r => require.ensure([], () => r(require('@/views/order/Route')), 'OrderRoute')
@@ -113,6 +114,14 @@ export default new Router({
     component: nouser,
     meta: {
       intro: '没有该用户',
+      requiresAuth: false
+    }
+  }, {
+    path: '/notwechat',
+    name: 'notwechat',
+    component: notwechat,
+    meta: {
+      intro: '请在微信中访问',
       requiresAuth: false
     }
   }, {

@@ -5,14 +5,17 @@
         <p>国际快递服务中心</p>
       </div>
       <div class="customservice-num flex">
-        <p>登录失败!</p>
-      </div>
-      <div class="customservice-num flex">
-        <p>您可以从公众号重新点击进入或者拨打客服热线咨询</p>
+        <p>请在微信中访问!</p>
       </div>
       <div class="customservice-num flex">
         <p>客服热线</p>
         <p>{{hotline}}</p>
+      </div>
+      <div class="customservice-num flex">
+        <p>公众号二维码</p>
+        <p>
+          <img src="../../assets/images/wechat_qr.jpg" alt="公众号二维码">
+        </p>
       </div>
     </div>
   </div>
@@ -21,7 +24,7 @@
 import {hotline} from '@/utils/config'
 
 export default {
-  name: 'customservice',
+  name: 'notwechat',
   created () {
     this.hotline = hotline
   }
@@ -52,6 +55,10 @@ export default {
     font-size: 1.5rem;
     &:last-child {
       .btg;
+    }
+    img {
+      width: 8rem;
+      height: auto;
     }
   }
 }

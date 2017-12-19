@@ -4,6 +4,7 @@ import { localPrefix } from './config'
 import * as time from './time'
 import * as reg from './reg'
 import * as cache from './cache'
+import { checkNum } from '@/services/expressCompany'
 import { getDefaultAddr } from '@/services/user'
 
 // 连字符转驼峰
@@ -253,6 +254,57 @@ async function getAddress ({type, storageKey, apiService}) {
   }
 }
 
+// 判断是否是微信浏览器的函数
+function isWeiXin () {
+  // window.navigator.userAgent属性包含了浏览器类型、版本、操作系统类型、浏览器引擎类型等信息，这个属性可以用来判断浏览器类型
+  const ua = window.navigator.userAgent.toLowerCase()
+  // 通过正则表达式匹配ua中是否含有MicroMessenger字符串
+  if (ua.match(/MicroMessenger/i) === 'micromessenger') {
+    return true
+  } else {
+    return false
+  }
+}
+
+async function isOrderNo (orderno) {
+  if (orderno) {
+    try {
+      const checkNumRes = await checkNum({
+        num: orderno
+      })
+      if (checkNumRes.success && checkNumRes.statusCode === 200) {
+        let resData = checkNumRes.stringData
+        resData = JSON.parse(resData)
+        if (!resData[0]['comCode']) {
+          return {
+            type: 'warn',
+            text: '经检测，单号所属物流公司为空，请检测后填写',
+            width: '25rem'
+          }
+        } else {
+          return {
+            type: 'success',
+            text: '单号正常',
+            width: '20rem'
+          }
+        }
+      }
+    } catch (err) {
+      console.error(err)
+      return {
+        type: 'warn',
+        text: '单号所属物流公司为空，请检测后重新填写',
+        width: '26rem'
+      }
+    }
+  }
+  return {
+    type: 'warn',
+    text: '单号不能为空',
+    width: '26rem'
+  }
+}
+
 export {
   queryURL,
   queryArray,
@@ -264,5 +316,7 @@ export {
   reg,
   getRating,
   cache,
-  getAddress
+  getAddress,
+  isWeiXin,
+  isOrderNo
 }

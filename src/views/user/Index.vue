@@ -27,6 +27,12 @@
           <p>客服热线:&nbsp;&nbsp;</p>
           <p><a :href="telHotline">{{hotline}}</a></p>
         </div>
+        <div class="customer-service">
+          <p>客服二维码:&nbsp;&nbsp;</p>
+          <p>
+            <img class="customer-qrpic" src="../../assets/images/wechat_customer.jpg" alt="客服二维码">
+          </p>
+        </div>
         <div class="package-close" @click="dialogshow = false">
           <span class="vux-close"></span>
         </div>
@@ -171,6 +177,10 @@ export default {
     p {
       font-size: @normal-size;
     }
+  }
+  .customer-qrpic {
+    width: 10rem;
+    height: auto;
   }
   .vux-close {
     margin-top: 8px;

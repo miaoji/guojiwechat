@@ -12,3 +12,12 @@ export async function query (data) {
     data
   })
 }
+
+export async function checkNum (data) {
+  return request({
+    url: expressCompanyApi.checkNum,
+    method: 'get',
+    auth: true,
+    data
+  })
+}

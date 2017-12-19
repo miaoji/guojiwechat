@@ -1,16 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as user from './modules/user'
 import * as address from './modules/address'
+import * as cargo from './modules/cargo'
 import * as order from './modules/order'
+import * as user from './modules/user'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
-    user,
     address,
-    order
+    cargo,
+    order,
+    user
   },
   state: {
     title: '妙寄',

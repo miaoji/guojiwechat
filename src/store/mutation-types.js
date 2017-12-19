@@ -9,3 +9,5 @@ export const SET_ADDRESS_RES = 'SET_ADDRESS_RES'
 export const SET_OPENID = 'SET_OPENID'
 
 export const SET_ORDERLIST = 'SET_ORDERLIST'
+
+export const SET_CARGOLIST = 'SET_CARGOLIST'

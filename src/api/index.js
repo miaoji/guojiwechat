@@ -4,12 +4,12 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟本地
-    url = 'http://192.168.0.231:8077/'
+    // url = 'http://192.168.0.231:8077/'
     // url = 'http://169.254.191.166:8077/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/mzkd/'
     // 正式 app 云端服务 Wechat
-    // url = 'http://api.mingz-tech.com/'
+    url = 'http://api.mingz-tech.com/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/'
@@ -172,7 +172,9 @@ export const expressRoute = {
 // 快递公司
 export const expressCompany = {
   // 传name进行模糊查询
-  query: url + 'api/kdCompany/index'
+  query: url + 'api/kdCompany/index',
+  // 传num获取快递公司名，判断单号真实性 ?num=
+  checkNum: url + 'api/kdCompany/getKdCompanyByNum'
 }
 
 // 查询补价

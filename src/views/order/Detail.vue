@@ -340,7 +340,7 @@ import Tips from '@/components/Tips'
 import { show, update } from '@/services/orderInfo'
 import { getLast as getLastBootByOrderNo } from '@/services/boot'
 import { show as cargoShow } from '@/services/cargo'
-import { storage, time } from '@/utils'
+import { storage, time, isOrderNo } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 import Clipboard from 'clipboard'
 
@@ -541,12 +541,14 @@ export default {
       try {
         const wxPayRes = await wxUtil.pay({initParams, successParams})
         this.$vux.toast.show(wxPayRes)
-        if (wxPayRes.type === 'success') {
-          window.location.reload()
-        }
       } catch (e) {
         console.error(e)
         this.$vux.toast.show(e)
+      } finally {
+        const _this = this
+        setTimeout(function () {
+          _this.getOrderDetail(_this.orderId)
+        }, 900)
       }
     },
     async getLastBoot ({orderNo = ''}) {
@@ -597,6 +599,19 @@ export default {
           time: '600'
         })
         return
+      }
+      // 单号要为正确单号
+      try {
+        const orderNo = this.newPackage['cnNo']
+        this.$vux.loading.show()
+        const orderRes = await isOrderNo(orderNo)
+        if (orderRes['type'] !== 'success') {
+          return this.$vux.toast.show(orderRes)
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.$vux.loading.hide()
       }
       const changeData = {
         kdCompanyCodeCn: this.newPackage['kdCompanyCodeCn'],

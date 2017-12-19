@@ -72,6 +72,7 @@ import ExpressRoute from '@/components/ExpressRoute'
 import LoadToshow from '@/components/load/WithService'
 import SelectBox from '@/components/SelectBox'
 import { show, update } from '@/services/orderInfo'
+import { isOrderNo } from '@/utils'
 
 export default {
   name: 'orderroute',
@@ -88,6 +89,7 @@ export default {
     return {
       orderId: '',
       orderInfo: {},
+      orderType: 0,
       // 0表示不需要补价， 1相反
       bootStatus: {
         val: 0,
@@ -155,6 +157,8 @@ export default {
         }
         let orderInfo = res.obj
         this.orderInfo = orderInfo
+        // 订单类型 0 直邮 1 集运
+        this.orderType = orderInfo.type || 0
         this.cnNo = orderInfo.cnNo
         this.cnCompany = orderInfo.kdCompanyCodeCn
         this.intelNo = orderInfo.intlNo
@@ -199,6 +203,19 @@ export default {
           time: '600'
         })
         return
+      }
+      // 单号要为正确单号
+      try {
+        const orderNo = this.newPackage['cnNo']
+        this.$vux.loading.show()
+        const orderRes = await isOrderNo(orderNo)
+        if (orderRes['type'] !== 'success') {
+          return this.$vux.toast.show(orderRes)
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.$vux.loading.hide()
       }
       const changeData = {
         kdCompanyCodeCn: this.newPackage['kdCompanyCodeCn'],

@@ -133,6 +133,7 @@ export default {
     &-state {
       font-size: @normal-size;
       color: @m-yellow;
+      white-space: nowrap;
     }
     &-address {
       .flex;

@@ -127,7 +127,7 @@
                 </tr>
               </thead>
               <tbody class="packageitem">
-                <tr v-for="item, index in packageTable">
+                <tr v-for="item, index in packageTable" :key="index">
                   <td>
                     {{item['orderName']}}
                   </td>
@@ -149,7 +149,7 @@
             </table>
           </div>
           <div v-show="packageTable.length > 0" class="package-tips">
-            <tips :content="'左滑删除/编辑，快递公司不可修改，' + packageTableLength"></tips>
+            <tips :content="'左滑删除/编辑，' + packageTableLength"></tips>
           </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">
@@ -169,7 +169,7 @@
           <group label-width="7rem" label-align="left">
             <x-input title="品名" placeholder="请填写品名" type="text" v-model="newPackage['orderName']" required></x-input>
             <!-- 2000以内 -->
-            <x-input title="价值/元" type="number" placeholder="请填写价值" lang="en" name="tel" v-model="newPackage['totalFee']" required></x-input>
+            <x-input title="价值/元" type="number" placeholder="请填写价值(￥2000以内)" lang="en" name="tel" v-model="newPackage['totalFee']" required></x-input>
             <x-input
               title="快递公司"
               placeholder="点击选择快递公司"
@@ -178,7 +178,7 @@
             >
             </x-input>
             <!-- 9~23位 -->
-            <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
+            <x-input title="国内单号" placeholder="请填写国内单号(9~23位)" type="text" v-model="newPackage['cnNo']"></x-input>
           </group>
           <tips
             :content="packageTableLength"
@@ -215,7 +215,7 @@
             >
             </x-input>
             <!-- 9~23位 -->
-            <x-input title="国内单号" type="text" v-model="editPackage['cnNo']"></x-input>
+            <x-input title="国内单号" placeholder="请填写国内单号(9~23位)" type="text" v-model="editPackage['cnNo']"></x-input>
           </group>
           <div class="pdialog-form__confrim">
             <button type="" class="pdialog-form__confrim--sure" @click="editSave">保存修改</button>
@@ -236,13 +236,15 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { Selector, XInput, PopupPicker, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import JagContainer from '@/components/JagContainer'
 import Tips from '@/components/Tips'
 import SelectBox from '@/components/SelectBox'
 import LoadToshow from '@/components/load/WithService'
 import Line from './components/Line'
-import { getAddress, storage, cache as cacheUtil } from '@/utils'
+import { getAddress, storage, cache as cacheUtil, isOrderNo } from '@/utils'
+import { bindSwiper, removeClass } from '@/utils/swiper'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as transferAddrService from '@/services/transferAddr'
 import { save as saveCargo } from '@/services/cargo'
@@ -290,6 +292,10 @@ export default {
       dataInCache: [
         {
           name: 'newPackage',
+          needJudge: 0
+        },
+        {
+          name: 'packageTable',
           needJudge: 0
         }
       ],
@@ -341,6 +347,12 @@ export default {
       // 从localStorage中获取存储的用户习惯信息, 将可以直接赋值的赋值到this
       const dataInCache = this.dataInCache
       cacheUtil.setCacheToData.apply(this, [dataInCache, 'cargo_info'])
+      if (!this.packageTable) {
+        this.packageTable = []
+      }
+      setTimeout(function () {
+        bindSwiper('.packageitem tr', 'swipeleft')
+      }, 500)
       this.customerNo = storage({
         key: 'customerNo'
       })
@@ -386,6 +398,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'setCargoList'
+    ]),
     /**
      * [从localStorage中获取选取的收件地址，没有的话则获取默认的收件地址]
      * no return
@@ -410,38 +425,16 @@ export default {
         console.error(e)
       }
     },
-    /**
-     * [长按删除]
-     * @param  {[type]} index  [description]
-     * @param  {[type]} $event [description]
-     * @return {[type]}        [description]
-     */
-    longTap (index, $event) {
-      const _this = this
-      function longPress () {
-        _this.$vux.confirm.show({
-          title: `确定删除这一行数据吗? (当前为第${index + 1}行)`,
-          onCancel () {
-          },
-          onConfirm () {
-            _this.packageTable.splice(index, 1)
-          }
-        })
-      }
-      const longTimer = setTimeout(longPress, 700)
-      $event.target.ontouchend = () => {
-        clearTimeout(longTimer)
-      }
-    },
     delTableItem (index) {
       this.packageTable.splice(index, 1)
+      removeClass('.packageitem tr', 'swipeleft')
     },
     editTableItem (item, index) {
       this.editPackage = {...item, index}
       this.packageShowEdit = true
       this.dialogType = 'edit'
     },
-    editSave () {
+    async editSave () {
       // 价值不能低于0
       const totalFee = Number(this.editPackage['totalFee'])
       if (isNaN(totalFee)) {
@@ -469,16 +462,29 @@ export default {
         })
         return
       }
-      // 单号为9到30位
+      // 单号为9到23位
       if (this.editPackage['cnNo']) {
         const cnNoLen = this.editPackage['cnNo'].length
-        if (cnNoLen < 9 || cnNoLen > 30) {
+        if (cnNoLen < 9 || cnNoLen > 23) {
           this.$vux.toast.show({
             type: 'warn',
-            text: '单号长度要在9~30之间',
+            text: '单号长度要在9~23之间',
             width: '19rem'
           })
           return
+        }
+        // 单号要为正确单号
+        try {
+          const orderNo = this.editPackage['cnNo']
+          this.$vux.loading.show()
+          const orderRes = await isOrderNo(orderNo)
+          if (orderRes['type'] !== 'success') {
+            return this.$vux.toast.show(orderRes)
+          }
+        } catch (e) {
+          console.error(e)
+        } finally {
+          this.$vux.loading.hide()
         }
       }
       const _this = this
@@ -509,43 +515,7 @@ export default {
         cnNo: ''
       }
       this.packageShowEdit = false
-    },
-    /**
-     * [添加左滑事件]
-     * @param  {[type]} val [description]
-     * @return {[type]}     [description]
-     */
-    swiperEvent () {
-      // 左滑删除
-      const _this = this
-      const container = document.querySelectorAll('.packageitem tr')
-      console.log(container)
-      // 为每个特定DOM元素绑定 touchstart
-      for (let i = 0; i < container.length; i++) {
-        console.log(i)
-        // touchmove时间监听 判断滑动方向
-        let startX
-        let endX
-        // 记录初始触控点横坐标
-        container[i].addEventListener('touchstart', function (event) {
-          startX = event.changedTouches[0].pageX
-        })
-        container[i].addEventListener('touchmove', function (event) {
-          // 记录当前触控点横坐标
-          endX = event.changedTouches[0].pageX
-          // 右滑
-          if (endX - startX > 10) {
-            // 右滑收起
-            this.className = ''
-          }
-          // 左滑
-          if (startX - endX > 10) {
-            // 左滑展开
-            this.className = 'swipeleft'
-            _this.expansion = this
-          }
-        })
-      }
+      removeClass('.packageitem tr', 'swipeleft')
     },
     handleTransferAddr (val) {
       this.transferRes = val
@@ -565,13 +535,14 @@ export default {
         this.packageShow = false
         return false
       }
+      this.dialogType = 'add'
       this.packageShow = true
       return true
     },
     /**
      * [添加包裹]
      */
-    addPackge (isClose = true) {
+    async addPackge (isClose = true) {
       if (!this.handlePackageShow()) {
         return
       }
@@ -602,16 +573,29 @@ export default {
         })
         return
       }
-      // 单号为9到30位
+      // 单号为9到23位
       if (this.newPackage['cnNo']) {
         const cnNoLen = this.newPackage['cnNo'].length
-        if (cnNoLen < 9 || cnNoLen > 30) {
+        if (cnNoLen < 9 || cnNoLen > 23) {
           this.$vux.toast.show({
             type: 'warn',
-            text: '单号长度要在9~30之间',
+            text: '单号长度要在9~23之间',
             width: '19rem'
           })
           return
+        }
+        // 单号要为正确单号
+        try {
+          const orderNo = this.newPackage['cnNo']
+          this.$vux.loading.show()
+          const orderRes = await isOrderNo(orderNo)
+          if (orderRes['type'] !== 'success') {
+            return this.$vux.toast.show(orderRes)
+          }
+        } catch (e) {
+          console.error(e)
+        } finally {
+          this.$vux.loading.hide()
         }
       }
       const _this = this
@@ -632,6 +616,7 @@ export default {
         })
         return
       }
+      this.newPackage['totalFee'] = Number(this.newPackage['totalFee'])
       this.packageTable.push(this.newPackage)
       this.newPackage = {
         orderName: '',
@@ -641,7 +626,7 @@ export default {
       }
       this.packageShow = !isClose
       setTimeout(function () {
-        _this.swiperEvent()
+        bindSwiper('.packageitem tr', 'swipeleft')
       }, 500)
     },
     /**
@@ -650,6 +635,14 @@ export default {
      */
     async submitOrder () {
       try {
+        if (!this.pickupId) {
+          this.$vux.toast.show({
+            text: '请先选择收件地址',
+            type: 'warn',
+            width: '18rem'
+          })
+          return
+        }
         if (this.packages.length < 1) {
           this.$vux.toast.show({
             text: '请填写至少一个包裹',
@@ -673,6 +666,10 @@ export default {
         })
         if (saveRes.code === 200) {
           this.clearForm()
+          await this.setCargoList({
+            page: 1,
+            rows: 150
+          })
           this.$router.push({
             path: '/cargo/list',
             query: {type: 'waitcargo'}

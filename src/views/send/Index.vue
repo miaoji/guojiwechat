@@ -8,7 +8,7 @@
           <div class="send-list">
             <div class="send-list--intro">
               <img slot="icon" class="order-icon" src="../../assets/images/send_list_icon.png" />
-              <span>寄件列表</span>
+              <span>直邮列表</span>
             </div>
             <div class="send-icon">
               <img slot="icon" src="../../assets/images/sen_ico_lis.png" />
@@ -179,31 +179,35 @@
                 </tr>
               </thead>
               <tbody class="package-table">
-                <tr v-for="item, index in packageTable" @touchstart="longTap(index, $event)">
+                <tr v-for="item, index in packageTable">
                   <td>
-                    <input type="text" v-model="item['nameCn']">
+                    {{item['nameCn']}}
                   </td>
                   <td>
-                    <input type="number" v-model="item['quantity']">
+                    {{item['quantity']}}
                   </td>
                   <td>
-                    <input type="number" v-model="item['unitPrice']">
+                    {{item['unitPrice']}}
                   </td>
                   <td>
-                    <input type="text" :value="item['quantity']*item['unitPrice']" disabled>
+                    {{item['quantity']*item['unitPrice']}}
+                  </td>
+                  <td class="tools">
+                    <button type="" class="pay" @click="delTableItem(index)">删除</button>
+                    <button type="" class="pay" @click="editTableItem(item, index)">编辑</button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p class="tips" v-show="packageTable.length > 0">            
-            <tips :content="'长按删除，价值不可修改，' + packageTableLength"></tips>
+            <tips :content="'左滑删除/编辑，' + packageTableLength"></tips>
           </p>
           <div class="send-container-package__money">
             预付运费：￥ <span>{{advanceShow}}</span>
           </div>
           <!-- 提交按钮 -->
-          <div class="submit-btn"> 
+          <div class="submit-btn">
             <button class="normal" @click="submitOrderInfo">提交</button>
           </div>
         </div>
@@ -248,7 +252,7 @@
         </div>
       </x-dialog>
     </div>
-    <!-- 添加包裹弹出框 -->
+    <!-- 包裹弹出框 添加 -->
     <div v-transfer-dom>
       <x-dialog v-model="packageShow" class="send-package-dialog">
         <h1>添加包裹</h1>
@@ -268,6 +272,25 @@
           <div class="send-package-dialog-form__confrim">
             <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">保存</button>
             <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
+          </div>
+        </div>
+      </x-dialog>
+    </div>
+    <!-- 包裹弹框 修改 -->
+    <div v-transfer-dom>
+      <x-dialog v-model="packageShowEdit" class="pdialog">
+        <h1>修改包裹</h1>
+        <div class="package-close" @click="packageShowEdit = false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="pdialog-form">
+          <group label-width="7rem" label-align="left">
+            <x-input title="品名" placeholder="请填写品名" type="text" v-model="editPackage['nameCn']" required></x-input>
+            <x-input title="产品单价/元" type="tel" placeholder="请填写价值" lang="en" name="tel" v-model="editPackage['unitPrice']" required></x-input>
+            <x-input title="产品数量" type="number" v-model="editPackage['quantity']" required></x-input>
+          </group>
+          <div class="pdialog-form__confrim">
+            <button type="" class="pdialog-form__confrim--sure" @click="editSave">保存修改</button>
           </div>
         </div>
       </x-dialog>
@@ -322,6 +345,7 @@ import * as priceService from '@/services/price'
 import * as orderInfoService from '@/services/orderInfo'
 import { storage, cache as cacheUtil, getAddress as getAddressUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
+import { bindSwiper } from '@/utils/swiper'
 
 export default {
   name: 'send',
@@ -365,6 +389,14 @@ export default {
       // 备注
       remark: '',
       packageShow: false,
+      packageShowEdit: false,
+      dialogType: 'add',
+      editPackage: {
+        index: '',
+        nameCn: '',
+        quantity: '',
+        unitPrice: ''
+      },
       // 包裹报关提示信息
       packagePromptInfoShow: false,
       // 退件提示信息
@@ -509,6 +541,11 @@ export default {
       this.$vux.loading.hide()
     }
   },
+  mounted () {
+    setTimeout(function () {
+      bindSwiper('.package-table tr', 'swipeleft')
+    }, 600)
+  },
   computed: {
     ...mapGetters({
       sendadd: 'getSendAdd',
@@ -579,29 +616,6 @@ export default {
       }
     },
     /**
-     * [长按删除]
-     * @param  {[type]} index  [description]
-     * @param  {[type]} $event [description]
-     * @return {[type]}        [description]
-     */
-    longTap (index, $event) {
-      const _this = this
-      function longPress () {
-        _this.$vux.confirm.show({
-          title: `确定删除这一行数据吗? (当前为第${index + 1}行)`,
-          onCancel () {
-          },
-          onConfirm () {
-            _this.packageTable.splice(index, 1)
-          }
-        })
-      }
-      const longTimer = setTimeout(longPress, 900)
-      $event.target.ontouchend = () => {
-        clearTimeout(longTimer)
-      }
-    },
-    /**
      * [处理点击添加包裹按钮的方法]
      */
     handlePackageShow () {
@@ -643,6 +657,32 @@ export default {
         })
         return
       }
+      // 价值不能低于0
+      const unitPriceCheckNum = this.checkNum(this.newPackage['unitPrice'])
+      if (unitPriceCheckNum['type'] === 'error') {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: unitPriceCheckNum['message'],
+          width: '19rem'
+        })
+        this.newPackage['unitPrice'] = ''
+        return
+      } else {
+        this.newPackage['unitPrice'] = unitPriceCheckNum['value']
+      }
+      // 数量不能低于0
+      const quantityCheckNum = this.checkNum(this.newPackage['quantity'])
+      if (quantityCheckNum['type'] === 'error') {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: quantityCheckNum['message'],
+          width: '19rem'
+        })
+        this.newPackage['quantity'] = ''
+        return
+      } else {
+        this.newPackage['quantity'] = quantityCheckNum['value']
+      }
       this.newPackage['worth'] = this.newPackage['unitPrice'] * this.newPackage['quantity']
       this.packageTable.push(this.newPackage)
       this.newPackage = {
@@ -651,6 +691,95 @@ export default {
         unitPrice: ''
       }
       this.packageShow = !isClose
+      setTimeout(function () {
+        bindSwiper('.package-table tr', 'swipeleft')
+      }, 500)
+    },
+    delTableItem (index) {
+      this.packageTable.splice(index, 1)
+    },
+    editTableItem (item, index) {
+      this.editPackage = {...item, index}
+      this.packageShowEdit = true
+      this.dialogType = 'edit'
+    },
+    /**
+     * [checkNum 数值检测 大于0的正整数]
+     * @return {[type]} [description]
+     */
+    checkNum (num) {
+      num = Number(num)
+      if (isNaN(num) || num <= 0) {
+        return {
+          type: 'error',
+          message: '请输入大于0的正整数',
+          value: 0
+        }
+      } else {
+        return {
+          type: 'success',
+          message: '正确',
+          value: num
+        }
+      }
+    },
+    editSave () {
+      const _this = this
+      // 价值不能低于0
+      const unitPriceCheckNum = this.checkNum(this.editPackage['unitPrice'])
+      if (unitPriceCheckNum['type'] === 'error') {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: unitPriceCheckNum['message'],
+          width: '19rem'
+        })
+        this.editPackage['unitPrice'] = ''
+        return
+      } else {
+        this.editPackage['unitPrice'] = unitPriceCheckNum['value']
+      }
+      // 数量不能低于0
+      const quantityCheckNum = this.checkNum(this.editPackage['quantity'])
+      if (quantityCheckNum['type'] === 'error') {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: quantityCheckNum['message'],
+          width: '19rem'
+        })
+        this.editPackage['quantity'] = ''
+        return
+      } else {
+        this.editPackage['quantity'] = quantityCheckNum['value']
+      }
+      let complete = []
+      console.log(_this.editPackage)
+      Object.keys(_this.editPackage).forEach(function (key) {
+        if (!_this.editPackage[key] && key !== 'worth' && key !== 'index') {
+          complete.push(false)
+        } else {
+          complete.push(true)
+        }
+      })
+      if (complete.includes(false)) {
+        _this.$vux.toast.show({
+          type: 'warn',
+          text: '请将信息填写完整',
+          width: '16rem',
+          time: '600'
+        })
+        return
+      }
+      this.editPackage['worth'] = this.editPackage['unitPrice'] * this.editPackage['quantity']
+      const index = this.editPackage['index']
+      delete this.editPackage['index']
+      this.packageTable[index] = this.editPackage
+      this.editPackage = {
+        nameCn: '',
+        quantity: '',
+        unitPrice: '',
+        index: ''
+      }
+      this.packageShowEdit = false
     },
     /**
      * [submitSend 创建订单，成功后调用微信支付接口]
@@ -753,6 +882,8 @@ export default {
           receiverProv: this.pickupAddress['province'],
           receiverCity: this.pickupAddress['city'],
           receiverCounty: this.pickupAddress['county'],
+          type: 0,
+          orderType: 0,
           orderItems
         })
         this.$vux.loading.hide()
