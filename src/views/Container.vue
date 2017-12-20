@@ -22,7 +22,7 @@ export default {
       window.localStorage.setItem('mj_mobile', '')
       // window.localStorage.setItem('mj_userId', '18')
       window.localStorage.setItem('mj_userId', '212')
-      window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTEzNjUwNTIzMDI5LCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.-Sdv16U4PRtUhaZXGLKm1ccKFracVATL-JhIqhX8QAA')
+      window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTEzNzM1NzQwODM1LCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.6tX4s3Q4nL6q3nymW-6nDEqkszIC-kvvZS6-ak_TaiU')
       return
     }
   },

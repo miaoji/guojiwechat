@@ -91,7 +91,7 @@
                       <template slot="content">
                         <p>
                           <img src="../../assets/images/tips.png" alt="tips">
-                          用户电商平台下单地址
+                          用户电商平台下单地址,下单时请在地址后加上客户编号哦
                           <span class="copyTransfer" id="copyTransfer" data-clipboard-target="#transferAddr">点击复制</span>
                         </p>
                       </template>
@@ -370,8 +370,12 @@ export default {
       try {
         const transferRes = this.transferRes
         let res = transferRes['obj'][0]
-        res = res['provinces']['province'] + res['cities']['city'] + res['districts']['district'] + res['transferAddress'] + res['transferName'] + res['transferMobile']
-        return res
+        res = [
+          (res['provinces']['province'] + res['cities']['city'] + res['districts']['district'] + res['transferAddress'] + this.customerNo),
+          res['transferName'],
+          res['transferMobile']
+        ]
+        return res.join(',')
       } catch (err) {
         return ''
       }
