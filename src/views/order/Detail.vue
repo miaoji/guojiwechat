@@ -445,7 +445,6 @@ export default {
       let {id} = this.$route.query
       this.orderId = id
       await this.getOrderDetail(id)
-      this.$vux.loading.hide()
       // 获取订单补价信息
       await this.getLastBoot({
         orderNo: this.orderInfo.orderNo
@@ -456,6 +455,7 @@ export default {
       }
     } catch (err) {
       console.error(err)
+    } finally {
       this.$vux.loading.hide()
     }
   },

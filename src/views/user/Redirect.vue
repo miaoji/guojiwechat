@@ -8,8 +8,8 @@ import {storage} from '@/utils'
 
 export default {
   created () {
-    let {openid} = this.$route.query
-    if (!openid) {
+    let {openid, unionid} = this.$route.query
+    if (!openid && !unionid) {
       this.$vux.toast.show({
         type: 'text',
         width: '20rem',
@@ -18,15 +18,20 @@ export default {
       })
       return this.$router.push({path: '/nouser'})
     }
-    // 删除openid
+    // 删除openid, unionid
     storage({
       key: 'openid',
       type: 'remove'
     })
-    // 删除存入新的openid
+    // 存入新的openid, unionid
     storage({
       key: 'openid',
       val: openid,
+      type: 'set'
+    })
+    storage({
+      key: 'unionid',
+      val: unionid,
       type: 'set'
     })
     this.$router.push({path: '/init'})

@@ -48,3 +48,12 @@ export async function remove (params) {
     params
   })
 }
+
+export async function count (data) {
+  return request({
+    url: orderInfoApi.count,
+    method: 'get',
+    auth: true,
+    data
+  })
+}

@@ -20,11 +20,12 @@ export default {
       time: '1500',
       text: '正在为您跳转, 请稍候'
     })
-    // 从localstorage中获取openid
+    // 从localstorage中获取openid, unionid
     const openid = storage({key: 'openid'})
-    if (openid) {
+    const unionid = storage({key: 'unionid'})
+    if (openid && unionid) {
       // 通过openid从数据库中查询用户数据
-      await this.getUserInfoByOpenid({openid})
+      await this.getUserInfoByOpenid({openid, unionid})
     } else {
       // 获取openid失败, 跳转到授权页面
       let state = storage({
@@ -52,8 +53,8 @@ export default {
       }
       storage({key: 'expire', val: JSON.stringify(expireNew), type: 'set'})
     },
-    async getUserInfoByOpenid ({openid}) {
-      const userinfo = await this.setUserInfo({openid})
+    async getUserInfoByOpenid ({openid, unionid}) {
+      const userinfo = await this.setUserInfo({openid, unionid})
       if (userinfo.type === 'text') {
         // 用户未绑定手机， 跳转绑定手机页面
         this.$router.push({path: '/bindphone'})

@@ -41,10 +41,12 @@ export const actions = {
    * @param {[type]} options.commit   [description]
    * @param {[type]} options.openid   [description]
    */
-  async setUserInfo ({ dispatch, commit }, {openid}) {
+  async setUserInfo ({ dispatch, commit }, {openid, unionid}) {
     try {
       const res = await show({
-        openid
+        openid,
+        unionid,
+        type: 0
       })
       if (res.statusCode === 200) {
         let user = res.user

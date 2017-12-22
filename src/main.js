@@ -34,10 +34,11 @@ router.beforeEach(function (to, from, next) {
   // login auth
   if (to.matched.some(record => record.meta.requiresAuth)) {
     const openid = storage({key: 'openid'})
+    const unionid = storage({key: 'unionid'})
     const userid = storage({key: 'userId'})
     const token = storage({key: 'token'})
     // openid、userid、token等参数都存在，则直接进入页面
-    if (openid && userid && token) {
+    if (openid && userid && token && unionid) {
       return next()
     }
     storage({

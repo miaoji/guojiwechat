@@ -50,6 +50,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { storage } from '@/utils'
+import { count } from '@/services/orderInfo'
 import ListItem from './components/ListItem'
 
 export default {
@@ -61,6 +62,7 @@ export default {
       key: 'cargo_switch_type'
     })
     this.show = type || localtype || 'all'
+    this.getCount()
   },
   components: {
     ListItem
@@ -73,27 +75,41 @@ export default {
       return this.cargolistData.data || []
     },
     countList () {
-      const cargolist = this.cargolist
-      const len = cargolist.length
       let list = {
-        'all': len,
+        'all': this.cargolistData.total,
         'waitcargo': 0,
         'waitpay': 0,
         'waitdelivery': 0,
         'done': 0
       }
-      for (let i = 0; i < len; i++) {
-        const item = cargolist[i]
-        const status = item.status
-        const parentId = item.parentId
-        if (parentId === 0) {
-          list['waitcargo']++
-        } else if (parentId !== 0 && (status === 1 || status === 0)) {
-          list['waitpay']++
-        } else if (parentId !== 0 && (status === 2 || status === 7)) {
-          list['waitdelivery']++
-        } else if (parentId !== 0 && status === 4) {
-          list['done']++
+      const countData = this.countData
+      for (let i = 0; i < countData.length; i++) {
+        const item = countData[i]
+        const status = Number(item.status)
+        const parentCount = item.parentCount
+        const childCount = item.childCount
+        switch (status) {
+          case 0:
+            list.waitcargo += childCount
+            break
+          case 1:
+            list.waitcargo += childCount
+            list.waitpay += parentCount
+            break
+          case 2:
+            list.waitdelivery += parentCount
+            break
+          case 3:
+            list.waitdelivery += parentCount
+            break
+          case 4:
+            list.done += parentCount
+            break
+          case 7:
+            list.waitdelivery += parentCount
+            break
+          default:
+            break
         }
       }
       return list
@@ -102,16 +118,33 @@ export default {
   data () {
     return {
       page: 1,
-      rows: 150,
+      rows: 50,
       showList: [],
       show: 'all',
-      scrollerNoDataText: '没有更多数据啦~'
+      scrollerNoDataText: '没有更多数据啦~',
+      countData: []
     }
   },
   methods: {
     ...mapActions([
       'setCargoList'
     ]),
+    async getCount () {
+      try {
+        const res = await count({
+          type: 1,
+          wxUserId: storage({
+            type: 'get',
+            key: 'userId'
+          })
+        })
+        if (res.code === 200) {
+          this.countData = res.obj
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    },
     async getList ({page, rows}) {
       try {
         this.setCargoList({

@@ -6,7 +6,8 @@ export const state = {
   list: {
     page: 1,
     rows: 15,
-    data: []
+    data: [],
+    total: 0
   }
 }
 
@@ -21,19 +22,21 @@ export const actions = {
    * @param {[type]} options.commit   [description]
    * @param {[type]} options.openid   [description]
    */
-  async setCargoList ({ dispatch, commit }, {page = 1, rows = 100}) {
+  async setCargoList ({ dispatch, commit }, {page = 1, rows = 10}) {
     try {
       const res = await query({
         wxUserId: storage({key: 'userId'}),
         page,
-        rows
+        rows,
+        status: []
       })
       if (res.code === 200) {
         const data = res.obj
         let list = {
           page,
           rows,
-          data
+          data,
+          total: res.total
         }
         commit(types.SET_CARGOLIST, {list})
         return {
