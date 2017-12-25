@@ -103,10 +103,18 @@ export default {
             list.waitdelivery += parentCount
             break
           case 4:
+            list.waitcargo += childCount
             list.done += parentCount
             break
+          case 5:
+            list.waitcargo += childCount
+            break
           case 7:
+            list.waitcargo += childCount
             list.waitdelivery += parentCount
+            break
+          case 8:
+            list.waitcargo += childCount
             break
           default:
             break
@@ -197,7 +205,7 @@ export default {
     refresh (done) {
       const _this = this
       this.page = 1
-      this.rows = 10
+      this.rows = 50
       const page = this.page
       const rows = this.rows
       setTimeout(async function () {
