@@ -27,7 +27,10 @@ export const init = function () {
       signature: jssdk.signature,
       jsApiList: [
         'chooseImage',
-        'chooseWXPay'
+        'chooseWXPay',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage',
+        'previewImage'
       ]
     })
     return resolve({

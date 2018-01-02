@@ -3,7 +3,7 @@
     <canvas id="Mycanvas" width="541" height="780" style="opacity: .5"></canvas>
     <div class="bind-container">
      <div class="logo">
-       <img src="../../assets/images/logo.png" alt="logo">
+       <img src="../../assets/images/logo.jpg" alt="logo">
        <h1 v-once>国际快递服务中心</h1>
      </div>
      <div class="input mobile">

@@ -1,5 +1,6 @@
 <template>
   <div class="mj">
+    <subscribe-tool></subscribe-tool>
     <transition>
       <router-view></router-view>
     </transition>
@@ -8,26 +9,64 @@
 </template>
 <script>
 import MJFooter from '@/components/Footer'
+import SubscribeTool from '@/components/SubscribeTool'
+import { storage } from '@/utils'
 
 export default {
   name: 'container',
   created () {
     if (process.env.NODE_ENV === 'development') {
-      window.localStorage.setItem('mj_headimgurl', '//wx.qlogo.cn/mmopen/x9caeaMpHoWcicDmIZs0Ovicuibe1H0icp57ndKcmv4Rz0xB6khyCeSbN3miagPMuyHpia1JHraN9btZDAZibEBlaKJKkYiaGnDjic0Gic/0')
-      window.localStorage.setItem('mj_nickname', '明华')
-      window.localStorage.setItem('mj_customerNo', 'MZA10235400')
-      // window.localStorage.setItem('mj_openid', 'oPg2ZwiH1ASA_EiAj10XHcB2qgcM')
-      window.localStorage.setItem('mj_openid', 'oPg2ZwgwuALccM_V8UIW4qmhkOwo')
-      // window.localStorage.setItem('mj_mobile', '17602180495')
-      window.localStorage.setItem('mj_mobile', '')
-      // window.localStorage.setItem('mj_userId', '18')
-      window.localStorage.setItem('mj_userId', '212')
-      window.localStorage.setItem('mj_token', 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTE0MTY4NzExMjYyLCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.isk29t_xcNRZs6u6SiMPp64eT2OeWGUAF6iSD0dANu8')
+      storage({
+        type: 'set',
+        key: 'headimgurl',
+        val: '//wx.qlogo.cn/mmopen/x9caeaMpHoWcicDmIZs0Ovicuibe1H0icp57ndKcmv4Rz0xB6khyCeSbN3miagPMuyHpia1JHraN9btZDAZibEBlaKJKkYiaGnDjic0Gic/0'
+      })
+      storage({
+        type: 'set',
+        key: 'nickname',
+        val: '塞尔达'
+      })
+      storage({
+        type: 'set',
+        key: 'customerNo',
+        val: 'MZA10235400'
+      })
+      storage({
+        type: 'set',
+        key: 'openid',
+        val: 'oPg2ZwgwuALccM_V8UIW4qmhkOwo'
+      })
+      storage({
+        type: 'set',
+        key: 'mobile',
+        val: ''
+      })
+      storage({
+        type: 'set',
+        key: 'mobile',
+        val: ''
+      })
+      storage({
+        type: 'set',
+        key: 'subscribe',
+        val: '1'
+      })
+      storage({
+        type: 'set',
+        key: 'userId',
+        val: '212'
+      })
+      storage({
+        type: 'set',
+        key: 'token',
+        val: 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTE0ODYxNDYzMDgzLCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.a3gboSYcJMod9o1FnpCElQZw4amSviK5xT_IhDc8wlQ'
+      })
       return
     }
   },
   components: {
-    'mj-footer': MJFooter
+    'mj-footer': MJFooter,
+    'subscribe-tool': SubscribeTool
   },
   data () {
     return {

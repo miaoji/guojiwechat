@@ -5,7 +5,7 @@
         <div slot="content" class="coupon">
           <div class="coupon-intro">
             <div class="coupon-intro-img">
-              <img src="../../assets/images/coupon_logo.png" alt="卡券logo">
+              <img src="../../assets/images/coupon_logo.jpg" alt="卡券logo">
             </div>
             <p class="coupon-intro-name">{{detailData.coupon_name}}</p>
             <p class="coupon-intro-func">{{detailData.coupon_value / 100}}元代金券</p>

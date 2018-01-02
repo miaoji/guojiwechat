@@ -18,13 +18,15 @@ export const getters = {
     return userId
   },
   getUserInfo: state => {
+    const headimgurl = storage({key: 'headimgurl'}) || ''
     const mobile = storage({key: 'mobile'}) || ''
     const nickname = storage({key: 'nickname'}) || ''
-    const headimgurl = storage({key: 'headimgurl'}) || ''
+    const subscribe = storage({key: 'subscribe'}) || ''
     return {
+      headimgurl,
       mobile,
       nickname,
-      headimgurl
+      subscribe
     }
   },
   getOpenId: state => {
@@ -56,7 +58,8 @@ export const actions = {
           mobile: user.mobile,
           headimgurl: user.headimgurl,
           nickname: user.nickName,
-          customerNo: user.customerNo
+          customerNo: user.customerNo,
+          subscribe: user.subscribe
         })
         return {
           text: '获取用户信息成功',
@@ -192,7 +195,8 @@ export const mutations = {
     mobile = storage({key: 'mobile'}),
     nickname = storage({key: 'nickname'}),
     headimgurl = storage({key: 'headimgurl'}),
-    customerNo = storage({key: 'customerNo'})
+    customerNo = storage({key: 'customerNo'}),
+    subscribe = storage({key: 'subscribe'})
   }) {
     storage({key: 'token', val: token, type: 'set'})
     storage({key: 'userId', val: userId, type: 'set'})
@@ -200,6 +204,7 @@ export const mutations = {
     storage({key: 'nickname', val: nickname, type: 'set'})
     storage({key: 'headimgurl', val: headimgurl, type: 'set'})
     storage({key: 'customerNo', val: customerNo, type: 'set'})
+    storage({key: 'subscribe', val: subscribe, type: 'set'})
   },
   [types.SET_OPENID] (state, { openid }) {
     state.openid = openid

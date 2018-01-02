@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueScroller from 'vue-scroller'
-import { Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin, LoadingPlugin } from 'vux'
+import { Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin, LoadingPlugin, DatetimePlugin } from 'vux'
 import { storage } from '@/utils'
 import router from '@/router'
 import store from '@/store'
@@ -11,14 +11,16 @@ import App from '@/App'
 import * as filters from '@/filters'
 import MJSpinner from '@/components/MJSpinner.vue'
 
+Vue.config.productionTip = false
+
 FastClick.attach(document.body)
 
 Vue.use(VueScroller)
-Vue.use(ConfirmPlugin)
-Vue.use(ToastPlugin)
-Vue.use(LoadingPlugin)
 
-Vue.config.productionTip = false
+Vue.use(ConfirmPlugin)
+Vue.use(DatetimePlugin)
+Vue.use(LoadingPlugin)
+Vue.use(ToastPlugin)
 
 Vue.component('group', Group)
 Vue.component('cell', Cell)

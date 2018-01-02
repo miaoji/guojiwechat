@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import * as address from './modules/address'
 import * as cargo from './modules/cargo'
 import * as order from './modules/order'
+import * as promote from './modules/promote'
 import * as user from './modules/user'
 
 Vue.use(Vuex)
@@ -12,10 +13,11 @@ const store = new Vuex.Store({
     address,
     cargo,
     order,
+    promote,
     user
   },
   state: {
-    title: '妙寄',
+    title: '国际快递服务中心',
     isLoading: false,
     isJump: false,
     jumpSrc: 'http://112.74.34.241:3000/pics/random?show=1',
@@ -24,7 +26,8 @@ const store = new Vuex.Store({
       type: 'success',
       info: 'show'
     },
-    page: 'usercenter'
+    page: 'usercenter',
+    issubscribe: true
   },
   actions: {
   },

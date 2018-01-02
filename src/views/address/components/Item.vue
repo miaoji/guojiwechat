@@ -31,6 +31,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { storage } from '@/utils'
 
 export default {
   name: 'addressitem',
@@ -70,14 +71,29 @@ export default {
         return
       }
       if (this.orderType === 'cargo') {
-        window.localStorage.setItem('mj_cargo_pickupaddress', JSON.stringify(item))
+        // window.localStorage.setItem('mj_cargo_pickupaddress', JSON.stringify(item))
+        storage({
+          type: 'set',
+          key: 'cargo_pickupaddress',
+          val: JSON.stringify(item)
+        })
         this.$router.push({path: '/cargo'})
         return
       }
       if (this.orderType === 'send' && this.addressType === 'send') {
-        window.localStorage.setItem('mj_send_sendaddress', JSON.stringify(item))
+        // window.localStorage.setItem('mj_send_sendaddress', JSON.stringify(item))
+        storage({
+          type: 'set',
+          key: 'send_sendaddress',
+          val: JSON.stringify(item)
+        })
       } else {
-        window.localStorage.setItem('mj_send_pickupaddress', JSON.stringify(item))
+        // window.localStorage.setItem('mj_send_pickupaddress', JSON.stringify(item))
+        storage({
+          type: 'set',
+          key: 'send_pickupaddress',
+          val: JSON.stringify(item)
+        })
       }
       this.$router.push({path: '/send'})
     },

@@ -64,7 +64,7 @@
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { storage } from '@/utils'
 import { hotline } from '@/utils/config'
-import logoPng from '@/assets/images/logo.png'
+import logoPng from '@/assets/images/logo.jpg'
 
 export default {
   name: 'usercenter',
@@ -118,6 +118,11 @@ export default {
         src: require('../../assets/images/cargo_ico.png'),
         name: '集运订单',
         path: '/cargo/list',
+        show: true
+      }, {
+        src: require('../../assets/images/promote/sales.png'),
+        name: '我的推广',
+        path: '/promote',
         show: true
       }, {
         src: require('../../assets/images/coupon.png'),

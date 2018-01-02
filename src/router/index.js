@@ -28,6 +28,13 @@ const feedrecommend = r => require.ensure([], () => r(require('@/views/feed/Reco
 const couponlist = r => require.ensure([], () => r(require('@/views/coupon/List')), 'CouponList')
 const coupondetail = r => require.ensure([], () => r(require('@/views/coupon/Detail')), 'CouponDetail')
 const cargolist = r => require.ensure([], () => r(require('@/views/cargo/List')), 'CargoList')
+const promote = r => require.ensure([], () => r(require('@/views/promote/Index')), 'Promote')
+const qrimage = r => require.ensure([], () => r(require('@/views/promote/QrImage')), 'qrimage')
+const promoteearings = r => require.ensure([], () => r(require('@/views/promote/Earnings')), 'promoteearings')
+const promoteearingdetail = r => require.ensure([], () => r(require('@/views/promote/EarningDetail')), 'promoteearingdetail')
+const promoteuserlist = r => require.ensure([], () => r(require('@/views/promote/UserList')), 'promoteuserlist')
+const promoteuserdetail = r => require.ensure([], () => r(require('@/views/promote/UserDetail')), 'promoteuserdetail')
+const promotehandlewithdraw = r => require.ensure([], () => r(require('@/views/promote/HandleWithdraw')), 'promotehandlewithdraw')
 
 export default new Router({
   base: __dirname,
@@ -221,6 +228,61 @@ export default new Router({
     component: cargolist,
     meta: {
       intro: '集运列表',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote',
+    name: 'Promote',
+    component: promote,
+    meta: {
+      intro: '我的推广',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promoteqr',
+    name: 'qrimage',
+    component: qrimage,
+    meta: {
+      intro: '推广二维码'
+    }
+  }, {
+    path: '/promote/earnings',
+    name: 'earings',
+    component: promoteearings,
+    meta: {
+      intro: '收益列表',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote/earnings/:earingId',
+    name: 'earingsdetail',
+    component: promoteearingdetail,
+    meta: {
+      intro: '收益详细',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote/users',
+    name: 'promoteuserlist',
+    component: promoteuserlist,
+    meta: {
+      intro: '用户管理',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote/users/:userId',
+    name: 'promoteuserdetail',
+    component: promoteuserdetail,
+    meta: {
+      intro: '用户详细',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote/handlewithdraw',
+    name: 'promotehandlewithdraw',
+    component: promotehandlewithdraw,
+    meta: {
+      intro: '提现申请',
       requiresAuth: true
     }
   }]

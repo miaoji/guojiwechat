@@ -9,7 +9,7 @@
     @click.stop.prevent="goPath"
   >
     <div class="listitem-image">
-      <img src="../../../assets/images/coupon_logo.png" alt="卡券图标">
+      <img src="../../../assets/images/coupon_logo.jpg" alt="卡券图标">
     </div>
     <div class="listitem-intro">
       <p class="listitem-intro-name">{{name}}</p>

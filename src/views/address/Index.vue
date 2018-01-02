@@ -92,7 +92,12 @@ export default {
       'changeAddress'
     ]),
     changeShow (type) {
-      window.localStorage.setItem('mj_address_page_switch_type', type)
+      // window.localStorage.setItem('mj_address_page_switch_type', type)
+      storage({
+        type: 'set',
+        key: 'address_page_switch_type',
+        val: type
+      })
       this.addressType = type
     },
     async refresh (done) {
@@ -117,7 +122,12 @@ export default {
     }
   },
   beforeDestroy () {
-    window.localStorage.setItem('mj_address_page_switch_type', this.addressType)
+    // window.localStorage.setItem('mj_address_page_switch_type', this.addressType)
+    storage({
+      type: 'set',
+      key: 'address_page_switch_type',
+      val: this.addressType
+    })
   }
 }
 </script>
