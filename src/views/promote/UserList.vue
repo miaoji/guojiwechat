@@ -13,43 +13,126 @@
             <img class="datetimepicker" src="../../assets/images/promote/datetimepicker.png"></img>
           </section>
         </div>
-        <div class="content" v-for="item in [1, 2, 3, 4, 5]">
-          <p class="time">
-            2017-0{{item}}
-          </p>
-          <group label-width="11rem" label-align="left">
-            <cell
-              title="塞尔达"
-              value="已产生收益￥6.00"
-              link="/promote/users/12"
-              is-link
-            ></cell>
-            <cell
-              title="林克"
-              value="已产生收益￥66.00"
-              link="/promote/users/33"
-              is-link
-            ></cell>
-          </group>
-        </div>
+        <scroller
+          :on-refresh="refresh"
+          :on-infinite="infinite"
+          ref="userlist-scroller"
+          noDataText="没有更多数据了"
+          class="userlist_scroller"
+        >
+          <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+          <div class="content" v-for="(value, key, index) in incomeList">
+            <p class="time">
+              {{key}}
+            </p>
+            <group label-width="11rem" label-align="left">
+              <cell
+                v-for="(items, index) in value" :key="index"
+                :title="items.nickName"
+                :value="'已产生收益￥' + items.totalAmount"
+                @click.native="showUserDetail(items)"
+                link=""
+                is-link
+              ></cell>
+            </group>
+          </div>
+          <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
+        </scroller>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import {query} from '@/services/promoteUsers'
+import { format } from '@/utils/time'
+// link="/promote/users/12"
 
 export default {
   name: 'userlist',
   data () {
     return {
+      incomeList: null,
+      page: 1,
+      rows: 10,
+      total: 0
     }
   },
-  created () {
+  async created () {
+    await this.initData()
   },
   computed: {
   },
   methods: {
+    showUserDetail (item) {
+      // {name:'promoteuserdetail', params: {...items}}
+      this.$router.push({name: 'promoteuserdetail', query: {...item}})
+      console.log('item', item)
+    },
+    async initData () {
+      try {
+        console.log('初始化数据')
+        const data = await query({
+          startDate: '2017-01-01',
+          endDate: '2018-01-31',
+          page: this.page,
+          rows: this.rows,
+          spreadUserId: 1
+        })
+        if (data.code === 200 && data.obj) {
+          this.reduceData(data.obj)
+          this.total = data.total
+        } else {
+          console.log('数据查询失败')
+        }
+      } catch (e) {
+        console.log('错误信息', e)
+      }
+    },
+    reduceData (data) {
+      if (!Array.isArray(data)) {
+        return
+      }
+      const len = data.length
+      this.incomeList = {}
+      for (let i = 0; i < len; i++) {
+        let item = data[i]
+        const date = new Date(item['subscribeTime'])
+        const yearMonth = format('yyyy-MM', date)
+        const monthDay = format('MM-dd', date)
+        if (!this.incomeList[yearMonth]) {
+          this.incomeList[yearMonth] = []
+        }
+        item.day = monthDay
+        this.incomeList[yearMonth].push(this.dealEarningItem(item))
+      }
+    },
+    dealEarningItem (item) {
+      let data = {}
+      data.nickName = item.nickName
+      data.totalAmount = item.totalAmount
+      data.sex = item.sex
+      data.subscribeTime = item.subscribeTime
+      return data
+    },
+    async refresh (done) {
+      console.log('下拉')
+      await this.initData()
+      console.log('下拉111')
+      setTimeout(() => {
+        return done(true)
+      }, 1000)
+    },
+    async infinite (done) {
+      console.log('上拉')
+      this.rows += 10
+      await this.initData()
+      if (this.total < this.rows) {
+        return done(true)
+      } else {
+        return done(false)
+      }
+    },
     handleDatePicker () {
       this.$vux.datetime.show({
         cancelText: '取消',
@@ -84,6 +167,8 @@ export default {
   &-container {
     .list {
       .tools {
+        position: relative;
+        z-index:3;
         .flex;
         background: white;
         padding: 10px 15px;
@@ -110,6 +195,10 @@ export default {
             }
           }
         }
+      }
+      .userlist_scroller {
+        padding-top: 48px!important;
+        box-sizing: border-box;
       }
       .content {
         p.time {

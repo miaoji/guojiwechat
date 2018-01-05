@@ -272,7 +272,7 @@ export default new Router({
       requiresAuth: true
     }
   }, {
-    path: '/promote/users/:userId',
+    path: '/promote/users/userdetail',
     name: 'promoteuserdetail',
     component: promoteuserdetail,
     meta: {

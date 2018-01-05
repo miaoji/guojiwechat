@@ -35,7 +35,14 @@ export const format = function (fmt, date) {
   return fmt
 }
 
-export const formatedatestamp = function (timpstamp) {
+/**
+ * [format description]
+ * @param  {[Date]} timpstamp    [输出的日期格式 'yyyy-MM-dd hh:mm:ss']
+ * @param  {[Number]}   type     需要的类型 1：年月日时分秒 2： 年月日
+ * @return {[String]}            [格式化后的时间]
+ */
+
+export const formatedatestamp = function (timpstamp, type = 1) {
   if (!timpstamp) {
     return '未知时间'
   }
@@ -48,7 +55,13 @@ export const formatedatestamp = function (timpstamp) {
   let h = date.getHours() + ':'
   let m = date.getMinutes() + ':'
   let s = date.getSeconds()
-  return year + '-' + month + '-' + day + ' ' + h + m + s
+  if (type === 1) {
+    return year + '-' + month + '-' + day + ' ' + h + m + s
+  } else if (type === 2) {
+    return year + '-' + month + '-' + day
+  } else {
+    return year + '-' + month + '-' + day
+  }
 }
 
 export const getMinute = function (date) {

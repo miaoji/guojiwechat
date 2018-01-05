@@ -200,3 +200,8 @@ export const promote = {
   levelinfo: url + 'api/spreadLevel/getByLevel',
   income: url + 'api/incomeRecord/index'
 }
+
+// 推广-用户管理
+export const promoteUsers = {
+  query: url + 'api/spreadUser/getSpreadGroupUser'
+}

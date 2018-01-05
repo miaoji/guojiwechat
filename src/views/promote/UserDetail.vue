@@ -4,23 +4,23 @@
       <group label-width="11rem" label-align="left">
         <cell
           title="微信名"
-          value="林克"
+          :value="userInfo.nickName"
         ></cell>
         <cell
           title="消费金额"
-          value="￥6666.66"
+          :value="'￥' + userInfo.totalAmount"
         ></cell>
         <cell
           title="分润金额"
-          value="￥66.66"
+          value="待查询"
         ></cell>
         <cell
           title="关注日期"
-          value="2017-01-27"
+          :value="userInfo.subscribeTime"
         ></cell>
         <cell
           title="性别"
-          value="女"
+          :value="userInfo.sex"
         ></cell>
       </group>
     </div>
@@ -28,37 +28,28 @@
 </template>
 
 <script>
+import { formatedatestamp } from '@/utils/time'
 
 export default {
   name: 'userdetail',
   data () {
     return {
+      userInfo: null
     }
   },
   created () {
+    const sex = {
+      0: '未知',
+      1: '男',
+      2: '女'
+    }
+    this.userInfo = this.$route.query
+    this.userInfo.subscribeTime = formatedatestamp(this.userInfo.subscribeTime, 2)
+    this.userInfo.sex = sex[this.userInfo.sex]
   },
   computed: {
   },
   methods: {
-    handleDatePicker () {
-      this.$vux.datetime.show({
-        cancelText: '取消',
-        confirmText: '确定',
-        format: 'YYYY-MM',
-        value: '2017-12',
-        minYear: 2017,
-        maxYear: 2018,
-        onConfirm (val) {
-          console.log('plugin confirm', val)
-        },
-        onShow () {
-          console.log('plugin show')
-        },
-        onHide () {
-          console.log('plugin hide')
-        }
-      })
-    }
   }
 }
 </script>
