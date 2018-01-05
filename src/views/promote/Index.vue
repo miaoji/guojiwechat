@@ -159,6 +159,7 @@ export default {
             this.ratio = userData.spreadUserRatio
           }
           this.spreadUserType = spreadUserType
+          this.nickName = userData.nickName
           this.spreadUserId = userData.spreadUserId
           this.netIncome = userData.netIncome
           this.totalIncome = userData.totalIncome
@@ -208,7 +209,11 @@ export default {
     handleShare () {
       this.$store.commit('SET_TIPSHOW', {tipshow: true})
       this.$router.push({
-        path: '/promoteqr'
+        path: '/promoteqr',
+        query: {
+          nickName: this.nickName,
+          qrTicket: this.qrTicket
+        }
       })
     },
     wxShareAppMessage () {

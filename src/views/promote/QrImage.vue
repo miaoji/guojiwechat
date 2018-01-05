@@ -1,8 +1,8 @@
 <template>
   <div class="qrimage">
     <div class="qrimage-container">
-      <p>林克的二维码</p>
-      <img src="../../assets/images/wechat_qr.jpg" alt="二维码">
+      <p>{{nickName}}的二维码</p>
+      <img :src="qrSrc" alt="二维码">
     </div>
     <!-- 分享选择 -->
     <div class="share-arrows" v-show="shareShow">
@@ -28,7 +28,9 @@ export default {
   name: 'qrimage',
   data () {
     return {
-      shareShow: false
+      shareShow: false,
+      nickName: '',
+      qrTicket: ''
     }
   },
   components: {
@@ -36,11 +38,18 @@ export default {
   },
   created () {
     this.shareShow = this.show
+    const {nickName, qrTicket} = this.$route.query
+    this.nickName = nickName
+    this.qrTicket = qrTicket
   },
   computed: {
     ...mapGetters({
       'show': 'getisTipShow'
-    })
+    }),
+    qrSrc () {
+      const prefix = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='
+      return `${prefix}${this.qrTicket}`
+    }
   },
   methods: {
   }

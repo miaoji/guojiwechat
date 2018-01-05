@@ -27,7 +27,6 @@
           title="提现金额"
           type="text"
           v-model="money"
-          :min="100"
           placeholder="请填写提现金额" 
           text-align="right"
           required
@@ -41,7 +40,10 @@
       </group>
       <div class="submit">
         <div class="submit-btn">
-          <button class="normal">
+          <button 
+            :class="{'normal': rightData, 'disabled': !rightData}"
+            @click.stop="submit"
+          >
             提交
           </button>
         </div>
@@ -79,8 +81,20 @@ export default {
   mounted () {
   },
   computed: {
+    rightData () {
+      if (this.money > 100) {
+        return true
+      }
+      return false
+    }
   },
   methods: {
+    submit () {
+      if (!this.rightData) {
+        return
+      }
+      console.log('111')
+    }
   },
   watch: {
   },

@@ -3,6 +3,7 @@
     <div class="earings-container">
       <scroller
         :on-refresh="refresh"
+        :on-infinite="infinite"
         noDataText=""
         ref="earning-scroller">
         <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
@@ -14,6 +15,11 @@
             <section @click.stop="handleDatePicker">
               <img class="datetimepicker" src="../../assets/images/promote/datetimepicker.png"></img>
             </section>
+          </div>
+          <div v-show="isNoData">
+            <p class="no-data">
+              暂时未产生收益~
+            </p>
           </div>
           <div class="content" v-for="(value, key, index) in incomeList">
             <p class="time">
@@ -53,36 +59,44 @@ export default {
   data () {
     return {
       spreadUserId: 0,
-      incomeList1: {
-        '2018-01': [{
-          createTime: 1514964214000,
-          day: '01-03'
-        }]
-      },
       incomeList: null,
-      testArr: {
-        '2018-01': [{
-          'data': '1'
-        }]
-      }
+      page: 1
     }
   },
   async created () {
-    // const {spreadUserId} = this.$route.query
-    // this.spreadUserId = spreadUserId
+    const {spreadUserId} = this.$route.query
+    this.spreadUserId = spreadUserId
     this.spreadUserId = 1
     await this.initData()
   },
   computed: {
+    isNoData () {
+      try {
+        let len = 0
+        Object.keys(this.incomeList).forEach(key => {
+          len++
+        })
+        return (len === 0)
+      } catch (e) {
+        return true
+      }
+    }
   },
   methods: {
-    async initData () {
+    initData () {
+      this.page = 1
+      this.setIncomeData({
+        page: this.page,
+        endDate: '2018-01-31'
+      })
+    },
+    async setIncomeData ({page, rows = 15, startDate = '2017-01-01', endDate}) {
       try {
         const res = await getIncome({
-          startDate: '2017-01-01',
-          endDate: '2018-01-31',
-          page: 1,
-          rows: 10,
+          startDate,
+          endDate,
+          page,
+          rows,
           spreadUserId: this.spreadUserId
         })
         if (res.success && res.code === 200) {
@@ -122,10 +136,22 @@ export default {
       res.incomeRatio = `${item.incomeRatio * 100}%`
       return res
     },
-    async refresh (done) {
+    refresh (done) {
       this.incomeList = null
-      await this.initData()
-      return done(true)
+      this.initData()
+      setTimeout(function () {
+        done(true)
+      }, 1000)
+    },
+    infinite (done) {
+      this.page = this.page + 1
+      this.setIncomeData({
+        page: this.page,
+        endDate: '2018-01-31'
+      })
+      setTimeout(function () {
+        done(true)
+      }, 1200)
     },
     goDetailPage (query) {
       this.$router.push({
@@ -193,6 +219,11 @@ export default {
           }
         }
       }
+    }
+    .no-data {
+      text-align: center;
+      padding: 1rem;
+      font-size: @normal-size;
     }
   }
 }
