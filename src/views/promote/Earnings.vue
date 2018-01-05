@@ -1,12 +1,6 @@
 <template>
   <div class="earings">
     <div class="earings-container">
-      <scroller
-        :on-refresh="refresh"
-        :on-infinite="infinite"
-        noDataText=""
-        ref="earning-scroller">
-        <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
         <div class="list">
           <div class="tools">
             <section>
@@ -21,31 +15,38 @@
               暂时未产生收益~
             </p>
           </div>
-          <div class="content" v-for="(value, key, index) in incomeList">
-            <p class="time">
-              {{key}}
-            </p>
-            <group label-align="left">
-              <cell
-                v-for="(iitem, index) in value" :key="index"
-                :title="iitem.nickName"
-                :value="iitem.income"
-                @click.native="goDetailPage(iitem)"
-                link=""
-                is-link
-              >
-                <template slot="title">
-                  <div class="earningitem">
-                    <span>{{iitem.type}}订单-by {{iitem.nickName}}</span>
-                    <span class="time">{{iitem.day}}</span>
-                  </div>
-                </template>
-              </cell>
-            </group>
-          </div>
+          <scroller
+            :on-refresh="refresh"
+            :on-infinite="infinite"
+            noDataText=""
+            ref="earning-scroller"
+            class="earning-scroller">
+            <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
+            <div class="content" v-for="(value, key, index) in incomeList">
+              <p class="time">
+                {{key}}
+              </p>
+              <group label-align="left">
+                <cell
+                  v-for="(iitem, index) in value" :key="index"
+                  :title="iitem.nickName"
+                  :value="iitem.income"
+                  @click.native="goDetailPage(iitem)"
+                  link=""
+                  is-link
+                >
+                  <template slot="title">
+                    <div class="earningitem">
+                      <span>{{iitem.type}}订单-by {{iitem.nickName}}</span>
+                      <span class="time">{{iitem.day}}</span>
+                    </div>
+                  </template>
+                </cell>
+              </group>
+            </div>
+            <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
+          </scroller>
         </div>
-        <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
-      </scroller>
     </div>
   </div>
 </template>
@@ -196,6 +197,8 @@ export default {
     .list {
       .tools {
         .flex;
+        position: relative;
+        z-index: 3;
         background: white;
         padding: 10px 15px;
         justify-content: space-between;
@@ -205,6 +208,10 @@ export default {
             width: 2.1rem;
           }
         }
+      }
+      .earning-scroller {
+        padding-top: 48px!important;
+        box-sizing: border-box;
       }
       .content {
         p.time {

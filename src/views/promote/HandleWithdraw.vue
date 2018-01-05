@@ -37,6 +37,14 @@
           :options="withdrawTypeOption"
           direction="rtl">
         </selector>
+        <x-input
+          title="微信帐号"
+          type="text"
+          v-model="account"
+          placeholder="请填写您的微信帐号" 
+          text-align="right"
+          required
+        ></x-input>
       </group>
       <div class="submit">
         <div class="submit-btn">
@@ -69,7 +77,8 @@ export default {
       }, {
         key: 'alipay',
         value: '支付宝'
-      }]
+      }],
+      account: ''
     }
   },
   components: {

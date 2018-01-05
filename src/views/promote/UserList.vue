@@ -167,9 +167,9 @@ export default {
   &-container {
     .list {
       .tools {
+        .flex;
         position: relative;
         z-index:3;
-        .flex;
         background: white;
         padding: 10px 15px;
         justify-content: space-between;
