@@ -305,6 +305,27 @@ async function isOrderNo (orderno) {
   }
 }
 
+/**
+ * [判断一个字符串是否包含除了中文英文数组以外的字符，可以有标点符号等]
+ * @return {Boolean} [description]
+ */
+function onlyCnOrEn (str) {
+  if (!str) {
+    return false
+  }
+  str = str.replace(/\s*/g, '')
+  str = str.replace(/[~!@#$%^&*()_+`/,.;''。，·“”]/g, '')
+  const len = str.length
+  const cnLength = str.match(/[\u4e00-\u9fa5]/g) ? str.match(/[\u4e00-\u9fa5]/g).length : 0
+  const enLength = str.match(/[a-zA-Z]/g) ? str.match(/[a-zA-Z]/g).length : 0
+  const numLength = str.match(/\d/g) ? str.match(/\d/g).length : 0
+  if ((cnLength + enLength + numLength) === len) {
+    return true
+  } else {
+    return false
+  }
+}
+
 export {
   queryURL,
   queryArray,
@@ -318,5 +339,6 @@ export {
   cache,
   getAddress,
   isWeiXin,
-  isOrderNo
+  isOrderNo,
+  onlyCnOrEn
 }

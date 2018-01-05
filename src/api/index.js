@@ -4,9 +4,9 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟本地
-    // url = 'http://192.168.0.231:8077/'
+    url = 'http://192.168.0.231:8077/'
     // 测试 app 云端服务 Wechat
-    url = 'http://api.didalive.net/mzkd/'
+    // url = 'http://api.didalive.net/mzkd/'
     // 正式 app 云端服务 Wechat
     // url = 'http://api.mingz-tech.com/'
     break
@@ -190,4 +190,13 @@ export const boot = {
 export const coupon = {
   // ?openid=oPg2ZwgwuALccM_V8UIW4qmhkOwo
   query: url + 'api/wxCoupon/index'
+}
+
+// 分销
+export const promote = {
+  // ?wxUserId=205
+  userinfo: url + 'api/spreadUser/getInfoByWxUserId',
+  // ?spreadLevel = 2
+  levelinfo: url + 'api/spreadLevel/getByLevel',
+  income: url + 'api/incomeRecord/index'
 }

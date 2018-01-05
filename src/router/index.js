@@ -34,7 +34,9 @@ const promoteearings = r => require.ensure([], () => r(require('@/views/promote/
 const promoteearingdetail = r => require.ensure([], () => r(require('@/views/promote/EarningDetail')), 'promoteearingdetail')
 const promoteuserlist = r => require.ensure([], () => r(require('@/views/promote/UserList')), 'promoteuserlist')
 const promoteuserdetail = r => require.ensure([], () => r(require('@/views/promote/UserDetail')), 'promoteuserdetail')
+const promotewithdraw = r => require.ensure([], () => r(require('@/views/promote/Withdraw')), 'promotewithdraw')
 const promotehandlewithdraw = r => require.ensure([], () => r(require('@/views/promote/HandleWithdraw')), 'promotehandlewithdraw')
+const promotesetting = r => require.ensure([], () => r(require('@/views/promote/Setting')), 'promotesetting')
 
 export default new Router({
   base: __dirname,
@@ -278,11 +280,27 @@ export default new Router({
       requiresAuth: true
     }
   }, {
+    path: '/promote/withdraw',
+    name: 'promotewithdraw',
+    component: promotewithdraw,
+    meta: {
+      intro: '提现记录',
+      requiresAuth: true
+    }
+  }, {
     path: '/promote/handlewithdraw',
     name: 'promotehandlewithdraw',
     component: promotehandlewithdraw,
     meta: {
       intro: '提现申请',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote/setting',
+    name: 'promotesetting',
+    component: promotesetting,
+    meta: {
+      intro: '推广设置',
       requiresAuth: true
     }
   }]

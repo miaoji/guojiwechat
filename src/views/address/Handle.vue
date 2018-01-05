@@ -103,10 +103,11 @@ import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as redisService from '@/services/redis'
 import { selectProvCityCounty } from '@/services/geography'
-import { reg as regUtil, storage } from '@/utils'
-import SelectCountry from './components/SelectCountry'
+import { reg as regUtil, storage, onlyCnOrEn } from '@/utils'
 import CascadeAddress from '@/components/CascadeAddress'
 import * as map from '@/utils/map'
+
+import SelectCountry from './components/SelectCountry'
 
 export default {
   name: 'handleaddress',
@@ -354,6 +355,14 @@ export default {
           text: '请将信息填写完整',
           type: 'warn',
           width: '18rem'
+        })
+        return false
+      }
+      if (!onlyCnOrEn(this.name) || !onlyCnOrEn(this.address)) {
+        this.$vux.toast.show({
+          text: '姓名和地址只能为中文或者英文',
+          type: 'warn',
+          width: '22rem'
         })
         return false
       }

@@ -11,7 +11,7 @@
           <group label-width="8rem" label-align="left">
             <cell
               title="昨日收益"
-              value="￥666.66"
+              :value="yesterdayIncomeShow"
             >
             </cell>
           </group>
@@ -23,19 +23,21 @@
               点击分享
             </button>
           </p>
-          <img src="../../assets/images/wechat_qr.jpg" alt="推广二维码" @click.native="checkQrImg">
+          <img :src="qrSrc" alt="推广二维码" @click.native="checkQrImg">
           <div class="withdraw-tips">
             可提现金额：
             <span class="money">
-              ￥1666.63
+              ￥{{netIncome / 100 || 0}}
             </span>
           </div>
           <div class="divide-tips">
             当前分润比例 
-            <span class="scale">1%</span>
-            ，团队还需消费
-            <span class="money">888元</span>
-            即可提升 
+            <span class="scale">{{ratio * 100}}%</span>
+            <span v-show="spreadUserType === 0">
+              ，团队还需消费
+              <span class="money">{{spreadConsumption / 100}}元</span>
+              即可提升
+            </span>
             <span class="divide-tips--link" @click.stop="promotionruleShow = true">查看规则</span>
           </div>
         </div>
@@ -43,8 +45,8 @@
           <group label-width="8rem" label-align="left">
             <cell
               title="累计收益"
-              value="￥6666.66"
-              link="/promote/earnings"
+              :value="totalIncomeShow"
+              :link="'/promote/earnings?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
@@ -65,6 +67,7 @@
             <cell
               title="推广设置"
               value="推送时间"
+              link="/promote/setting"
               is-link
             >
             </cell>
@@ -92,14 +95,24 @@
 </template>
 
 <script>
+import { storage } from '@/utils'
 import { init } from '@/utils/wx'
 import { XDialog } from 'vux'
 import Tips from '@/components/Tips'
+import { getUserinfo, getLevelInfo } from '@/services/promote'
 
 export default {
   name: 'promote',
   data () {
     return {
+      ratio: 0,
+      netIncome: 0,
+      yesterdayIncome: 0,
+      qrTicket: '',
+      spreadUserType: 0,
+      spreadUserId: 0,
+      spreadConsumption: 0,
+      totalIncome: 0,
       shareChooseShow: false,
       promotionruleShow: false
     }
@@ -110,15 +123,73 @@ export default {
   },
   async created () {
     await init()
+    this.initUserData()
   },
   mounted () {
   },
   computed: {
+    yesterdayIncomeShow () {
+      return `￥${this.yesterdayIncome / 100 || 0}`
+    },
+    totalIncomeShow () {
+      return `￥${this.totalIncome / 100 || 0}`
+    },
+    qrSrc () {
+      const prefix = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='
+      return `${prefix}${this.qrTicket}`
+    }
   },
   methods: {
+    async initUserData () {
+      try {
+        let wxUserId = storage({
+          type: 'get',
+          key: 'userId'
+        })
+        const res = await getUserinfo({wxUserId})
+        if (res.success && res.code === 200) {
+          const userData = res.obj
+          let {spreadUserType, spreadLevelId} = userData
+          spreadUserType = Number(spreadUserType)
+          if (spreadUserType === 0) {
+            this.ratio = userData.consumptionRatio
+            spreadLevelId = Number(spreadLevelId) + 1
+            this.checkLevelMoney(spreadLevelId)
+          } else {
+            this.ratio = userData.spreadUserRatio
+          }
+          this.spreadUserType = spreadUserType
+          this.spreadUserId = userData.spreadUserId
+          this.netIncome = userData.netIncome
+          this.totalIncome = userData.totalIncome
+          this.yesterdayIncome = userData.yesterdayIncome
+          this.qrTicket = userData.qrTicket
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    /**
+     * [根据分润比例等级id获取达到这一等级所需消费的金额]
+     * @param  {Number} level [level id]
+     * @return {[type]}        [description]
+     */
+    async checkLevelMoney (level) {
+      try {
+        const res = await getLevelInfo({spreadLevel: level})
+        const { spreadConsumption } = res.obj
+        this.spreadConsumption = spreadConsumption
+      } catch (err) {
+        console.error(err)
+      }
+    },
     refresh (done) {
       this._self.$refs['promote-scroller'].finishInfinite(true)
-      return done(true)
+      const _this = this
+      setTimeout(async function () {
+        await _this.initUserData()
+        return done(true)
+      }, 600)
     },
     infinite (done) {
       this._self.$refs['promote-scroller'].finishInfinite()
@@ -130,8 +201,8 @@ export default {
     },
     checkQrImg () {
       window.wx.previewImage({
-        current: 'http://wx.qlogo.cn/mmopen/vi_32/UDZGqoED7TrhHdA34JSlmVdIcz2X30emabQGKekkAviadjJFu98dhadicT8ibY32aoYmEd2o2BwGedFAE7hG3ibYLA/0',
-        urls: ['http://wx.qlogo.cn/mmopen/vi_32/UDZGqoED7TrhHdA34JSlmVdIcz2X30emabQGKekkAviadjJFu98dhadicT8ibY32aoYmEd2o2BwGedFAE7hG3ibYLA/0']
+        current: this.qrSrc,
+        urls: [this.qrSrc]
       })
     },
     handleShare () {

@@ -1,13 +1,10 @@
 <template>
-  <div class="userlist">
-    <div class="userlist-container">
+  <div class="withdraw">
+    <div class="withdraw-container">
       <div class="list">
         <div class="tools">
-          <section class="search">
-            <input type="" name="" placeholder="根据微信名搜索">
-            <span type="" class="search-icon">
-              <img src="../../assets/images/search.png" alt="">
-            </span>
+          <section>
+            筛选
           </section>
           <section @click.stop="handleDatePicker">
             <img class="datetimepicker" src="../../assets/images/promote/datetimepicker.png"></img>
@@ -17,17 +14,17 @@
           <p class="time">
             2017-0{{item}}
           </p>
-          <group label-width="11rem" label-align="left">
+          <group label-align="left">
             <cell
-              title="塞尔达"
-              value="已产生收益￥6.00"
-              link="/promote/users/12"
+              title="转出到微信 1月30号"
+              value="￥6.00"
+              link="/promote/withdraw/12"
               is-link
             ></cell>
             <cell
-              title="林克"
-              value="已产生收益￥66.00"
-              link="/promote/users/33"
+              title="转出到支付宝 1月20号"
+              value="￥1.60"
+              link="/promote/withdraw/33"
               is-link
             ></cell>
           </group>
@@ -40,7 +37,7 @@
 <script>
 
 export default {
-  name: 'userlist',
+  name: 'withdraw',
   data () {
     return {
     }
@@ -80,7 +77,7 @@ export default {
 @import '../../assets/styles/helpers.less';
 @import '../../assets/styles/colors.less';
 
-.userlist {
+.withdraw {
   &-container {
     .list {
       .tools {
@@ -92,22 +89,6 @@ export default {
           font-size: @normal-size;
           img.datetimepicker {
             width: 2.1rem;
-            vertical-align: middle;
-          }
-        }
-        .search {
-          input {
-            padding: 6px 10px;
-            font-size: @small-size;
-            border: 1px solid #d9d9d9;
-            border-radius: @radius-size;
-            margin-right: .5rem;
-          }
-          &-icon {
-            img {
-              width: 1.6rem;
-              vertical-align: middle;
-            }
           }
         }
       }
