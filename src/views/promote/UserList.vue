@@ -17,7 +17,7 @@
           :on-refresh="refresh"
           :on-infinite="infinite"
           ref="userlist-scroller"
-          noDataText="没有更多数据了"
+          :noDataText="'共'+total+'个用户'"
           class="userlist_scroller"
         >
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
@@ -33,7 +33,12 @@
                 @click.native="showUserDetail(items)"
                 link=""
                 is-link
-              ></cell>
+              >
+                <div slot="title" class="slot">
+                    <span class="i1"><img :src='items.headimgurl'/></span>
+                    <span class="i2">{{items.nickName}}</span>
+                </div>
+              </cell>
             </group>
           </div>
           <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
@@ -113,6 +118,7 @@ export default {
       data.totalAmount = item.totalAmount
       data.sex = item.sex
       data.subscribeTime = item.subscribeTime
+      data.headimgurl = item.headimgurl
       return data
     },
     async refresh (done) {
@@ -199,12 +205,31 @@ export default {
       .userlist_scroller {
         padding-top: 48px!important;
         box-sizing: border-box;
-      }
-      .content {
-        p.time {
-          text-align: left;
-          padding: 10px 15px;
-          font-size: @small-size;
+        .content {
+          p.time {
+            text-align: left;
+            padding: 10px 15px;
+            font-size: @small-size;
+          }
+          .slot {
+            .i1 {
+              height: 1.8rem;
+              width: 1.8rem;
+              overflow: hidden;
+              img {
+                position: relative;
+                top: 0.25rem;
+                width:1.8rem;
+                height:1.8rem;
+              }
+            }
+            .i2 {
+              position: relative;
+              top: -0.2rem;
+              padding-left: 5px;
+              line-height: 1.8rem;
+            }
+          }
         }
       }
     }

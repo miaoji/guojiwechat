@@ -1,6 +1,9 @@
 <template>
   <div class="earings">
     <div class="earings-container">
+      <div slot="title" class="slot">
+        <img :src="userInfo.headimgurl"/>
+      </div>
       <group label-width="11rem" label-align="left">
         <cell
           title="微信名"
@@ -60,6 +63,17 @@ export default {
 
 .earings {
   &-container {
+    .slot {
+      margin: 0 auto -3rem;
+      background-color: #fff;
+      text-align: center;
+      img {
+        width: 10rem;
+        height: 10rem;
+        padding-bottom: 3rem;
+        padding-top: 3rem;
+      }
+    }
     .list {
       .tools {
         .flex;
