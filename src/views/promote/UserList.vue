@@ -60,17 +60,19 @@ export default {
       incomeList: null,
       page: 1,
       rows: 10,
-      total: 0
+      total: 0,
+      spreadUserId: 0
     }
   },
   async created () {
+    const {spreadUserId} = this.$route.query
+    this.spreadUserId = spreadUserId
     await this.initData()
   },
   computed: {
   },
   methods: {
     showUserDetail (item) {
-      // {name:'promoteuserdetail', params: {...items}}
       this.$router.push({name: 'promoteuserdetail', query: {...item}})
       console.log('item', item)
     },
@@ -82,7 +84,7 @@ export default {
           endDate: '2018-01-31',
           page: this.page,
           rows: this.rows,
-          spreadUserId: 1
+          spreadUserId: this.spreadUserId
         })
         if (data.code === 200 && data.obj) {
           this.reduceData(data.obj)

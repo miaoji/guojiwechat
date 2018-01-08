@@ -12,7 +12,7 @@
           </div>
           <div v-show="isNoData">
             <p class="no-data">
-              暂时未产生收益~
+              暂未产生收益~
             </p>
           </div>
           <scroller
@@ -67,7 +67,6 @@ export default {
   async created () {
     const {spreadUserId} = this.$route.query
     this.spreadUserId = spreadUserId
-    this.spreadUserId = 1
     await this.initData()
   },
   computed: {

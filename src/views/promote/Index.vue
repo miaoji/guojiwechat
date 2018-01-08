@@ -53,21 +53,21 @@
             <cell
               title="用户管理"
               value=""
-              link="/promote/users"
+              :link="'/promote/users?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
             <cell
               title="提现记录"
               value=""
-              link="/promote/withdraw"
+              :link="'/promote/withdraw?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
             <cell
               title="推广设置"
               value="推送时间"
-              link="/promote/setting"
+              :link="'/promote/setting?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
@@ -76,7 +76,7 @@
       </div>
       <mj-spinner type="circle" slot="infinite-spinner"></mj-spinner>
     </scroller>
-    <router-link to="/promote/handlewithdraw">
+    <router-link :to="'/promote/handlewithdraw?spreadUserId=' + spreadUserId">
       <div class="withdraw">
         <span><img src="../../assets/images/promote/withdraw.png" alt="">申请提现</span>
       </div>

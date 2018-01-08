@@ -30,3 +30,12 @@ export async function getIncome (data) {
     data
   })
 }
+
+export async function createWithdraw (params) {
+  return request({
+    url: promoteApi.withdraw,
+    method: 'post',
+    auth: true,
+    params
+  })
+}

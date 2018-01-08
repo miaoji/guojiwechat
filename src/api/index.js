@@ -198,7 +198,8 @@ export const promote = {
   userinfo: url + 'api/spreadUser/getInfoByWxUserId',
   // ?spreadLevel = 2
   levelinfo: url + 'api/spreadLevel/getByLevel',
-  income: url + 'api/incomeRecord/index'
+  income: url + 'api/incomeRecord/index',
+  withdraw: url + 'api/withdrawalsRecord/add'
 }
 
 // 推广-用户管理

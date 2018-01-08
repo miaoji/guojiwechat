@@ -10,6 +10,21 @@ export const checkMobile = function (num, type) {
   return regFor.test(num) || regCN.test(num)
 }
 
+/**
+ * [js正则验证手机号 15位数字+'+'+'-']
+ * @param  {[String]} str  [传入的手机号]
+ * @return {[Boolean]}      [description]
+ */
+export const checkMobileForVux = function (str) {
+  const regFor = /^\+?\d{1,6}-?\d{8,15}$/
+  const regCN = /^1(3|4|5|6|7|8|9)\d{9}$/
+  const valid = regFor.test(str) || regCN.test(str)
+  return {
+    valid,
+    msg: valid ? '正确' : '请输入正确的手机号'
+  }
+}
+
 export const checkPostcode = function (num) {
   num = num.replace(/\s/g, '')
   // 邮编“数字”+“英文”+“-”共10位

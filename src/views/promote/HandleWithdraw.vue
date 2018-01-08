@@ -20,17 +20,23 @@
           v-model="mobile"
           :max="20"
           placeholder="请填写手机号" 
-          text-align="right"
+          textAlign="right"
           required
+          :isType="checkMobileForVux"
+          shouldToasterror
         ></x-input>
         <x-input
           title="提现金额"
           type="text"
           v-model="money"
-          placeholder="请填写提现金额" 
+          :placeholder="`可提现金额${totalIncome}元`"
           text-align="right"
           required
-        ></x-input>
+        >
+        </x-input>
+        <div class="tips-container">
+          <tips content="最低提现100元"></tips>
+        </div>
         <selector 
           title="提现方式" 
           v-model="withdrawType" 
@@ -38,18 +44,19 @@
           direction="rtl">
         </selector>
         <x-input
-          title="微信帐号"
+          :title="accountTitle"
           type="text"
-          v-model="account"
-          placeholder="请填写您的微信帐号" 
+          v-show="withdrawType"
+          v-model="accountNumber"
+          :placeholder="'请填写您的' + accountTitle" 
           text-align="right"
           required
         ></x-input>
       </group>
       <div class="submit">
         <div class="submit-btn">
-          <button 
-            :class="{'normal': rightData, 'disabled': !rightData}"
+          <button
+            :class="{'normal': canSubmit['res'], 'disabled': !canSubmit['res']}"
             @click.stop="submit"
           >
             提交
@@ -62,15 +69,22 @@
 
 <script>
 import { XInput, Selector } from 'vux'
+import { storage } from '@/utils'
+/* eslint-disable no-unused-vars */
+import { checkMobile } from '@/utils/reg'
+import Tips from '@/components/Tips'
+import { getUserinfo, createWithdraw } from '@/services/promote'
 
 export default {
   name: 'handlewithdraw',
   data () {
     return {
+      spreadUserId: 0,
+      totalIncome: 0,
       name: '',
       mobile: '',
-      money: 100,
-      withdrawType: 'wx',
+      money: null,
+      withdrawType: null,
       withdrawTypeOption: [{
         key: 'wx',
         value: '微信'
@@ -78,34 +92,157 @@ export default {
         key: 'alipay',
         value: '支付宝'
       }],
-      account: ''
+      accountNumber: '',
+      inLoading: false
     }
   },
   components: {
     XInput,
-    Selector
+    Selector,
+    Tips
   },
-  created () {
+  async created () {
+    await this.initData()
   },
   mounted () {
   },
   computed: {
-    rightData () {
-      if (this.money > 100) {
-        return true
+    accountTitle () {
+      const withdrawType = this.withdrawType
+      return withdrawType === 'wx' ? '微信帐号' : '支付宝帐号'
+    },
+    canSubmit () {
+      if (this.money < 100) {
+        return {
+          res: false,
+          msg: '最低提现100元'
+        }
       }
-      return false
+      if (!checkMobile(this.mobile)) {
+        return {
+          res: false,
+          msg: '手机号码格式不对'
+        }
+      }
+      if (!this.accountNumber) {
+        return {
+          res: false,
+          msg: '请填写收款帐号'
+        }
+      }
+      return {
+        res: true,
+        msg: '可以提交'
+      }
+    },
+    postData () {
+      return {
+        spreadUserId: this.spreadUserId,
+        trueName: this.name,
+        cash: this.money * 100,
+        mobile: this.mobile,
+        type: this.withdrawType === 'wx' ? 0 : 1,
+        accountNumber: this.accountNumber
+      }
     }
   },
   methods: {
-    submit () {
-      if (!this.rightData) {
+    async initData () {
+      try {
+        let wxUserId = storage({
+          type: 'get',
+          key: 'userId'
+        })
+        const res = await getUserinfo({wxUserId})
+        if (res.success && res.code === 200) {
+          const userData = res.obj
+          this.spreadUserId = userData.spreadUserId
+          this.totalIncome = userData.totalIncome ? Number(userData.totalIncome) : 0
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    checkMobileForVux (str) {
+      const regFor = /^\+?\d{1,6}-?\d{8,15}$/
+      const regCN = /^1(3|4|5|6|7|8|9)\d{9}$/
+      const valid = regFor.test(str) || regCN.test(str)
+      return {
+        valid,
+        msg: valid ? '正确' : '请输入正确的手机号'
+      }
+    },
+    async submit () {
+      if (this.inLoading) {
+        this.$vux.toast.show({
+          text: '正在提交，请稍后再试',
+          width: '18rem',
+          type: 'warn'
+        })
         return
       }
-      console.log('111')
+      if (!this.canSubmit['res']) {
+        this.$vux.toast.show({
+          text: this.canSubmit['msg'],
+          width: '20rem',
+          type: 'warn'
+        })
+        return
+      }
+      try {
+        this.inLoading = true
+        const postData = this.postData
+        const res = await createWithdraw({
+          ...postData
+        })
+        if (res.success && res.code === 200) {
+          this.$vux.toast.show({
+            text: '提现请求已提交',
+            width: '18rem',
+            type: 'success'
+          })
+          this.clearForm()
+          return
+        } else {
+          this.$vux.toast.show({
+            text: res.msg || '提交失败',
+            width: '18rem',
+            type: 'warn'
+          })
+          return
+        }
+      } catch (err) {
+        console.error(err)
+        this.$vux.toast.show({
+          text: err.message || '提交失败',
+          width: '18rem',
+          type: 'warn'
+        })
+      } finally {
+        this.inLoading = false
+      }
+    },
+    clearForm () {
+      this.name = ''
+      this.mobile = ''
+      this.money = 0
+      this.withdrawType = null
+      this.accountNumber = ''
     }
   },
   watch: {
+    money (val, oldval) {
+      // val = Number(val)
+      // if (val > this.totalIncome) {
+      //   this.$vux.toast.show({
+      //     text: '提现金额超出最大值',
+      //     width: '18rem',
+      //     type: 'warn'
+      //   })
+      //   this.money = this.totalIncome
+      //   return
+      // }
+    }
   },
   beforeDestroy () {
   }
