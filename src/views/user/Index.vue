@@ -123,7 +123,7 @@ export default {
         src: require('../../assets/images/promote/sales.png'),
         name: '我的推广',
         path: '/promote',
-        show: true
+        show: false
       }, {
         src: require('../../assets/images/coupon.png'),
         name: '我的卡包',
