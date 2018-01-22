@@ -25,7 +25,7 @@ import jyPng from '../assets/images/footer/nav_jiyun_nor.png'
 import acjyPng from '../assets/images/footer/nav_jiyun_che.png'
 
 export default {
-  name: 'footer',
+  name: 'mzfooter',
   props: {
     title: {
       type: String,

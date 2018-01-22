@@ -17,7 +17,7 @@
 <script>
 
 export default {
-  name: 'header',
+  name: 'feedheader',
   props: {
     title: {
       type: String,
