@@ -36,6 +36,7 @@ const promoteuserlist = r => require.ensure([], () => r(require('@/views/promote
 const promoteuserdetail = r => require.ensure([], () => r(require('@/views/promote/UserDetail')), 'promoteuserdetail')
 const promotewithdraw = r => require.ensure([], () => r(require('@/views/promote/Withdraw')), 'promotewithdraw')
 const promotehandlewithdraw = r => require.ensure([], () => r(require('@/views/promote/HandleWithdraw')), 'promotehandlewithdraw')
+const promotewithdrawdetail = r => require.ensure([], () => r(require('@/views/promote/WithdrawDetail')), 'promotewithdrawdetail')
 const promotesetting = r => require.ensure([], () => r(require('@/views/promote/Setting')), 'promotesetting')
 
 export default new Router({
@@ -285,6 +286,14 @@ export default new Router({
     component: promotewithdraw,
     meta: {
       intro: '提现记录',
+      requiresAuth: true
+    }
+  }, {
+    path: '/promote/withdraw/:withdrawId',
+    name: 'promotewithdrawdetail',
+    component: promotewithdrawdetail,
+    meta: {
+      intro: '提现详细',
       requiresAuth: true
     }
   }, {

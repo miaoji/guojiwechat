@@ -1,26 +1,48 @@
 <template>
   <div class="earings">
     <div class="earings-container">
-      <group label-width="11rem" label-align="left">
+      <group v-show="type === 'order'" label-width="11rem" label-align="left">
         <cell
-          title="下单人"
-          :value="detail.nickName"
+          title="收益类型"
+          :value="detail.event"
         ></cell>
         <cell
           title="订单类型"
-          :value="detail.type"
+          :value="detail.orderInfoType | ordertype"
+        ></cell>
+        <cell
+          title="订单编号"
+          :value="detail.orderNo"
         ></cell>
         <cell
           title="订单金额"
-          :value="detail.cashFee"
+          :value="detail.orderInfoCashFee | moneyshow"
         ></cell>
         <cell
           title="所得收益"
-          :value="detail.income"
+          :value="detail.income | moneyshow"
         ></cell>
         <cell
           title="下单时分润比例"
-          :value="detail.incomeRatio"
+          :value="(detail.incomeRatio * 100) + '%'"
+        ></cell>
+        <cell
+          title="下单时间"
+          :value="detail.createTime | formatedatestamp"
+        ></cell>
+      </group>
+      <group v-show="type === 'withdraw'" label-width="11rem" label-align="left">
+        <cell
+          title="收益类型"
+          :value="detail.event"
+        ></cell>
+        <cell
+          title="退回金额"
+          :value="detail.income | moneyshow"
+        ></cell>
+        <cell
+          title="退回时间"
+          :value="detail.createTime | formatedatestamp"
         ></cell>
       </group>
     </div>
@@ -40,6 +62,14 @@ export default {
     this.detail = this.$route.query
   },
   computed: {
+    type () {
+      let event = this.detail.event
+      if (event.indexOf('提') !== -1) {
+        return 'withdraw'
+      } else {
+        return 'order'
+      }
+    }
   },
   methods: {
   }

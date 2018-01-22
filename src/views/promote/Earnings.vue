@@ -42,6 +42,9 @@
                       <span class="time">{{iitem.day}}</span>
                     </div>
                   </template>
+                  <template slot="default">
+                    <span>￥{{iitem.income / 100}}</span>
+                  </template>
                 </cell>
               </group>
             </div>
@@ -123,16 +126,17 @@ export default {
           this.incomeList[yearMonth] = []
         }
         item.day = monthDay
-        this.incomeList[yearMonth].push(this.dealEarningItem(item))
+        this.incomeList[yearMonth].push(this.dealItem(item))
       }
     },
-    dealEarningItem (item) {
+    dealItem (item) {
       let res = {}
-      res.day = item.day
-      res.event = item.event
-      res.type = item.type
-      res.id = item.id
-      res.income = `￥${item.income / 100}`
+      res = item
+      if (item.orderInfo) {
+        let orderInfo = item.orderInfo
+        res.orderInfoCashFee = orderInfo.cashFee
+        res.orderInfoType = orderInfo.type
+      }
       return res
     },
     refresh (done) {

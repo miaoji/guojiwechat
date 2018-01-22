@@ -1,7 +1,7 @@
 <template>
   <div class="qrimage">
     <div class="qrimage-container">
-      <p>{{nickName}}的二维码</p>
+      <p>{{nickName}}的二维码(长按识别)</p>
       <img :src="qrSrc" alt="二维码">
     </div>
     <!-- 分享选择 -->

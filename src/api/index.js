@@ -199,7 +199,8 @@ export const promote = {
   // ?spreadLevel = 2
   levelinfo: url + 'api/spreadLevel/getByLevel',
   income: url + 'api/incomeRecord/index',
-  withdraw: url + 'api/withdrawalsRecord/add'
+  withdraw: url + 'api/withdrawalsRecord/add',
+  withdrawlist: url + 'api/withdrawalsRecord/index'
 }
 
 // 推广-用户管理

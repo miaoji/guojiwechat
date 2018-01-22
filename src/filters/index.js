@@ -282,3 +282,45 @@ export const bootstatus = function (val) {
   }
   return statusGroup[val]
 }
+
+export const withdrawtype = function (val) {
+  if (!val && val !== 0) {
+    return ''
+  }
+  const list = {
+    0: '微信',
+    1: '支付宝'
+  }
+  return list[val]
+}
+
+export const withdrawstatus = function (val) {
+  if (!val && val !== 0) {
+    return ''
+  }
+  const list = {
+    0: '待处理',
+    1: '成功',
+    2: '被拒绝'
+  }
+  return list[val]
+}
+
+export const ordertype = function (val) {
+  if (!val && val !== 0) {
+    return ''
+  }
+  const list = {
+    0: '直邮',
+    1: '集运'
+  }
+  return list[val]
+}
+
+export const moneyshow = function (val) {
+  if (!val && val !== 0) {
+    return ''
+  }
+  val = Number(val / 100).toFixed(2)
+  return `￥${val}`
+}

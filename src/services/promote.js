@@ -39,3 +39,12 @@ export async function createWithdraw (params) {
     params
   })
 }
+
+export async function getWithdrawList (data) {
+  return request({
+    url: promoteApi.withdrawlist,
+    method: 'get',
+    auth: true,
+    data
+  })
+}

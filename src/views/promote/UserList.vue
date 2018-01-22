@@ -29,7 +29,7 @@
               <cell
                 v-for="(items, index) in value" :key="index"
                 :title="items.nickName"
-                :value="'已产生收益￥' + items.totalAmount"
+                :value="'消费金额￥' + items.totalAmount"
                 @click.native="showUserDetail(items)"
                 link=""
                 is-link

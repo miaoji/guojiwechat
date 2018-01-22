@@ -5,6 +5,9 @@
         <img :src="userAvar" alt="用户背景">
       </div>
       <div class="usercenter-info__detail">
+        <div class="refresh-btn submit-btn" v-show="showRefresh">
+          <button type="" class="normal" @click.stop="refreshUser">刷新</button>
+        </div>
         <div class="usercenter-info__detail--image">
           <img :src="userAvar" alt="用户头像" @click="usershow = true">
         </div>
@@ -88,6 +91,13 @@ export default {
     },
     telHotline () {
       return 'tel:' + this.hotline
+    },
+    showRefresh () {
+      if (process.env.NODE_ENV !== 'production') {
+        return true
+      } else {
+        return false
+      }
     }
   },
   mounted () {
@@ -159,6 +169,14 @@ export default {
     },
     showDialog () {
       this.dialogshow = true
+    },
+    refreshUser () {
+      storage({
+        type: 'clear'
+      })
+      this.$router.push({
+        path: 'send'
+      })
     }
   }
 }
@@ -226,6 +244,11 @@ export default {
   padding-top: 4vh;
   padding-bottom: 4vh;
   min-height: 94vh;
+  .refresh-btn {
+    position: absolute;
+    top: 0;
+    right: 10px;
+  }
   &-info {
     margin: 0;
     padding: 0;
