@@ -46,7 +46,7 @@ import { storage } from '@/utils'
 import AddressItem from './components/Item'
 
 export default {
-  name: 'address',
+  name: 'mzaddress',
   components: {
     AddressItem
   },

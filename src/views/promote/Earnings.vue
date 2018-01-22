@@ -29,7 +29,8 @@
               <group label-align="left">
                 <cell
                   v-for="(iitem, index) in value" :key="index"
-                  :title="iitem.nickName"
+                  title=""
+                  v-show="iitem.type === 1"
                   :value="iitem.income"
                   @click.native="goDetailPage(iitem)"
                   link=""
@@ -37,7 +38,7 @@
                 >
                   <template slot="title">
                     <div class="earningitem">
-                      <span>{{iitem.type}}订单-by {{iitem.nickName}}</span>
+                      <span>{{iitem.event}}</span>
                       <span class="time">{{iitem.day}}</span>
                     </div>
                   </template>
@@ -128,12 +129,10 @@ export default {
     dealEarningItem (item) {
       let res = {}
       res.day = item.day
-      res.nickName = item.wxUser.nickName
-      res.type = item.orderInfo.type === 0 ? '直邮' : '集运'
-      res.income = `+￥${item.income / 100}`
-      res.orderNo = item.orderNo
-      res.cashFee = `￥${item.orderInfo.cashFee / 100}`
-      res.incomeRatio = `${item.incomeRatio * 100}%`
+      res.event = item.event
+      res.type = item.type
+      res.id = item.id
+      res.income = `￥${item.income / 100}`
       return res
     },
     refresh (done) {
@@ -155,7 +154,7 @@ export default {
     },
     goDetailPage (query) {
       this.$router.push({
-        path: `/promote/earnings/${query.orderNo}`,
+        path: `/promote/earnings/${query.id}`,
         query
       })
     },

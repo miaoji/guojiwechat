@@ -62,7 +62,7 @@
                     <span>中转地址</span>
                   </div>
                 </template>
-                <template slot="value">
+                <template slot="default">
                   <Load-toshow
                     title="中转地址"
                     :ajaxFunc="transferService"

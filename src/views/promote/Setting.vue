@@ -16,7 +16,7 @@
              <span>推送时间</span>
              <img class="question-icon" src="../../assets/images/question.png" @click.stop="pushRulesShow = true">
             </div>
-            <div slot="value">
+            <div slot="default">
             </div>
           </template>
         </cell>

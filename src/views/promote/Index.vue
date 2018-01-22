@@ -31,14 +31,22 @@
             </span>
           </div>
           <div class="divide-tips">
-            当前分润比例 
-            <span class="scale">{{ratio * 100}}%</span>
-            <span v-show="spreadUserType === 0">
+            当前分润比例
+            <span class="scale">一级{{ratio * 100}}%</span>
+            <span class="scale">，二级{{ratioSecond * 100}}%</span>
+            <span class="divide-tips--link" @click.stop="promotionruleShow = true">查看规则</span>
+          </div>
+          <div class="divide-tips">
+            月末分红等级-
+            <span class="scale">{{consumptionName}}</span>
+            ，比例
+            <span class="scale">一级{{consumptionRatio * 100}}%</span>
+            <span class="scale">，二级{{consumptionRatioSecond * 100}}%</span>
+            <span v-show="spreadConsumption">
               ，团队还需消费
               <span class="money">{{spreadConsumption / 100}}元</span>
               即可提升
             </span>
-            <span class="divide-tips--link" @click.stop="promotionruleShow = true">查看规则</span>
           </div>
         </div>
         <div class="junior">
@@ -88,7 +96,7 @@
         <span class="vux-close"></span>
       </div>
       <div class="package-prompt-info">
-        分润比例初始一般为1%，当团队累计消费金额达到一定额度便会提升，每次提升金额都会增加。最高不超过100%。
+        分润比例为一级分润8%，二级分润5%不可改变。分红等级可变，当团队累计消费金额达到一定额度时分红等级便会提升，每次提升月末分红金额都会增加。最高不超过100%。
       </div>
     </x-dialog>
   </div>
@@ -106,11 +114,18 @@ export default {
   data () {
     return {
       ratio: 0,
+      ratioSecond: 0,
+      consumptionName: '',
+      consumptionRatio: 0,
+      consumptionRatioSecond: 0,
       netIncome: 0,
+      // 昨日收益
       yesterdayIncome: 0,
       qrTicket: '',
-      spreadUserType: 0,
+      // 团队累计收益
+      consumeTeam: 0,
       spreadUserId: 0,
+      // 下个等级所需消费金额
       spreadConsumption: 0,
       totalIncome: 0,
       shareChooseShow: false,
@@ -149,19 +164,19 @@ export default {
         const res = await getUserinfo({wxUserId})
         if (res.success && res.code === 200) {
           const userData = res.obj
-          let {spreadUserType, spreadLevelId} = userData
-          spreadUserType = Number(spreadUserType)
-          if (spreadUserType === 0) {
-            this.ratio = userData.consumptionRatio
-            spreadLevelId = Number(spreadLevelId) + 1
-            this.checkLevelMoney(spreadLevelId)
-          } else {
-            this.ratio = userData.spreadUserRatio
-          }
-          this.spreadUserType = spreadUserType
+          let {spreadLevel} = userData
+          this.ratio = userData.consumptionRatio
+          spreadLevel = Number(spreadLevel) + 1
+          this.checkLevelMoney(spreadLevel)
+          this.ratio = userData.spreadUserRatio
+          this.ratioSecond = userData.spreadUserRatioSecond
+          this.consumptionName = userData.spreadName
+          this.consumptionRatio = userData.consumptionRatio
+          this.consumptionRatioSecond = userData.consumptionRatioSecond
           this.nickName = userData.nickName
           this.spreadUserId = userData.spreadUserId
           this.netIncome = userData.netIncome
+          this.consumeTeam = userData.consumeTeam
           this.totalIncome = userData.totalIncome
           this.yesterdayIncome = userData.yesterdayIncome
           this.qrTicket = userData.qrTicket
@@ -179,7 +194,7 @@ export default {
       try {
         const res = await getLevelInfo({spreadLevel: level})
         const { spreadConsumption } = res.obj
-        this.spreadConsumption = spreadConsumption
+        this.spreadConsumption = (spreadConsumption - this.consumeTeam) || 0
       } catch (err) {
         console.error(err)
       }

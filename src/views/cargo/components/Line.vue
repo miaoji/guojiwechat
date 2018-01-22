@@ -8,7 +8,7 @@
 <script>
 
 export default {
-  name: 'line',
+  name: 'mzline',
   props: {
   }
 }

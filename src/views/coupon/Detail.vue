@@ -36,8 +36,10 @@
             <span class="vux-close"></span>
           </div>
           <div class="package-info">
-            <p>消费满{{detailData.coupon_minimum / 100}}元使用</p>
-            <p>每次下单最多使用一张</p>
+            <p>本券可用于冲抵直邮或集运运费，消费满{{detailData.coupon_minimum / 100 || 17}}元即可使用。</p>
+            <p>每次下单限用一张，不可叠加使用。寄件须知请参考：微信公众号->个人中心->新手指南，也可以直接下载
+              <a href="http://www.mingz-tech.com/新手指南.png">新手指南.png</a>
+            </p>
           </div>
         </x-dialog>
       </div>

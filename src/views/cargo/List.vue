@@ -33,7 +33,7 @@
           ref="my_scroller_cargolist"
           class="cargolist-scroller">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="cargolist-cell-detail" v-for="item in cargolist" :key="item.id" v-show="isShow(item.status, item.parentId)">
+          <div class="cargolist-cell-detail" v-for="item, index in cargolist" :key="index" v-show="isShow(item.status, item.parentId)">
             <list-item
               :item="item"
             >
