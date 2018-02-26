@@ -8,7 +8,7 @@
           <div class="send-list">
             <div class="send-list--intro">
               <img slot="icon" class="order-icon" src="../../assets/images/send_list_icon.png" />
-              <span>直邮列表</span>
+              <span>{{'send.title' | translate}}</span>
             </div>
             <div class="send-icon">
               <img slot="icon" src="../../assets/images/sen_ico_lis.png" />
@@ -23,11 +23,11 @@
         <div class="send-container-address">
           <div class="common-padding">
             <div class="send-container-address__intro address-icon">
-              <span class="bgblack">寄</span>
+              <span class="bgblack">{{'send.sendS' | translate}}</span>
             </div>
             <div class="send-container-address__info">
               <div v-show="!sendAddress['name']" style="line-height: 3rem;">
-                点击选择地址
+                {{'send.selectaddress' | translate}}
               </div>
               <div v-show="sendAddress['name']" class="send-container-address__info--line">
                 <div>
@@ -54,11 +54,11 @@
         <div class="send-container-address">
           <div class="common-padding">
             <div class="send-container-address__intro  address-icon">
-              <span class="bgred">收</span>
+              <span class="bgred">{{'send.pickS' | translate}}</span>
             </div>
             <div class="send-container-address__info">
               <div v-show="!pickupAddress['name']" style="line-height: 3rem;">
-                点击选择地址
+                {{'send.selectaddress' | translate}}
               </div>
               <div v-show="pickupAddress['name']" class="send-container-address__info--line">
                 <div>
@@ -83,8 +83,8 @@
         <group label-width="8rem" label-align="left">
           <!-- 包裹和产品类型选择，两者为级联关系 -->
           <package-product
-            title="产品类型"
-            placeholder="请选择产品类型"
+            :title="'send.producttype' | translate"
+            :placeholder="'send.selectproducttype' | translate"
             :countryId="pickupCountryId"
             :defaultSelect="packageProductCache"
             @listenValChange="onProductChange"
@@ -95,7 +95,7 @@
             @click.native="dialogshow = true"
             :class="{'office': true, 'isFilled': orderOptions.weight}"
             type="number"
-            title="产品规格"
+            :title="'send.productspecification' | translate"
             :value="showProductSpecs"
             is-link
           >
@@ -103,8 +103,8 @@
           <selector
             direction="rtl"
             v-model="isOffer"
-            placeholder="是否保价"
-            title="是否保价"
+            :title="'send.isoffer' | translate"
+            :placeholder="'send.isoffer' | translate"
             name="isoffer"
             :options="isOfferOption"
             @on-change="isofferShowChange"
@@ -139,9 +139,9 @@
           </div>
           <x-textarea
             type="text"
-            title="备注"
+            :title="'remark' | translate"
+            :placeholder="'send.remarktips' | translate"
             :max="120"
-            placeholder="请添加备注 (限120字)"
             :show-counter="false"
             v-model="remark"
             :rows="1"
@@ -153,29 +153,29 @@
       </div>
       <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
       <!-- 订单包裹展示 -->
-      <p  class="intro-p">包裹报关</p>
+      <p  class="intro-p">{{'send.packagedetail' | translate}}</p>
       <div class="send-container-package">
         <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__title">
             <div class="question-icon" @click.stop='packagePromptInfoShow = true'>
               <span>
-                包裹报关
+                {{'send.packagedetail' | translate}}
               </span>
               <img src="../../assets/images/question.png" />
             </div>
             <div @click="handlePackageShow">
-              <button type="" class="pay" >点击添加</button>
+              <button type="" class="pay" >{{'clicktoadd' | translate}}</button>
             </div>
           </div>
           <div class="packages__table">
             <table>
               <thead>
                 <tr>
-                  <th>中文品名</th>
-                  <th>数量</th>
-                  <th>单价/元</th>
-                  <th>价值/元</th>
+                  <th>{{'send.chinesename' | translate}}</th>
+                  <th>{{'number' | translate}}</th>
+                  <th>{{'price' | translate}}/{{'rmb' | translate}}</th>
+                  <th>{{'value' | translate}}/{{'rmb' | translate}}</th>
                 </tr>
               </thead>
               <tbody class="package-table">
@@ -193,8 +193,8 @@
                     {{item['quantity']*item['unitPrice']}}
                   </td>
                   <td class="tools">
-                    <button type="" class="pay" @click="delTableItem(index)">删除</button>
-                    <button type="" class="pay" @click="editTableItem(item, index)">编辑</button>
+                    <button type="" class="pay" @click="delTableItem(index)">{{'delete' | translate}}</button>
+                    <button type="" class="pay" @click="editTableItem(item, index)">{{'edit' | translate}}</button>
                   </td>
                 </tr>
               </tbody>
@@ -270,8 +270,8 @@
             <tips content="单次寄件最多可包含三个包裹，超过三个请分批次寄件"></tips>
           </div>
           <div class="send-package-dialog-form__confrim">
-            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">保存</button>
-            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
+            <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">{{'save' | translate}}</button>
+            <button type="" class="send-package-dialog-form__confrim--cancle" @click="addPackge(false)">{{'add' | translate}}</button>
           </div>
         </div>
       </x-dialog>
@@ -511,6 +511,7 @@ export default {
   },
   async created () {
     try {
+      window.scrollTo(0, 0)
       this.$store.commit('SET_PAGE', {page: 'send'})
       this.$vux.loading.show()
       await wxUtil.init()
@@ -549,17 +550,18 @@ export default {
   computed: {
     ...mapGetters({
       sendadd: 'getSendAdd',
-      user: 'getUserInfo',
       userid: 'getUserId'
     }),
     showProductSpecs () {
       const options = this.orderOptions
       if (Number(options.weight) === 0 || !options.weight || Number(options.volume) === 0 || !options.volume) {
-        return '请填入重量和体积'
+        return this.$i18n.translate('send.selectproductspecification')
       }
       let weight = options.weight
       let volumeWeight = options.volumeWeight
-      return `重量${weight}kg，体积重${volumeWeight}`
+      const textWeight = this.$i18n.translate('weight')
+      const textVolumeweight = this.$i18n.translate('volumeweight')
+      return `${textWeight}${weight}kg，${textVolumeweight}${volumeWeight}`
     },
     advanceShow () {
       if (!this.advanceStatus['status']) {
@@ -594,7 +596,7 @@ export default {
       try {
         const storageKey = type === 'send' ? 'send_sendaddress' : 'send_pickupaddress'
         const apiService = type === 'send' ? mailingAddrService.show : receiveAddrService.show
-        const addressData = await getAddressUtil({type, storageKey, apiService})
+        const addressData = await getAddressUtil({type, storageKey, apiService, userid: this.userid})
         this[`${type}Address`] = addressData
       } catch (e) {
         console.error(e)
@@ -862,7 +864,7 @@ export default {
         const orderOptions = this.orderOptions
         const result = await orderInfoService.save({
           ...orderOptions,
-          wxUserId: storage({key: 'userId'}),
+          wxUserId: this.userid,
           mailingAddrId: this.sendAddress['id'],
           receiveAddrId: this.pickupAddress['id'],
           returnGood: this.isBack,

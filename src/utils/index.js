@@ -211,7 +211,7 @@ function getRating (rating) {
  * @param  {[Func]} options.apiService [api方法]
  * @return {[Object]}                    [description]
  */
-async function getAddress ({type, storageKey, apiService}) {
+async function getAddress ({type, storageKey, apiService, userid}) {
   try {
     const Local = JSON.parse(storage({key: storageKey}))
     let addrId = ''
@@ -220,9 +220,7 @@ async function getAddress ({type, storageKey, apiService}) {
     } else {
       // 如果local为空，则选择默认的地址
       const defaultAdrrRes = await getDefaultAddr({
-        WxUserId: storage({
-          key: 'userId'
-        })
+        WxUserId: userid
       })
       if (defaultAdrrRes.code === 200 && defaultAdrrRes.obj) {
         let defaultAdrr = defaultAdrrRes.obj

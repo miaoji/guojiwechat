@@ -4,35 +4,17 @@ import { storage } from '@/utils'
 import * as types from '../mutation-types'
 
 export const state = {
-  userId: null,
-  mobile: '',
-  nickname: '',
-  headimgurl: '',
+  userinfo: {},
   openid: '',
   smscode: ''
 }
 
 export const getters = {
   getUserId: state => {
-    const userId = storage({key: 'userId'}) || ''
+    const userId = state.userinfo.id || ''
     return userId
   },
-  getUserInfo: state => {
-    const headimgurl = storage({key: 'headimgurl'}) || ''
-    const mobile = storage({key: 'mobile'}) || ''
-    const nickname = storage({key: 'nickname'}) || ''
-    const subscribe = storage({key: 'subscribe'}) || ''
-    return {
-      headimgurl,
-      mobile,
-      nickname,
-      subscribe
-    }
-  },
-  getOpenId: state => {
-    const openid = storage({key: 'openid'}) || ''
-    return openid
-  },
+  getUserInfo: state => state.userinfo,
   getSmsCode: state => state.smscode
 }
 
@@ -51,16 +33,13 @@ export const actions = {
         type: 0
       })
       if (res.statusCode === 200) {
-        let user = res.user
-        commit(types.SET_USERINFO, {
-          token: res.token,
-          userId: user.id,
-          mobile: user.mobile,
-          headimgurl: user.headimgurl,
-          nickname: user.nickName,
-          customerNo: user.customerNo,
-          subscribe: user.subscribe
+        storage({
+          type: 'set',
+          key: 'token',
+          val: res.token
         })
+        let userinfo = res.user
+        commit(types.SET_USERINFO, {userinfo})
         return {
           text: '获取用户信息成功',
           width: '15rem',
@@ -189,22 +168,8 @@ export const actions = {
 }
 
 export const mutations = {
-  [types.SET_USERINFO] (state, {
-    token = storage({key: 'token'}),
-    userId = storage({key: 'userId'}),
-    mobile = storage({key: 'mobile'}),
-    nickname = storage({key: 'nickname'}),
-    headimgurl = storage({key: 'headimgurl'}),
-    customerNo = storage({key: 'customerNo'}),
-    subscribe = storage({key: 'subscribe'})
-  }) {
-    storage({key: 'token', val: token, type: 'set'})
-    storage({key: 'userId', val: userId, type: 'set'})
-    storage({key: 'mobile', val: mobile, type: 'set'})
-    storage({key: 'nickname', val: nickname, type: 'set'})
-    storage({key: 'headimgurl', val: headimgurl, type: 'set'})
-    storage({key: 'customerNo', val: customerNo, type: 'set'})
-    storage({key: 'subscribe', val: subscribe, type: 'set'})
+  [types.SET_USERINFO] (state, {userinfo}) {
+    state.userinfo = userinfo
   },
   [types.SET_OPENID] (state, { openid }) {
     state.openid = openid

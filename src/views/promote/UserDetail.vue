@@ -11,7 +11,7 @@
         ></cell>
         <cell
           title="消费金额"
-          :value="'￥' + userInfo.totalAmount"
+          :value="'￥' + userInfo.totalAmount / 100"
         ></cell>
         <cell
           title="分润金额"

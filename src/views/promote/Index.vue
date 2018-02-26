@@ -32,16 +32,16 @@
           </div>
           <div class="divide-tips">
             当前分润比例
-            <span class="scale">一级{{ratio * 100}}%</span>
-            <span class="scale">，二级{{ratioSecond * 100}}%</span>
+            <span class="scale">一级{{ratio}}%</span>
+            <span class="scale">，二级{{ratioSecond}}%</span>
             <span class="divide-tips--link" @click.stop="promotionruleShow = true">查看规则</span>
           </div>
           <div class="divide-tips">
             月末分红等级-
             <span class="scale">{{consumptionName}}</span>
             ，比例
-            <span class="scale">一级{{consumptionRatio * 100}}%</span>
-            <span class="scale">，二级{{consumptionRatioSecond * 100}}%</span>
+            <span class="scale">一级{{consumptionRatio}}%</span>
+            <span class="scale">，二级{{consumptionRatioSecond}}%</span>
             <span v-show="spreadConsumption">
               ，团队还需消费
               <span class="money">{{spreadConsumption / 100}}元</span>
@@ -75,6 +75,7 @@
             <cell
               title="推广设置"
               value="推送时间"
+              v-show="false"
               :link="'/promote/setting?spreadUserId=' + spreadUserId"
               is-link
             >
@@ -103,7 +104,7 @@
 </template>
 
 <script>
-import { storage } from '@/utils'
+import { mapGetters } from 'vuex'
 import { init } from '@/utils/wx'
 import { XDialog } from 'vux'
 import Tips from '@/components/Tips'
@@ -143,6 +144,9 @@ export default {
   mounted () {
   },
   computed: {
+    ...mapGetters({
+      userid: 'getUserId'
+    }),
     yesterdayIncomeShow () {
       return `￥${this.yesterdayIncome / 100 || 0}`
     },
@@ -157,10 +161,7 @@ export default {
   methods: {
     async initUserData () {
       try {
-        let wxUserId = storage({
-          type: 'get',
-          key: 'userId'
-        })
+        let wxUserId = this.userid
         const res = await getUserinfo({wxUserId})
         if (res.success && res.code === 200) {
           const userData = res.obj
@@ -168,11 +169,11 @@ export default {
           this.ratio = userData.consumptionRatio
           spreadLevel = Number(spreadLevel) + 1
           this.checkLevelMoney(spreadLevel)
-          this.ratio = userData.spreadUserRatio
-          this.ratioSecond = userData.spreadUserRatioSecond
+          this.ratio = Number(userData.spreadUserRatio * 100).toFixed(2)
+          this.ratioSecond = Number(userData.spreadUserRatioSecond * 100).toFixed(2)
           this.consumptionName = userData.spreadName
-          this.consumptionRatio = userData.consumptionRatio
-          this.consumptionRatioSecond = userData.consumptionRatioSecond
+          this.consumptionRatio = Number(userData.consumptionRatio * 100).toFixed(2)
+          this.consumptionRatioSecond = Number(userData.consumptionRatioSecond * 100).toFixed(2)
           this.nickName = userData.nickName
           this.spreadUserId = userData.spreadUserId
           this.netIncome = userData.netIncome

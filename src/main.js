@@ -3,12 +3,15 @@
 import Vue from 'vue'
 import FastClick from 'fastclick'
 import VueScroller from 'vue-scroller'
+import vuexI18n from 'vuex-i18n'
 import { Group, Cell, ConfirmPlugin, Tab, TabItem, ToastPlugin, LoadingPlugin, DatetimePlugin } from 'vux'
 import { storage } from '@/utils'
 import router from '@/router'
 import store from '@/store'
 import App from '@/App'
 import * as filters from '@/filters'
+import translationsZhcn from '@/assets/language/zh-cn'
+import translationsEn from '@/assets/language/en'
 import MJSpinner from '@/components/MJSpinner.vue'
 
 Vue.config.productionTip = false
@@ -21,6 +24,17 @@ Vue.use(ConfirmPlugin)
 Vue.use(DatetimePlugin)
 Vue.use(LoadingPlugin)
 Vue.use(ToastPlugin)
+Vue.use(vuexI18n.plugin, store, {
+  moduleName: 'i18n',
+  onTranslationNotFound (locale, key) {
+    switch (key) {
+      case '200':
+        return 'Everything went fine'
+      default:
+        return 'There was a problem'
+    }
+  }
+})
 
 Vue.component('group', Group)
 Vue.component('cell', Cell)
@@ -28,20 +42,27 @@ Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-spinner', MJSpinner)
 
-router.beforeEach(function (to, from, next) {
+router.beforeEach(async function (to, from, next) {
   // 开发环境跳过验证登录码是否过期
-  if (process.env.NODE_ENV === 'development') {
-    return next()
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   return next()
+  // }
   // login auth
   if (to.matched.some(record => record.meta.requiresAuth)) {
     const openid = storage({key: 'openid'})
     const unionid = storage({key: 'unionid'})
-    const userid = storage({key: 'userId'})
     const token = storage({key: 'token'})
+    const userid = store.state.user.userinfo.id
     // openid、userid、token等参数都存在，则直接进入页面
     if (openid && userid && token && unionid) {
       return next()
+    }
+    // 如果用户未登录，本地中有openid和unionid，则自动登录
+    if (!userid) {
+      const userres = await store.dispatch('setUserInfo', {openid, unionid})
+      if (userres.type === 'success') {
+        return next()
+      }
     }
     storage({
       type: 'clear'
@@ -74,6 +95,12 @@ router.afterEach((to, from) => {
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
+
+Vue.i18n.add('en', translationsEn)
+Vue.i18n.add('zh-cn', translationsZhcn)
+
+Vue.i18n.set('zh-cn')
+// Vue.i18n.set('en')
 
 /* eslint-disable no-new */
 window.wxvue = new Vue({

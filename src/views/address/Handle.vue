@@ -9,7 +9,7 @@
           title="联系人"
           type="text"
           v-model="name"
-          :max="20"
+          :max="50"
           placeholder="请填写您的真实姓名" 
           text-align="right"
           required

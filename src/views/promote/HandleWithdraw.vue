@@ -29,7 +29,7 @@
           title="提现金额"
           type="text"
           v-model="money"
-          :placeholder="`可提现金额${totalIncome}元`"
+          :placeholder="`可提现金额${netIncome}元`"
           text-align="right"
           required
         >
@@ -69,7 +69,7 @@
 
 <script>
 import { XInput, Selector } from 'vux'
-import { storage } from '@/utils'
+import { mapGetters } from 'vuex'
 /* eslint-disable no-unused-vars */
 import { checkMobile } from '@/utils/reg'
 import Tips from '@/components/Tips'
@@ -80,7 +80,7 @@ export default {
   data () {
     return {
       spreadUserId: 0,
-      totalIncome: 0,
+      netIncome: 0,
       name: '',
       mobile: '',
       money: null,
@@ -107,6 +107,9 @@ export default {
   mounted () {
   },
   computed: {
+    ...mapGetters({
+      userid: 'getUserId'
+    }),
     accountTitle () {
       const withdrawType = this.withdrawType
       return withdrawType === 'wx' ? '微信帐号' : '支付宝帐号'
@@ -149,15 +152,13 @@ export default {
   methods: {
     async initData () {
       try {
-        let wxUserId = storage({
-          type: 'get',
-          key: 'userId'
-        })
+        const wxUserId = this.userid
         const res = await getUserinfo({wxUserId})
         if (res.success && res.code === 200) {
           const userData = res.obj
           this.spreadUserId = userData.spreadUserId
-          this.totalIncome = userData.totalIncome ? Number(userData.totalIncome) : 0
+          this.netIncome = userData.netIncome ? Number(userData.netIncome) : 0
+          this.netIncome = Number(this.netIncome / 100).toFixed(2)
         }
       } catch (err) {
         console.error(err)
@@ -201,7 +202,12 @@ export default {
             width: '18rem',
             type: 'success'
           })
-          this.clearForm()
+          this.$router.push({
+            path: '/promote/withdraw',
+            query: {
+              spreadUserId: this.spreadUserId
+            }
+          })
           return
         } else {
           this.$vux.toast.show({
@@ -232,16 +238,6 @@ export default {
   },
   watch: {
     money (val, oldval) {
-      // val = Number(val)
-      // if (val > this.totalIncome) {
-      //   this.$vux.toast.show({
-      //     text: '提现金额超出最大值',
-      //     width: '18rem',
-      //     type: 'warn'
-      //   })
-      //   this.money = this.totalIncome
-      //   return
-      // }
     }
   },
   beforeDestroy () {

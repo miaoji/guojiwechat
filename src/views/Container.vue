@@ -18,48 +18,18 @@ export default {
     if (process.env.NODE_ENV === 'development') {
       storage({
         type: 'set',
-        key: 'headimgurl',
-        val: '//wx.qlogo.cn/mmopen/x9caeaMpHoWcicDmIZs0Ovicuibe1H0icp57ndKcmv4Rz0xB6khyCeSbN3miagPMuyHpia1JHraN9btZDAZibEBlaKJKkYiaGnDjic0Gic/0'
-      })
-      storage({
-        type: 'set',
-        key: 'nickname',
-        val: '塞尔达'
-      })
-      storage({
-        type: 'set',
-        key: 'customerNo',
-        val: 'MZA10235400'
-      })
-      storage({
-        type: 'set',
         key: 'openid',
-        val: 'oPg2ZwgwuALccM_V8UIW4qmhkOwo'
+        val: 'osdH7vw74PjKl4x8jvxplraC-tiE'
       })
       storage({
         type: 'set',
-        key: 'mobile',
-        val: ''
-      })
-      storage({
-        type: 'set',
-        key: 'mobile',
-        val: ''
-      })
-      storage({
-        type: 'set',
-        key: 'subscribe',
-        val: '1'
-      })
-      storage({
-        type: 'set',
-        key: 'userId',
-        val: '212'
+        key: 'unionid',
+        val: 'ofgJC0pki0DBx7apxj1JObf7AUro'
       })
       storage({
         type: 'set',
         key: 'token',
-        val: 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTE2NTg0OTUxMjc2LCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.iNOERApCDxDRVa3LDbDZ1H8zEo5bCc-h7SSo6yhPdHI'
+        val: 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTE5NjMxNzkxMDM4LCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.mS8r8vp493ZKFXAMaF4KtASoAVPmvz9U3zKJRLqpMj8'
       })
       return
     }

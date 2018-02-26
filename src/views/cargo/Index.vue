@@ -53,7 +53,7 @@
             <group label-width="6rem" label-align="left">
               <cell
                 title="客户编号"
-                :value="customerNo"
+                :value="userinfo.customerNo"
               >
               </cell>
               <cell>
@@ -236,7 +236,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { Selector, XInput, PopupPicker, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import JagContainer from '@/components/JagContainer'
 import Tips from '@/components/Tips'
@@ -312,7 +312,6 @@ export default {
         city: '',
         county: ''
       },
-      customerNo: '',
       pickupId: null,
       packageTable: [],
       newPackage: {
@@ -339,6 +338,7 @@ export default {
   },
   async created () {
     try {
+      window.scrollTo(0, 0)
       this.$vux.loading.show()
       // 创建时将SET_PAGE创建为consolidation
       this.$store.commit('SET_PAGE', {page: 'cargo'})
@@ -353,9 +353,6 @@ export default {
       setTimeout(function () {
         bindSwiper('.packageitem tr', 'swipeleft')
       }, 500)
-      this.customerNo = storage({
-        key: 'customerNo'
-      })
     } catch (e) {
       console.error(e)
     } finally {
@@ -363,6 +360,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      userid: 'getUserId',
+      userinfo: 'getUserInfo'
+    }),
     transferService () {
       return transferAddrService.query
     },
@@ -371,7 +372,7 @@ export default {
         const transferRes = this.transferRes
         let res = transferRes['obj'][0]
         res = [
-          (res['provinces']['province'] + res['cities']['city'] + res['districts']['district'] + res['transferAddress'] + this.customerNo),
+          (res['provinces']['province'] + res['cities']['city'] + res['districts']['district'] + res['transferAddress'] + this.userinfo['customerNo']),
           res['transferName'],
           res['transferMobile']
         ]
@@ -389,9 +390,7 @@ export default {
         return {
           ...elem,
           type: 1,
-          wxUserId: storage({
-            key: 'userId'
-          }),
+          wxUserId: _this.userid,
           receiverCountry: _this.pickupAddress['country']
         }
       })
@@ -414,7 +413,8 @@ export default {
         const pickupAddress = await getAddress({
           type: 'pickup',
           storageKey: 'cargo_pickupaddress',
-          apiService: receiveAddrService.show
+          apiService: receiveAddrService.show,
+          userid: this.userid
         })
         if (pickupAddress) {
           this.pickupAddress = pickupAddress

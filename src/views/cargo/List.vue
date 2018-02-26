@@ -69,7 +69,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      'cargolistData': 'getCargoList'
+      'cargolistData': 'getCargoList',
+      userid: 'getUserId'
     }),
     cargolist () {
       return this.cargolistData.data || []
@@ -141,10 +142,7 @@ export default {
       try {
         const res = await count({
           type: 1,
-          wxUserId: storage({
-            type: 'get',
-            key: 'userId'
-          })
+          wxUserId: this.userid
         })
         if (res.code === 200) {
           this.countData = res.obj

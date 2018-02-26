@@ -1,7 +1,6 @@
 import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as geographyService from '@/services/geography'
-import { storage } from '../../utils'
 
 import * as types from '../mutation-types'
 
@@ -23,11 +22,9 @@ export const actions = {
    * @param  {[type]} options.commit [description]
    * @return {[type]}                [description]
    */
-  async changeAddress ({ commit }) {
+  async changeAddress ({ commit, rootGetters }) {
     try {
-      const userId = storage({
-        key: 'userId'
-      })
+      const userId = rootGetters.getUserId
       const send = await mailingAddrService.query({
         wxUserId: userId
       })
@@ -69,11 +66,9 @@ export const actions = {
    * @param {[type]} options.data      [添加的数据]
    * @param {Number} options.type      [判断是添加寄件/收件地址]
    */
-  async addAddress ({commit, dispatch}, {data = {}, type = 1}) {
+  async addAddress ({commit, dispatch, rootGetters}, {data = {}, type = 1}) {
     try {
-      const userId = storage({
-        key: 'userId'
-      })
+      const userId = rootGetters.getUserId
       data['wxUserId'] = userId
       let service = type === 1 ? mailingAddrService.save : receiveAddrService.save
       const res = await service(data)
@@ -106,10 +101,10 @@ export const actions = {
    * @param  {Number} options.type     [description]
    * @return {[type]}                  [description]
    */
-  async updateAddress ({dispatch}, {data, type = 1}) {
+  async updateAddress ({dispatch, rootGetters}, {data, type = 1}) {
     try {
       if (!data.wxUserId) {
-        data.wxUserId = storage({key: 'userId'})
+        data.wxUserId = rootGetters.getUserId
       }
       let service = type === 1 ? mailingAddrService.update : receiveAddrService.update
       const res = await service(data)

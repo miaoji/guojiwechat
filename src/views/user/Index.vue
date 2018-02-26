@@ -2,7 +2,7 @@
   <div class="usercenter">
     <div class="usercenter-info">
       <div class="usercenter-info__container">
-        <img :src="userAvar" alt="用户背景">
+        <img :src="userinfo.headimgurl" alt="用户背景">
       </div>
       <div class="usercenter-info__detail">
         <div class="refresh-btn submit-btn" v-show="showRefresh">
@@ -11,7 +11,7 @@
         <div class="usercenter-info__detail--image">
           <img :src="userAvar" alt="用户头像" @click="usershow = true">
         </div>
-        <p>{{nickname}}</p>
+        <p>{{userinfo.nickName}}</p>
       </div>
     </div>
     <div class="usercenter-orderfunc">
@@ -47,9 +47,9 @@
         <div class="img-box" :style="'background-image:url(' + userAvar + ')'">
         </div>
         <div class="user-info">
-          <p>微信昵称: {{nickname}}</p>
-          <p>手机号: {{mobile || '未绑定手机号'}} 
-            <span v-show="!mobile">
+          <p>微信昵称: {{userinfo.nickName}}</p>
+          <p>手机号: {{userinfo.mobile || '未绑定手机号'}} 
+            <span v-show="!userinfo.mobile">
               <router-link to="/bindphone">
                 点击此处绑定
               </router-link>
@@ -64,20 +64,20 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
 import { storage } from '@/utils'
 import { hotline } from '@/utils/config'
 import logoPng from '@/assets/images/logo.jpg'
+import { getUserinfo as getSpreadUserinfo } from '@/services/promote'
 
 export default {
   name: 'usercenter',
   async created () {
     this.$store.commit('SET_PAGE', {page: 'usercenter'})
     this.hotline = hotline
-    this.headImgUrl = storage({key: 'headimgurl'}) || ''
-    this.nickname = storage({key: 'nickname'}) || '未知用户'
-    this.mobile = storage({key: 'mobile'})
     this.logoPng = logoPng
+    this.getSpreadUser()
   },
   directives: {
     TransferDom
@@ -86,8 +86,12 @@ export default {
     XDialog
   },
   computed: {
+    ...mapGetters({
+      userinfo: 'getUserInfo',
+      userid: 'getUserId'
+    }),
     userAvar () {
-      return this.headImgUrl || this.logoPng
+      return this.userinfo.headimgurl || this.logoPng
     },
     telHotline () {
       return 'tel:' + this.hotline
@@ -98,18 +102,9 @@ export default {
       } else {
         return false
       }
-    }
-  },
-  mounted () {
-  },
-  data () {
-    return {
-      usershow: false,
-      isShow: false,
-      headImgUrl: '',
-      nickname: '',
-      mobile: '',
-      orderfunc: [{
+    },
+    orderfunc () {
+      return [{
         src: require('../../assets/images/min_ico_add.png'),
         name: '地址管理',
         path: '/address',
@@ -133,7 +128,7 @@ export default {
         src: require('../../assets/images/promote/sales.png'),
         name: '我的推广',
         path: '/promote',
-        show: true
+        show: (this.spreadUserId !== null)
       }, {
         src: require('../../assets/images/coupon.png'),
         name: '我的卡包',
@@ -143,7 +138,16 @@ export default {
         src: require('../../assets/images/min_ico_rea.png'),
         name: '实名认证',
         show: false
-      }],
+      }]
+    }
+  },
+  mounted () {
+  },
+  data () {
+    return {
+      usershow: false,
+      isShow: false,
+      spreadUserId: null,
       isReresh: false,
       dialogshow: false
     }
@@ -177,6 +181,19 @@ export default {
       this.$router.push({
         path: 'send'
       })
+    },
+    async getSpreadUser () {
+      try {
+        let wxUserId = this.userid
+        const res = await getSpreadUserinfo({wxUserId})
+        if (res.success && res.code === 200) {
+          const userData = res.obj
+          this.spreadUserId = userData.spreadUserId
+          console.log('12', this.spreadUserId)
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 }

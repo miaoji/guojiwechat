@@ -330,6 +330,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 import { LoadMore, XDialog, XInput } from 'vux'
 import JagContainer from '@/components/JagContainer'
 import ColonSpan from '@/components/ColonSpan'
@@ -385,6 +386,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      userid: 'getUserId'
+    }),
     createTime () {
       try {
         const date = new Date(this.orderInfo.createTime)
@@ -498,9 +502,7 @@ export default {
       // 查询批次下订单
       try {
         const res = await cargoShow({
-          wxUserId: storage({
-            key: 'userId'
-          }),
+          wxUserId: this.userid,
           batch: this.orderInfo.batch,
           id: this.orderInfo.id
         })

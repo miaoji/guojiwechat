@@ -65,12 +65,16 @@ export default {
     return {
       spreadUserId: 0,
       incomeList: null,
-      page: 1
+      page: 1,
+      datePickerVal: '2017-12'
     }
   },
   async created () {
     const {spreadUserId} = this.$route.query
     this.spreadUserId = spreadUserId
+    const dateN = new Date()
+    this.endDate = format('yyyy-MM-dd', dateN)
+    this.datePickerVal = format('yyyy-MM', dateN)
     await this.initData()
   },
   computed: {
@@ -89,23 +93,29 @@ export default {
   methods: {
     initData () {
       this.page = 1
-      this.setIncomeData({
-        page: this.page,
-        endDate: '2018-01-31'
-      })
+      this.startDate = '2017-01-01'
+      this.endDate = format('yyyy-MM-dd', new Date())
+      this.setData()
     },
-    async setIncomeData ({page, rows = 15, startDate = '2017-01-01', endDate}) {
+    async setData () {
       try {
         const res = await getIncome({
-          startDate,
-          endDate,
-          page,
-          rows,
-          spreadUserId: this.spreadUserId
+          startDate: this.startDate,
+          endDate: this.endDate,
+          page: this.page,
+          rows: this.rows,
+          spreadUserId: this.spreadUserId,
+          event: '团队消费分润'
         })
         if (res.success && res.code === 200) {
-          const data = res.obj
-          this.reduceData(data)
+          const obj = res.obj
+          this.reduceData(obj)
+          const total = res.total
+          if (!total && this.page === 1) {
+            this.total = 0
+          } else {
+            this.total = total
+          }
         }
       } catch (err) {
         console.error(err)
@@ -113,6 +123,9 @@ export default {
     },
     reduceData (data) {
       if (!Array.isArray(data)) {
+        if (this.page === 1) {
+          this.incomeList = []
+        }
         return
       }
       const len = data.length
@@ -148,10 +161,7 @@ export default {
     },
     infinite (done) {
       this.page = this.page + 1
-      this.setIncomeData({
-        page: this.page,
-        endDate: '2018-01-31'
-      })
+      this.setData()
       setTimeout(function () {
         done(true)
       }, 1200)
@@ -163,15 +173,21 @@ export default {
       })
     },
     handleDatePicker () {
+      const _this = this
       this.$vux.datetime.show({
         cancelText: '取消',
         confirmText: '确定',
         format: 'YYYY-MM',
-        value: '2017-12',
+        value: _this.datePickerVal,
         minYear: 2017,
         maxYear: 2018,
         onConfirm (val) {
           console.log('plugin confirm', val)
+          _this.datePickerVal = val
+          _this.page = 1
+          _this.startDate = val + '-01'
+          _this.endDate = val + '-31'
+          _this.setData()
         },
         onShow () {
           console.log('plugin show')

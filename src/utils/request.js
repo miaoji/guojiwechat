@@ -76,6 +76,7 @@ export default function request (options) {
       ...data
     }
   }).catch((error) => {
+    console.error(error)
     const { response } = error
     let msg
     let statusCode

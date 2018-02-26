@@ -327,9 +327,7 @@ export default {
       // 查询批次下订单
       try {
         const res = await cargoShow({
-          wxUserId: storage({
-            key: 'userId'
-          }),
+          wxUserId: this.userid,
           batch: this.orderInfo.batch
         })
         if (res.success && res.code === 200) {

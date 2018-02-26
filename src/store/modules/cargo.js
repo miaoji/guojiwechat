@@ -1,5 +1,4 @@
 import { query } from '@/services/cargo'
-import { storage } from '@/utils'
 import * as types from '../mutation-types'
 
 export const state = {
@@ -22,10 +21,11 @@ export const actions = {
    * @param {[type]} options.commit   [description]
    * @param {[type]} options.openid   [description]
    */
-  async setCargoList ({ dispatch, commit }, {page = 1, rows = 10}) {
+  async setCargoList ({ dispatch, commit, rootGetters }, {page = 1, rows = 10}) {
     try {
+      const userId = rootGetters.getUserId
       const res = await query({
-        wxUserId: storage({key: 'userId'}),
+        wxUserId: userId,
         page,
         rows,
         status: []

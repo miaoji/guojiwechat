@@ -1,5 +1,4 @@
 import * as orderListService from '@/services/orderInfo'
-import { storage } from '@/utils'
 import * as types from '../mutation-types'
 
 export const state = {
@@ -17,10 +16,11 @@ export const actions = {
    * @param {[type]} options.commit   [description]
    * @param {[type]} options.openid   [description]
    */
-  async setOrderList ({ dispatch, commit }) {
+  async setOrderList ({ dispatch, commit, rootGetters }) {
     try {
+      const userId = rootGetters.getUserId
       const res = await orderListService.query({
-        wxUserId: storage({key: 'userId'})
+        wxUserId: userId
       })
       if (res.code === 200) {
         let orderlist = res.obj

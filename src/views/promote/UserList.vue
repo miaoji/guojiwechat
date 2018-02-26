@@ -4,8 +4,8 @@
       <div class="list">
         <div class="tools">
           <section class="search">
-            <input type="" name="" placeholder="根据微信名搜索">
-            <span type="" class="search-icon">
+            <input type="" name="" v-model="nickNameV" placeholder="根据微信名搜索">
+            <span type="" class="search-icon" @click.stop="searchNickname">
               <img src="../../assets/images/search.png" alt="">
             </span>
           </section>
@@ -29,7 +29,7 @@
               <cell
                 v-for="(items, index) in value" :key="index"
                 :title="items.nickName"
-                :value="'消费金额￥' + items.totalAmount"
+                :value="'消费金额￥' + items.totalAmount / 100"
                 @click.native="showUserDetail(items)"
                 link=""
                 is-link
@@ -51,44 +51,78 @@
 <script>
 import {query} from '@/services/promoteUsers'
 import { format } from '@/utils/time'
-// link="/promote/users/12"
 
 export default {
   name: 'userlist',
   data () {
     return {
+      nickNameV: '',
+      nickName: '',
       incomeList: null,
       page: 1,
       rows: 10,
       total: 0,
-      spreadUserId: 0
+      spreadUserId: 0,
+      datePickerVal: '2017-02',
+      startDate: '2017-01-01',
+      endDate: '2018-12-31'
     }
   },
   async created () {
     const {spreadUserId} = this.$route.query
     this.spreadUserId = spreadUserId
+    const dateN = new Date()
+    this.endDate = format('yyyy-MM-dd', dateN)
+    this.datePickerVal = format('yyyy-MM', dateN)
     await this.initData()
   },
   computed: {
   },
   methods: {
+    searchNickname () {
+      if (this.nickNameV) {
+        console.log('nickName', this.nickName)
+        this.nickName = this.nickNameV
+        this.initData()
+        this.nickName = ''
+        this.nickNameV = ''
+      }
+    },
     showUserDetail (item) {
       this.$router.push({name: 'promoteuserdetail', query: {...item}})
-      console.log('item', item)
     },
-    async initData () {
+    initData () {
+      this.page = 1
+      this.startDate = '2017-01-01'
+      this.endDate = format('yyyy-MM-dd', new Date())
+      this.setData()
+    },
+    async setData () {
       try {
-        console.log('初始化数据')
         const data = await query({
-          startDate: '2017-01-01',
-          endDate: '2018-01-31',
+          startDate: this.startDate,
+          endDate: this.endDate,
           page: this.page,
           rows: this.rows,
-          spreadUserId: this.spreadUserId
+          spreadUserId: this.spreadUserId,
+          nickName: this.nickName
         })
-        if (data.code === 200 && data.obj) {
-          this.reduceData(data.obj)
-          this.total = data.total
+        if (data.code === 200) {
+          const obj = data.obj
+          if (obj) {
+            this.reduceData(obj)
+            const total = data.total
+            if (!total && this.page === 1) {
+              this.total = 0
+            } else {
+              this.total = total
+            }
+          } else {
+            if (this.page === 1) {
+              this.incomeList = []
+              this.total = 0
+            }
+          }
         } else {
           console.log('数据查询失败')
         }
@@ -98,6 +132,9 @@ export default {
     },
     reduceData (data) {
       if (!Array.isArray(data)) {
+        if (this.page === 1) {
+          this.incomeList = []
+        }
         return
       }
       const len = data.length
@@ -124,33 +161,35 @@ export default {
       return data
     },
     async refresh (done) {
-      console.log('下拉')
-      await this.initData()
-      console.log('下拉111')
+      this.incomeList = null
+      this.initData()
       setTimeout(() => {
-        return done(true)
+        done(true)
       }, 1000)
     },
     async infinite (done) {
-      console.log('上拉')
-      this.rows += 10
-      await this.initData()
-      if (this.total < this.rows) {
-        return done(true)
-      } else {
-        return done(false)
-      }
+      this.page = this.page + 1
+      this.setData()
+      setTimeout(function () {
+        done(true)
+      }, 1200)
     },
     handleDatePicker () {
+      const _this = this
       this.$vux.datetime.show({
         cancelText: '取消',
         confirmText: '确定',
         format: 'YYYY-MM',
-        value: '2017-12',
+        value: _this.datePickerVal,
         minYear: 2017,
         maxYear: 2018,
         onConfirm (val) {
           console.log('plugin confirm', val)
+          _this.datePickerVal = val
+          _this.page = 1
+          _this.startDate = val + '-01'
+          _this.endDate = val + '-31'
+          _this.setData()
         },
         onShow () {
           console.log('plugin show')

@@ -5126,9 +5126,9 @@ vue@^2.2.2, vue@^2.2.6:
   version "2.4.2"
   resolved "http://registry.npm.taobao.org/vue/download/vue-2.4.2.tgz#a9855261f191c978cc0dc1150531b8d08149b58c"
 
-vuex-i18n@^1.3.1:
-  version "1.6.0"
-  resolved "http://registry.npm.taobao.org/vuex-i18n/download/vuex-i18n-1.6.0.tgz#738d06068361d85451e5c467d8b2642aa7bf04eb"
+vuex-i18n@^1.10.5:
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/vuex-i18n/-/vuex-i18n-1.10.5.tgz#635ea2204e0aa3f8fd512f0fab7f6b994d3f666c"
 
 vuex@^2.1.1:
   version "2.3.1"
