@@ -29,7 +29,7 @@ export default {
       storage({
         type: 'set',
         key: 'token',
-        val: 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTE5NjMxNzkxMDM4LCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.mS8r8vp493ZKFXAMaF4KtASoAVPmvz9U3zKJRLqpMj8'
+        val: 'eyJhbGciOiJIUzI1NiJ9.eyJ3eFVzZXJJZCI6MjEyLCJjcmVhdGVUaW1lIjoxNTE5NzA4MTc0NjA1LCJvcGVuaWQiOiJvUGcyWndpSDFBU0FfRWlBajEwWEhjQjJxZ2NNIn0.jqrImWhLWA8qUCft4PWK1P22qEx7Tj78Ghyvc6dTZuU'
       })
       return
     }
