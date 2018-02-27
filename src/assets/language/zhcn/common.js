@@ -1,0 +1,30 @@
+export default {
+  // 通用
+  'yes': '是',
+  'no': '否',
+  'remark': '备注',
+  'number': '数量',
+  'price': '单价',
+  'value': '价值',
+  'rmb': '元',
+  'add': '添加',
+  'submit': '提交',
+  'confirm': '确定',
+  'save': '保存',
+  'edit': '编辑',
+  'cancle': '取消',
+  'delete': '删除',
+  'length': '长度{unit}',
+  'width': '宽度{unit}',
+  'height': '高度{unit}',
+  'weight': '重量{unit}',
+  'volumeweight': '体积重',
+  'pickS': '收',
+  'sendS': '寄',
+  'pushtorefresh': '下拉刷新',
+  'nodata': '没有更多数据啦',
+  'copy': '复制',
+  // 页面动作 click
+  'click.add': '点击添加',
+  'click.copy': '点击复制'
+}

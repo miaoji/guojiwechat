@@ -10,7 +10,7 @@ import router from '@/router'
 import store from '@/store'
 import App from '@/App'
 import * as filters from '@/filters'
-import translationsZhcn from '@/assets/language/zh-cn'
+import translationsZhcn from '@/assets/language/zhcn'
 import translationsEn from '@/assets/language/en'
 import MJSpinner from '@/components/MJSpinner.vue'
 
