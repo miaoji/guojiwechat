@@ -8,7 +8,7 @@
             <div class="list">
               <div class="list-intro">
                 <img slot="icon" class="order-icon" src="../../assets/images/send_list_icon.png" />
-                <span>集运列表</span>
+                <span>{{'cargo.list' | translate}}</span>
               </div>
               <div class="list-icon">
                 <img slot="icon" src="../../assets/images/sen_ico_lis.png" />
@@ -21,7 +21,7 @@
             <div class="address">
               <div class="common-padding">
                 <div class="address-icon">
-                  <span class="bgblack">收</span>
+                  <span class="bgblack">{{'cargo.pickS' | translate}}</span>
                 </div>
                 <div class="address-info">
                   <div v-show="!pickupAddress['name']" style="color: #666;">
@@ -40,7 +40,7 @@
                   <p class="address-info--detail">
                    {{pickupAddress['country']}}{{pickupAddress['province']}}{{pickupAddress['city']}}{{pickupAddress['county']}}{{pickupAddress['address']}}
                   </p>
-                  <tips content="此为默认地址，系统自动选择" v-show="isDefaultAddr"></tips>
+                  <tips :content="'cargo.defaultaddresstips' | translate" v-show="isDefaultAddr"></tips>
                 </div>
                 <div class="address-link">
                   <img src="../../assets/images/sen_ico_com.png" alt="地址簿">
@@ -113,7 +113,7 @@
               </span>
             </div>
             <div @click.stop="handlePackageShow">
-              <button type="" class="pay">点击添加</button>
+              <button type="" class="pay">{{'click.add' | translate}}</button>
             </div>
           </div>
           <div class="packages__table">

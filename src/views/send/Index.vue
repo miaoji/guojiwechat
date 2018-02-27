@@ -116,19 +116,19 @@
             </span>
           </div>
           <x-input
-            title="保价金额"
+            :title="'send.offermoney' | translate"
+            :placeholder="'send.offermoneytips' | translate"
             v-model="offer"
             v-show='isofferShow'
             :max="6"
-            placeholder="请填写您的物品的保价金额"
             @on-change='offerChange'
           >
           </x-input>
           <selector 
+            :title="'send.isback' | translate"
+            :placeholder="'send.isbackexplain' | translate"
             direction="rtl"
             v-model="isBack"
-            placeholder="退件要承担逆向物流费用, 默认不选"
-            title="是否退件"
             name="district"
             :options="isBackOption"
           >
@@ -165,7 +165,7 @@
               <img src="../../assets/images/question.png" />
             </div>
             <div @click="handlePackageShow">
-              <button type="" class="pay" >{{'clicktoadd' | translate}}</button>
+              <button type="" class="pay" >{{'click.add' | translate}}</button>
             </div>
           </div>
           <div class="packages__table">
@@ -201,14 +201,15 @@
             </table>
           </div>
           <p class="tips" v-show="packageTable.length > 0">            
-            <tips :content="'左滑删除/编辑，' + packageTableLength"></tips>
+            <tips content="左滑删除/编辑"></tips>
+            <tips :content="$t('send.presentpackagenumber', {'num': packageTableLength})"></tips>
           </p>
           <div class="send-container-package__money">
-            预付运费：￥ <span>{{advanceShow}}</span>
+            {{'send.prepay' | translate}}：￥ <span>{{advanceShow}}</span>
           </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">
-            <button class="normal" @click="submitOrderInfo">提交</button>
+            <button class="normal" @click="submitOrderInfo">{{'submit' | translate}}</button>
           </div>
         </div>
       </div>
@@ -219,55 +220,55 @@
       <x-dialog v-model="dialogshow" class="send-weight-dialog">
         <div class="dialog-content">
           <div class="dialog-content--weight">
-            产品重量(kg)
+            {{'send.productweight' | translate}}(kg)
             <div class="dialog-close" @click="dialogshow = false">
               <span class="vux-close"></span>
             </div>
           </div>
           <div class="dialog-content--input send-weight-input">
             <group>
-               <x-input title="" type="number" required v-model="weight" placeholder="请填写您的物品的实际重量"></x-input>
+               <x-input title="" type="number" required v-model="weight" :placeholder="'send.productweighttips' | translate"></x-input>
             </group>
           </div>
         </div>
         <div class="dialog-content">
           <div class="dialog-content--weight">
-            产品体积重
+            {{'send.productvolumweight' | translate}}
           </div>
           <div class="dialog-content--input volume">
-           <input title="" type="number" v-model="length" placeholder="长度/cm"></input>
+           <input title="" type="number" v-model="length" :placeholder="$t('length', {'unit': '/cm'})"></input>
            <span>x</span>
-           <input title="" type="number" show-clear="false" required v-model="width" placeholder="宽度/cm"></input>
+           <input title="" type="number" show-clear="false" required v-model="width" :placeholder="$t('width', {'unit': '/cm'})"></input>
            <span>x</span>
-           <input title="" type="number" required v-model="height" placeholder="高度/cm"></input>
+           <input title="" type="number" required v-model="height" :placeholder="$t('height', {'unit': '/cm'})"></input>
            <span>=</span>
            <input title="" disabled type="number" required v-model="volumeWeight" placeholder=""></input>            
           </div>
         </div>
         <p class="dialog-tips">
-          <tips content="请准确填写重量与体积，若复重出现差异，可能会发生补价差"></tips>
+          <tips :content="'send.productvolumweighttips' | translate"></tips>
         </p>
         <div class="dialog-confirm-btn">
-          <button type="" @click.stop="volumeConfirm">确定</button>
+          <button type="" @click.stop="volumeConfirm">{{'confirm' | translate}}</button>
         </div>
       </x-dialog>
     </div>
     <!-- 包裹弹出框 添加 -->
     <div v-transfer-dom>
       <x-dialog v-model="packageShow" class="send-package-dialog">
-        <h1>添加包裹</h1>
+        <h1>{{'send.addpackage' | translate}}</h1>
         <div class="package-close" @click="packageShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="send-package-dialog-form">
           <group>
-            <x-input title="中文品名" type="text" v-model="newPackage['nameCn']" required></x-input>
-            <x-input title="产品单价" lang="en" type="tel" name="tel" v-model="newPackage['unitPrice']" required></x-input>
-            <x-input title="产品数量" type="number" v-model="newPackage['quantity']" required></x-input>
+            <x-input :title="'send.chinesename' | translate" type="text" v-model="newPackage['nameCn']" required></x-input>
+            <x-input :title="'send.productprice' | translate" lang="en" type="tel" name="tel" v-model="newPackage['unitPrice']" required></x-input>
+            <x-input :title="'send.productnumber' | translate" type="number" v-model="newPackage['quantity']" required></x-input>
           </group>
           <div class="package-dialog-tips">
-            <tips :content="packageTableLength"></tips>
-            <tips content="单次寄件最多可包含三个包裹，超过三个请分批次寄件"></tips>
+            <tips :content="$t('send.presentpackagenumber', {'num': packageTableLength})"></tips>
+            <tips :content="'send.addpackagetips' | translate"></tips>
           </div>
           <div class="send-package-dialog-form__confrim">
             <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">{{'save' | translate}}</button>
@@ -279,18 +280,33 @@
     <!-- 包裹弹框 修改 -->
     <div v-transfer-dom>
       <x-dialog v-model="packageShowEdit" class="pdialog">
-        <h1>修改包裹</h1>
+        <h1>{{'send.editpackage' | translate}}</h1>
         <div class="package-close" @click="packageShowEdit = false">
           <span class="vux-close"></span>
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
-            <x-input title="品名" placeholder="请填写品名" type="text" v-model="editPackage['nameCn']" required></x-input>
-            <x-input title="产品单价/元" type="tel" placeholder="请填写价值" lang="en" name="tel" v-model="editPackage['unitPrice']" required></x-input>
-            <x-input title="产品数量" type="number" v-model="editPackage['quantity']" required></x-input>
+            <x-input 
+              :title="'send.chinesename' | translate" 
+              type="text" 
+              v-model="editPackage['nameCn']" 
+              required>
+            </x-input>
+            <x-input 
+              :title="'send.productprice' | translate" 
+              type="tel" 
+              lang="en" 
+              name="tel" 
+              v-model="editPackage['unitPrice']" 
+              required></x-input>
+            <x-input 
+              :title="'send.productnumber' | translate" 
+              type="number" 
+              v-model="editPackage['quantity']" 
+              required></x-input>
           </group>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--sure" @click="editSave">保存修改</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="editSave">{{'send.saveedit' | translate}}</button>
           </div>
         </div>
       </x-dialog>
@@ -298,36 +314,36 @@
     <!-- 包裹报关提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="packagePromptInfoShow" class="send-package-dialog" hide-on-blur>
-        <h1>包裹报关</h1>
+        <h1>{{'send.packagedetail' | translate}}</h1>
         <div class="package-close" @click="packagePromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="package-prompt-info">
-          此栏内容用于清关使用，若不填，清关另需其他材料我们会电话联系您。
+          {{'send.packagedetailexplain' | translate}}
         </div>
       </x-dialog>
     </div>
     <!-- 退件提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="districtPromptInfoShow" class="send-package-dialog" hide-on-blur>
-        <h1>退件说明</h1>
+        <h1>{{'send.backexplain' | translate}}</h1>
         <div class="package-close" @click="districtPromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="package-prompt-info">
-          若快递妥投出现问题，我们会逆向返还给寄件人，逆向物流费用将由寄件人承担。
+          {{'send.backexplaincontent' | translate}}
         </div>
       </x-dialog>
     </div>
     <!-- 保价提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="isofferPromptInfoShow" class="send-package-dialog" hide-on-blur>
-        <h1>保价说明</h1>
+        <h1>{{'send.offerexplain' | translate}}</h1>
         <div class="package-close" @click="isofferPromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="package-prompt-info">
-          此项服务以自愿为原则。寄件人选择此项服务时，应确定保价金额与每个邮件内件实际价值一致，每个邮件保价金额最高限额为二十万元人民币，保价费按申报的保价金额的0.5%收取，每件最低收取1.00元人民币。未按规定交纳保价费的快件，不属于保价快件。
+          {{'send.offerexplaincontent' | translate}}
         </div>
       </x-dialog>
     </div>
@@ -580,7 +596,7 @@ export default {
     },
     packageTableLength () {
       const len = this.packageTable.length
-      return `当前包裹数量 ${len}`
+      return len || 0
     }
   },
   methods: {
@@ -1069,17 +1085,17 @@ export default {
       this.advanceStatus['status'] = false
       try {
         if (!this.pickupCountryId) {
-          this.advanceStatus['text'] = '请先选择收件地址'
+          this.advanceStatus['text'] = this.$i18n.translate('send.getprice.needaddress')
           return
         }
         if (!this.productType['productId']) {
-          this.advanceStatus['text'] = '请先选择产品类型'
+          this.advanceStatus['text'] = this.$i18n.translate('send.getprice.needproducttype')
           return
         }
         const orderOptions = this.orderOptions
         let weight = orderOptions.volumeWeight > orderOptions.weight ? orderOptions.volumeWeight : orderOptions.weight
         if (!weight) {
-          this.advanceStatus['text'] = '请先输入重量'
+          this.advanceStatus['text'] = this.$i18n.translate('send.getprice.needwight')
           return
         }
         const price = await priceService.showAdvanced({
@@ -1091,12 +1107,12 @@ export default {
         let data = price.obj
         this.priceId = data.priceId
         this.advanceStatus['status'] = true
-        this.advanceStatus['text'] = '请先输入重量'
+        this.advanceStatus['text'] = this.$i18n.translate('send.getprice.needwight')
         this.advance = data.finalPrice
         return
       } catch (err) {
         console.error(err)
-        this.advanceStatus['text'] = '请先输入重量'
+        this.advanceStatus['text'] = this.$i18n.translate('send.getprice.needwight')
       }
     }
   },
