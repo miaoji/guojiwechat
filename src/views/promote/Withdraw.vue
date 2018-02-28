@@ -4,7 +4,7 @@
         <div class="list">
           <div class="tools">
             <section>
-              筛选
+              {{$t('promoteW.screen')}}
             </section>
             <section @click.stop="handleDatePicker">
               <img class="datetimepicker" src="../../assets/images/promote/datetimepicker.png"></img>
@@ -12,7 +12,7 @@
           </div>
           <div v-show="isNoData">
             <p class="no-data">
-              暂未产生收益~
+              {{$t('promoteW.profit')}}~
             </p>
           </div>
           <scroller
@@ -37,7 +37,7 @@
                 >
                   <template slot="title">
                     <div class="earningitem">
-                      <span>提现到{{iitem.type | withdrawtype}}-by {{iitem.trueName}}</span>
+                      <span>{{$t('promoteW.withdrawal')}}{{iitem.type | withdrawtype}}-by {{iitem.trueName}}</span>
                       <span class="time">{{iitem.day}}</span>
                     </div>
                   </template>
@@ -163,8 +163,8 @@ export default {
     handleDatePicker () {
       const _this = this
       this.$vux.datetime.show({
-        cancelText: '取消',
-        confirmText: '确定',
+        cancelText: this.$t('promoteS.cancel'),
+        confirmText: this.$t('promoteS.confirm'),
         format: 'YYYY-MM',
         value: _this.datePickerVal,
         minYear: 2017,

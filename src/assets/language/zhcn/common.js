@@ -29,12 +29,12 @@ export default {
   'copy': '复制',
   'create': '创建',
   'confirmedit': '确认修改',
+  'saveedit': '保存修改',
+  'backhome': '返回首页',
+  'leftdeleteandedit': '左滑删除/编辑',
+  'systemlanguage': '系统语言',
   // 页面动作 click
   'click.add': '点击添加',
   'click.copy': '点击复制',
-  'click.check': '点击查看',
-  // 业务通用
-  'business.batchno': '批次号',
-  'business.chineseorderno': '国内段单号',
-  'business.addchineseorderno': '添加国内段单号'
+  'click.check': '点击查看'
 }

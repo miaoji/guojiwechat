@@ -9,3 +9,12 @@ export async function query (data) {
     data
   })
 }
+
+export async function save (data) {
+  return request({
+    url: redisApi.save,
+    method: 'post',
+    auth: true,
+    data
+  })
+}

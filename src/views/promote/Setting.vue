@@ -6,14 +6,14 @@
         label-align="left"
       >
         <cell
-          title="推送时间"
+          :title="$t('promoteS.pushTime')"
           value="9:00"
           is-link
           @click.native="handleDatePicker"
         >
           <template>
             <div slot="title">
-             <span>推送时间</span>
+             <span>{{$t('promoteS.pushTime')}}</span>
              <img class="question-icon" src="../../assets/images/question.png" @click.stop="pushRulesShow = true">
             </div>
             <div slot="default">
@@ -24,12 +24,12 @@
     </div>
     <!-- 推送时间规则说明 -->
     <x-dialog v-model="pushRulesShow" class="send-package-dialog" hide-on-blur>
-      <h1>推送时间说明</h1>
+      <h1>{{$t('promoteS.pushTimeInfo')}}</h1>
       <div class="package-close" @click="pushRulesShow = false">
         <span class="vux-close"></span>
       </div>
       <div class="package-prompt-info">
-        推送时间为每天推送用户昨日收益的时间，初始一般为每天上午9:00(中国北京时间)。可根据自身需求配置。
+        {{$t('promoteS.pushTimeText')}}
       </div>
     </x-dialog>
   </div>
@@ -58,8 +58,8 @@ export default {
   methods: {
     handleDatePicker () {
       this.$vux.datetime.show({
-        cancelText: '取消',
-        confirmText: '确定',
+        cancelText: this.$t('promoteS.cancel'),
+        confirmText: this.$t('promoteS.confirm'),
         format: 'HH:mm',
         value: '8:30',
         onConfirm (val) {
@@ -88,8 +88,6 @@ export default {
 @import '~vux/src/styles/close';
 
 .setting {
-  &-container {
-  }
   .question-icon {
     width: 1.4rem;
     height: 1.4rem;

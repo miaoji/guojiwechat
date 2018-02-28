@@ -22,7 +22,8 @@ switch (NODE_ENV) {
 
 // redis
 export const redis = {
-  query: url + 'api/redis/getRedisVal'
+  query: url + 'api/redis/getRedisVal',
+  save: url + 'api/redis/setRedisVal'
 }
 
 // 寄件地址

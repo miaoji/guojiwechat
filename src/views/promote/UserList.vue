@@ -4,7 +4,7 @@
       <div class="list">
         <div class="tools">
           <section class="search">
-            <input type="" name="" v-model="nickNameV" placeholder="根据微信名搜索">
+            <input type="" name="" v-model="nickNameV" :placeholder="$t('promoteUL.search')">
             <span type="" class="search-icon" @click.stop="searchNickname">
               <img src="../../assets/images/search.png" alt="">
             </span>
@@ -17,7 +17,7 @@
           :on-refresh="refresh"
           :on-infinite="infinite"
           ref="userlist-scroller"
-          :noDataText="'共'+total+'个用户'"
+          :noDataText="$t('promoteUL.info', {'num': total})"
           class="userlist_scroller"
         >
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
@@ -29,7 +29,7 @@
               <cell
                 v-for="(items, index) in value" :key="index"
                 :title="items.nickName"
-                :value="'消费金额￥' + items.totalAmount / 100"
+                :value="$t('promoteUD.amount')+'￥' + items.totalAmount / 100"
                 @click.native="showUserDetail(items)"
                 link=""
                 is-link
@@ -177,8 +177,8 @@ export default {
     handleDatePicker () {
       const _this = this
       this.$vux.datetime.show({
-        cancelText: '取消',
-        confirmText: '确定',
+        cancelText: this.$t('promoteS.cancel'),
+        confirmText: this.$t('promoteS.confirm'),
         format: 'YYYY-MM',
         value: _this.datePickerVal,
         minYear: 2017,

@@ -8,7 +8,7 @@
           <div class="send-list">
             <div class="send-list--intro">
               <img slot="icon" class="order-icon" src="../../assets/images/send_list_icon.png" />
-              <span>{{'send.title' | translate}}</span>
+              <span>{{$t('send.title')}}</span>
             </div>
             <div class="send-icon">
               <img slot="icon" src="../../assets/images/sen_ico_lis.png" />
@@ -23,11 +23,11 @@
         <div class="send-container-address">
           <div class="common-padding">
             <div class="send-container-address__intro address-icon">
-              <span class="bgblack">{{'send.sendS' | translate}}</span>
+              <span class="bgblack">{{'sendS' | translate}}</span>
             </div>
             <div class="send-container-address__info">
               <div v-show="!sendAddress['name']" style="line-height: 3rem;">
-                {{'send.selectaddress' | translate}}
+                {{'business.selectaddress' | translate}}
               </div>
               <div v-show="sendAddress['name']" class="send-container-address__info--line">
                 <div>
@@ -54,11 +54,11 @@
         <div class="send-container-address">
           <div class="common-padding">
             <div class="send-container-address__intro  address-icon">
-              <span class="bgred">{{'send.pickS' | translate}}</span>
+              <span class="bgred">{{'pickS' | translate}}</span>
             </div>
             <div class="send-container-address__info">
               <div v-show="!pickupAddress['name']" style="line-height: 3rem;">
-                {{'send.selectaddress' | translate}}
+                {{'business.selectaddress' | translate}}
               </div>
               <div v-show="pickupAddress['name']" class="send-container-address__info--line">
                 <div>
@@ -83,8 +83,8 @@
         <group label-width="8rem" label-align="left">
           <!-- 包裹和产品类型选择，两者为级联关系 -->
           <package-product
-            :title="'send.producttype' | translate"
-            :placeholder="'send.selectproducttype' | translate"
+            :title="'business.producttype' | translate"
+            :placeholder="'business.selectproducttype' | translate"
             :countryId="pickupCountryId"
             :defaultSelect="packageProductCache"
             @listenValChange="onProductChange"
@@ -95,16 +95,16 @@
             @click.native="dialogshow = true"
             :class="{'office': true, 'isFilled': orderOptions.weight}"
             type="number"
-            :title="'send.productspecification' | translate"
+            :title="'business.productspecification' | translate"
             :value="showProductSpecs"
             is-link
           >
           </cell>
           <selector
+            :title="'business.isoffer' | translate"
+            :placeholder="'business.isoffer' | translate"
             direction="rtl"
             v-model="isOffer"
-            :title="'send.isoffer' | translate"
-            :placeholder="'send.isoffer' | translate"
             name="isoffer"
             :options="isOfferOption"
             @on-change="isofferShowChange"
@@ -116,8 +116,8 @@
             </span>
           </div>
           <x-input
-            :title="'send.offermoney' | translate"
-            :placeholder="'send.offermoneytips' | translate"
+            :title="'business.offermoney' | translate"
+            :placeholder="'business.offermoneytips' | translate"
             v-model="offer"
             v-show='isofferShow'
             :max="6"
@@ -125,8 +125,8 @@
           >
           </x-input>
           <selector 
-            :title="'send.isback' | translate"
-            :placeholder="'send.isbackexplain' | translate"
+            :title="$t('business.isback')"
+            :placeholder="$t('business.isbackexplain')"
             direction="rtl"
             v-model="isBack"
             name="district"
@@ -139,8 +139,8 @@
           </div>
           <x-textarea
             type="text"
-            :title="'remark' | translate"
-            :placeholder="'send.remarktips' | translate"
+            :title="$t('remark')"
+            :placeholder="$t('business.remarktips')"
             :max="120"
             :show-counter="false"
             v-model="remark"
@@ -153,14 +153,14 @@
       </div>
       <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
       <!-- 订单包裹展示 -->
-      <p  class="intro-p">{{'send.packagedetail' | translate}}</p>
+      <p  class="intro-p">{{$t('business.packagedetail')}}</p>
       <div class="send-container-package">
         <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__title">
             <div class="question-icon" @click.stop='packagePromptInfoShow = true'>
               <span>
-                {{'send.packagedetail' | translate}}
+                {{'business.packagedetail' | translate}}
               </span>
               <img src="../../assets/images/question.png" />
             </div>
@@ -172,7 +172,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>{{'send.chinesename' | translate}}</th>
+                  <th>{{'business.chinesename' | translate}}</th>
                   <th>{{'number' | translate}}</th>
                   <th>{{'price' | translate}}/{{'rmb' | translate}}</th>
                   <th>{{'value' | translate}}/{{'rmb' | translate}}</th>
@@ -200,9 +200,10 @@
               </tbody>
             </table>
           </div>
-          <p class="tips" v-show="packageTable.length > 0">            
-            <tips content="左滑删除/编辑"></tips>
-            <tips :content="$t('send.presentpackagenumber', {'num': packageTableLength})"></tips>
+          <p class="tips" v-show="packageTable.length > 0">           
+            <tips :content="$t('leftdeleteandedit')"></tips>
+            <tips 
+              :content="$t('send.presentpackagenumber', {'num': packageTableLength})"></tips>
           </p>
           <div class="send-container-package__money">
             {{'send.prepay' | translate}}：￥ <span>{{advanceShow}}</span>
@@ -220,33 +221,59 @@
       <x-dialog v-model="dialogshow" class="send-weight-dialog">
         <div class="dialog-content">
           <div class="dialog-content--weight">
-            {{'send.productweight' | translate}}(kg)
+            {{'business.productweight' | translate}}(kg)
             <div class="dialog-close" @click="dialogshow = false">
               <span class="vux-close"></span>
             </div>
           </div>
           <div class="dialog-content--input send-weight-input">
             <group>
-               <x-input title="" type="number" required v-model="weight" :placeholder="'send.productweighttips' | translate"></x-input>
+               <x-input 
+                 title="" 
+                 type="number" 
+                 required 
+                 v-model="weight" 
+                 :placeholder="$t('business.productweighttips')"></x-input>
             </group>
           </div>
         </div>
         <div class="dialog-content">
           <div class="dialog-content--weight">
-            {{'send.productvolumweight' | translate}}
+            {{'business.productvolumweight' | translate}}
           </div>
           <div class="dialog-content--input volume">
-           <input title="" type="number" v-model="length" :placeholder="$t('length', {'unit': '/cm'})"></input>
+           <input 
+             title="" 
+             type="number" 
+             v-model="length" 
+             :placeholder="$t('length', {'unit': '/cm'})"></input>
            <span>x</span>
-           <input title="" type="number" show-clear="false" required v-model="width" :placeholder="$t('width', {'unit': '/cm'})"></input>
+           <input 
+             title="" 
+             type="number" 
+             show-clear="false" 
+             required 
+             v-model="width" 
+             :placeholder="$t('width', {'unit': '/cm'})"></input>
            <span>x</span>
-           <input title="" type="number" required v-model="height" :placeholder="$t('height', {'unit': '/cm'})"></input>
+           <input 
+             title="" 
+             type="number" 
+             required 
+             v-model="height" 
+             :placeholder="$t('height', {'unit': '/cm'})"></input>
            <span>=</span>
-           <input title="" disabled type="number" required v-model="volumeWeight" placeholder=""></input>            
+           <input 
+             title="" 
+             disabled 
+             type="number" 
+             required 
+             v-model="volumeWeight" 
+             placeholder=""></input>            
           </div>
         </div>
         <p class="dialog-tips">
-          <tips :content="'send.productvolumweighttips' | translate"></tips>
+          <tips :content="$t('business.productvolumweighttips')"></tips>
         </p>
         <div class="dialog-confirm-btn">
           <button type="" @click.stop="volumeConfirm">{{'confirm' | translate}}</button>
@@ -262,13 +289,13 @@
         </div>
         <div class="send-package-dialog-form">
           <group>
-            <x-input :title="'send.chinesename' | translate" type="text" v-model="newPackage['nameCn']" required></x-input>
-            <x-input :title="'send.productprice' | translate" lang="en" type="tel" name="tel" v-model="newPackage['unitPrice']" required></x-input>
-            <x-input :title="'send.productnumber' | translate" type="number" v-model="newPackage['quantity']" required></x-input>
+            <x-input :title="'business.chinesename' | translate" type="text" v-model="newPackage['nameCn']" required></x-input>
+            <x-input :title="'business.productprice' | translate" lang="en" type="tel" name="tel" v-model="newPackage['unitPrice']" required></x-input>
+            <x-input :title="'business.productnumber' | translate" type="number" v-model="newPackage['quantity']" required></x-input>
           </group>
           <div class="package-dialog-tips">
-            <tips :content="$t('send.presentpackagenumber', {'num': packageTableLength})"></tips>
-            <tips :content="'send.addpackagetips' | translate"></tips>
+            <tips :content="$t('business.presentpackagenumber', {'num': packageTableLength})"></tips>
+            <tips :content="'business.addpackagetips' | translate"></tips>
           </div>
           <div class="send-package-dialog-form__confrim">
             <button type="" class="send-package-dialog-form__confrim--sure" @click="addPackge(true)">{{'save' | translate}}</button>
@@ -280,27 +307,27 @@
     <!-- 包裹弹框 修改 -->
     <div v-transfer-dom>
       <x-dialog v-model="packageShowEdit" class="pdialog">
-        <h1>{{'send.editpackage' | translate}}</h1>
+        <h1>{{'business.editpackage' | translate}}</h1>
         <div class="package-close" @click="packageShowEdit = false">
           <span class="vux-close"></span>
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
             <x-input 
-              :title="'send.chinesename' | translate" 
+              :title="'business.chinesename' | translate" 
               type="text" 
               v-model="editPackage['nameCn']" 
               required>
             </x-input>
             <x-input 
-              :title="'send.productprice' | translate" 
+              :title="'business.productprice' | translate" 
               type="tel" 
               lang="en" 
               name="tel" 
               v-model="editPackage['unitPrice']" 
               required></x-input>
             <x-input 
-              :title="'send.productnumber' | translate" 
+              :title="'business.productnumber' | translate" 
               type="number" 
               v-model="editPackage['quantity']" 
               required></x-input>
@@ -314,36 +341,36 @@
     <!-- 包裹报关提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="packagePromptInfoShow" class="send-package-dialog" hide-on-blur>
-        <h1>{{'send.packagedetail' | translate}}</h1>
+        <h1>{{'business.packagedetail' | translate}}</h1>
         <div class="package-close" @click="packagePromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="package-prompt-info">
-          {{'send.packagedetailexplain' | translate}}
+          {{'business.packagedetailexplain' | translate}}
         </div>
       </x-dialog>
     </div>
     <!-- 退件提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="districtPromptInfoShow" class="send-package-dialog" hide-on-blur>
-        <h1>{{'send.backexplain' | translate}}</h1>
+        <h1>{{'business.backexplain' | translate}}</h1>
         <div class="package-close" @click="districtPromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="package-prompt-info">
-          {{'send.backexplaincontent' | translate}}
+          {{'business.backexplaincontent' | translate}}
         </div>
       </x-dialog>
     </div>
     <!-- 保价提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="isofferPromptInfoShow" class="send-package-dialog" hide-on-blur>
-        <h1>{{'send.offerexplain' | translate}}</h1>
+        <h1>{{'business.offerexplain' | translate}}</h1>
         <div class="package-close" @click="isofferPromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="package-prompt-info">
-          {{'send.offerexplaincontent' | translate}}
+          {{'business.offerexplaincontent' | translate}}
         </div>
       </x-dialog>
     </div>
@@ -571,12 +598,12 @@ export default {
     showProductSpecs () {
       const options = this.orderOptions
       if (Number(options.weight) === 0 || !options.weight || Number(options.volume) === 0 || !options.volume) {
-        return this.$i18n.translate('send.selectproductspecification')
+        return this.$t('business.selectproductspecification')
       }
       let weight = options.weight
       let volumeWeight = options.volumeWeight
-      const textWeight = this.$i18n.translate('weight')
-      const textVolumeweight = this.$i18n.translate('volumeweight')
+      const textWeight = this.$t('weight')
+      const textVolumeweight = this.$t('volumeweight')
       return `${textWeight}${weight}kg，${textVolumeweight}${volumeWeight}`
     },
     advanceShow () {

@@ -38,6 +38,7 @@ const promotewithdraw = r => require.ensure([], () => r(require('@/views/promote
 const promotehandlewithdraw = r => require.ensure([], () => r(require('@/views/promote/HandleWithdraw')), 'promotehandlewithdraw')
 const promotewithdrawdetail = r => require.ensure([], () => r(require('@/views/promote/WithdrawDetail')), 'promotewithdrawdetail')
 const promotesetting = r => require.ensure([], () => r(require('@/views/promote/Setting')), 'promotesetting')
+const usersetting = r => require.ensure([], () => r(require('@/views/user/Setting')), 'usersetting')
 
 export default new Router({
   base: __dirname,
@@ -216,6 +217,14 @@ export default new Router({
     component: userinfo,
     meta: {
       intro: '用户信息',
+      requiresAuth: true
+    }
+  }, {
+    path: '/user/setting',
+    name: 'UserSetting',
+    component: usersetting,
+    meta: {
+      intro: '用户设置',
       requiresAuth: true
     }
   }, {

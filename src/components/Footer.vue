@@ -4,11 +4,11 @@
       <li v-for="item in foot" @click="goPath(item.path)" :key="item.key" v-show="item.show">
         <div class="footer-active" v-if="item.key === page">
           <img :src="item.activeicon" :alt="item.name">
-          <p>{{ item.name }}</p>
+          <p>{{ item.name | translate }}</p>
         </div>
         <div class="footer-unactive" v-else>
           <img :src="item.icon" :alt="item.name">
-          <p>{{ item.name }}</p>
+          <p>{{ item.name | translate }}</p>
         </div>
       </li>
     </ul>
@@ -40,21 +40,21 @@ export default {
   data () {
     return {
       foot: [{
-        name: '直邮',
+        name: 'bottom.send',
         path: '/send',
         icon: sendPng,
         activeicon: acsendPng,
         key: 'send',
         show: true
       }, {
-        name: '集运',
+        name: 'bottom.cargo',
         path: '/cargo',
         icon: jyPng,
         activeicon: acjyPng,
         key: 'cargo',
         show: true
       }, {
-        name: '我的',
+        name: 'bottom.usercenter',
         path: '/usercenter',
         icon: minePng,
         activeicon: acminePng,

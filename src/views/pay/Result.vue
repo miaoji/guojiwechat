@@ -5,24 +5,27 @@
         <div class="payresult-content">
           <div class="result-info">
             <icon :type="status"></icon>
-            <span class="pay-info">
-              {{status === 'success' ? '支付成功 !' : '支付失败 !' }}
+            <span class="pay-info" v-show="status === 'success'">
+              {{$t('business.paysuccess')}}！
+            </span>
+            <span class="pay-info" v-show="status !== 'success'">
+              {{$t('business.payfail')}}！
             </span>
           </div>
           <div class="payresult-content-item">
-            <span>订单号:</span>
+            <span>{{$t('business.orderno')}}:</span>
             <span>{{orderNo}}</span>
           </div>
           <div class="payresult-content-item">
-            <span>订单总额:</span>
+            <span>{{$t('business.ordertotalmoney')}}:</span>
             <span>{{totalFee}}元</span>
           </div>
           <div class="payresult-content-btn">
             <router-link class="common check" :to="{path:'/orderdetail',query:{id:orderId}}">
-              点击查看
+              {{$t('click.check')}}
             </router-link>
             <router-link to="/send" class="common back">
-              返回首页
+              {{$t('backhome')}}
             </router-link>
           </div>
         </div>

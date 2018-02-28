@@ -42,6 +42,12 @@ Vue.component('tab', Tab)
 Vue.component('tabItem', TabItem)
 Vue.component('mj-spinner', MJSpinner)
 
+Vue.i18n.add('en', translationsEn)
+Vue.i18n.add('zh-cn', translationsZhcn)
+
+Vue.i18n.set('zh-cn')
+// Vue.i18n.set('en')
+
 router.beforeEach(async function (to, from, next) {
   // 开发环境跳过验证登录码是否过期
   // if (process.env.NODE_ENV === 'development') {
@@ -90,17 +96,17 @@ router.afterEach((to, from) => {
   if (to.meta.intro) {
     window.document.title = to.meta.intro
   }
+  // 决定系统语言
+  const locale = storage({
+    type: 'get',
+    key: 'locale'
+  }) || 'zh-cn'
+  Vue.i18n.set(locale)
 })
 
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
-
-Vue.i18n.add('en', translationsEn)
-Vue.i18n.add('zh-cn', translationsZhcn)
-
-Vue.i18n.set('zh-cn')
-// Vue.i18n.set('en')
 
 /* eslint-disable no-new */
 window.wxvue = new Vue({

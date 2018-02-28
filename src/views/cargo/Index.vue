@@ -21,11 +21,11 @@
             <div class="address">
               <div class="common-padding">
                 <div class="address-icon">
-                  <span class="bgblack">{{'cargo.pickS' | translate}}</span>
+                  <span class="bgblack">{{'pickS' | translate}}</span>
                 </div>
                 <div class="address-info">
                   <div v-show="!pickupAddress['name']" style="color: #666;">
-                    点击选择收件地址
+                    {{$t('business.clicktoselectpickupaddr')}}
                   </div>
                   <div class="address-info--line" v-show="pickupAddress['name']">
                     <div>
@@ -40,7 +40,7 @@
                   <p class="address-info--detail">
                    {{pickupAddress['country']}}{{pickupAddress['province']}}{{pickupAddress['city']}}{{pickupAddress['county']}}{{pickupAddress['address']}}
                   </p>
-                  <tips :content="'cargo.defaultaddresstips' | translate" v-show="isDefaultAddr"></tips>
+                  <tips :content="'business.defaultaddresstips' | translate" v-show="isDefaultAddr"></tips>
                 </div>
                 <div class="address-link">
                   <img src="../../assets/images/sen_ico_com.png" alt="地址簿">
@@ -52,19 +52,19 @@
           <div class="options">
             <group label-width="6rem" label-align="left">
               <cell
-                title="客户编号"
+                :title="$t('business.customerno')"
                 :value="userinfo.customerNo"
               >
               </cell>
               <cell>
                 <template slot="title">
                   <div class="question-icon">
-                    <span>中转地址</span>
+                    <span>{{$t('business.transferaddr')}}</span>
                   </div>
                 </template>
                 <template slot="default">
                   <Load-toshow
-                    title="中转地址"
+                    :title="$t('business.transferaddr')"
                     :ajaxFunc="transferService"
                     :query="{
                       isDefault: 1
@@ -91,8 +91,10 @@
                       <template slot="content">
                         <p>
                           <img src="../../assets/images/tips.png" alt="tips">
-                          用户电商平台下单地址,下单时请在地址后加上客户编号哦
-                          <span class="copyTransfer" id="copyTransfer" data-clipboard-target="#transferAddr">点击复制</span>
+                            {{$t('business.transferaddrtips')}}
+                          <span class="copyTransfer" id="copyTransfer" data-clipboard-target="#transferAddr">
+                            {{$t('click.copy')}}
+                          </span>
                         </p>
                       </template>
                     </tips>
@@ -103,13 +105,13 @@
           </div>
         </div>
       </jag-container>
-      <p class="intro-p" style="padding-bottom: 1rem;">包裹报关</p>
+      <p class="intro-p" style="padding-bottom: 1rem;">{{$t('business.packagedetail')}}</p>
       <jag-container>
         <div slot="content" class="packages">
           <div class="packages__title">
             <div class="question-icon">
               <span>
-                包裹报关
+                {{$t('business.packagedetail')}}
               </span>
             </div>
             <div @click.stop="handlePackageShow">
@@ -120,10 +122,10 @@
             <table>
               <thead>
                 <tr>
-                  <th>品名</th>
-                  <th>价值/元</th>
-                  <th>快递公司</th>
-                  <th>国内段单号</th>
+                  <th>{{$t('business.productname')}}</th>
+                  <th>{{$t('value')}}/{{$t('rmb')}}</th>
+                  <th>{{$t('business.expresscom')}}</th>
+                  <th>{{$t('business.chineseorderno')}}</th>
                 </tr>
               </thead>
               <tbody class="packageitem">
@@ -141,15 +143,19 @@
                     {{item['cnNo']}}
                   </td>
                   <td class="tools">
-                    <button type="" class="pay" @click="delTableItem(index)">删除</button>
-                    <button type="" class="pay" @click="editTableItem(item, index)">编辑</button>
+                    <button type="" class="pay" @click="delTableItem(index)">  {{$t('delete')}}
+                    </button>
+                    <button type="" class="pay" @click="editTableItem(item, index)">
+                      {{$t('edit')}}
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div v-show="packageTable.length > 0" class="package-tips">
-            <tips :content="'左滑删除/编辑，' + packageTableLength"></tips>
+            <tips :content="$t('leftdeleteandedit')"></tips>
+            <tips :content="$t('business.presentpackagenumber', {'num': packageTableLength})"></tips>
           </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">
@@ -181,7 +187,7 @@
             <x-input title="国内单号" placeholder="请填写国内单号(9~23位)" type="text" v-model="newPackage['cnNo']"></x-input>
           </group>
           <tips
-            :content="packageTableLength"
+            :content="$t('business.presentpackagenumber', {'num': packageTableLength})"
           >
           </tips>
           <tips
@@ -189,8 +195,8 @@
           >
           </tips>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">保存</button>
-            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">添加</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="addPackge(true)">{{$t('save')}}</button>
+            <button type="" class="pdialog-form__confrim--cancle" @click="addPackge(false)">{{$t('add')}}</button>
           </div>
         </div>
       </x-dialog>
@@ -198,27 +204,45 @@
     <!-- 包裹弹框 修改新增 -->
     <div v-transfer-dom>
       <x-dialog v-model="packageShowEdit" class="pdialog">
-        <h1>修改包裹</h1>
+        <h1>{{$t('business.editpackage')}}</h1>
         <div class="package-close" @click="packageShowEdit = false">
           <span class="vux-close"></span>
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
-            <x-input title="品名" placeholder="请填写品名" type="text" v-model="editPackage['orderName']" required></x-input>
+            <x-input 
+              :title="$t('business.productname')" 
+              :placeholder="$t('business.productnametips')" 
+              type="text" 
+              v-model="editPackage['orderName']" 
+              required></x-input>
             <!-- 2000以内 -->
-            <x-input title="价值/元" type="number" placeholder="请填写价值" lang="en" name="tel" v-model="editPackage['totalFee']" required></x-input>
+            <x-input 
+              :title="$t('business.price')" 
+              :placeholder="$t('cargo.pricetips')"
+              type="number"
+              lang="en" 
+              name="tel" 
+              v-model="editPackage['totalFee']" 
+              required></x-input>
             <x-input
-              title="快递公司"
-              placeholder="点击选择快递公司"
+              :title="$t('business.expresscom')"
+              :placeholder="$t('business.selectexpresscom')"
               v-model="editPackage['companyName']"
               @click.native="onClickExSelect"
             >
             </x-input>
             <!-- 9~23位 -->
-            <x-input title="国内单号" placeholder="请填写国内单号(9~23位)" type="text" v-model="editPackage['cnNo']"></x-input>
+            <x-input
+              :title="$t('business.chineseordernoslim')"
+              :placeholder="$t('cargo.chinanotips')"
+              type="text"
+              v-model="editPackage['cnNo']"></x-input>
           </group>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--sure" @click="editSave">保存修改</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="editSave">
+              {{$t('saveedit')}}
+            </button>
           </div>
         </div>
       </x-dialog>
@@ -397,7 +421,7 @@ export default {
     },
     packageTableLength () {
       const len = this.packageTable.length
-      return `当前包裹数量 ${len}`
+      return len || 0
     }
   },
   methods: {

@@ -3,45 +3,45 @@
     <div class="earings-container">
       <group v-show="type === 'order'" label-width="11rem" label-align="left">
         <cell
-          title="收益类型"
+          :title="'promoteED.IncomeType' | translate"
           :value="detail.event"
         ></cell>
         <cell
-          title="订单类型"
+          :title="'promoteED.orderType' | translate"
           :value="detail.orderInfoType | ordertype"
         ></cell>
         <cell
-          title="订单编号"
+          :title="'promoteED.orderNo' | translate"
           :value="detail.orderNo"
         ></cell>
         <cell
-          title="订单金额"
+          :title="'promoteED.orderAmount' | translate"
           :value="detail.orderInfoCashFee | moneyshow"
         ></cell>
         <cell
-          title="所得收益"
+          :title="'promoteED.profit' | translate"
           :value="detail.income | moneyshow"
         ></cell>
         <cell
-          title="下单时分润比例"
+          :title="'promoteED.orderTimeProfitRatio' | translate"
           :value="(detail.incomeRatio * 100) + '%'"
         ></cell>
         <cell
-          title="下单时间"
+          :title="'promoteED.orederTime' | translate"
           :value="detail.createTime | formatedatestamp"
         ></cell>
       </group>
       <group v-show="type === 'withdraw'" label-width="11rem" label-align="left">
         <cell
-          title="收益类型"
+          :title="'promoteED.IncomeType' | translate"
           :value="detail.event"
         ></cell>
         <cell
-          title="退回金额"
+          :title="'promoteED.returnAmount' | translate"
           :value="detail.income | moneyshow"
         ></cell>
         <cell
-          title="退回时间"
+          :title="'promoteED.returnTime' | translate"
           :value="detail.createTime | formatedatestamp"
         ></cell>
       </group>

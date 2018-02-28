@@ -3,36 +3,36 @@
     <div class="withdraw-container">
       <group label-width="11rem" label-align="left">
         <cell
-          title="真实姓名"
+          :title="$t('promoteWD.trueName')"
           :value="detail.trueName"
         ></cell>
         <cell
-          title="手机号码"
+          :title="$t('promoteWD.mobile')"
           :value="detail.mobile"
         ></cell>
         <cell
-          title="提现方式"
+          :title="$t('promoteWD.withdrawType')"
           :value="detail.type | withdrawtype"
         ></cell>
         <cell
-          title="提现账号"
+          :title="$t('promoteWD.accountNumber')"
           :value="detail.accountNumber"
         ></cell>
         <cell
-          title="提现金额"
+          :title="$t('promoteWD.cash')"
           :value="detail.cash"
         ></cell>
         <cell
-          title="提现状态"
+          :title="$t('promoteWD.status')"
           :value="detail.status | withdrawstatus"
         ></cell>
         <cell
           v-show="detail.status === 2"
-          title="拒绝原因"
+          :title="$t('promoteWD.reason')"
           :value="detail.reason"
         ></cell>
         <cell
-          title="发起时间"
+          :title="$t('promoteWD.createTime')"
           :value="detail.createTime | formatedatestamp"
         ></cell>
       </group>

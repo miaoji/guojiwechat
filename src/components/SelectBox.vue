@@ -4,8 +4,8 @@
       <div class="fix-box">
         <div class="head-box">
           <div class="header">
-            <p>选择快递公司</p>
-            <div class="header-right" @click.stop="onClickConfirm">完成</div>
+            <p>{{$t('component.selectbox.selectexpresscom')}}</p>
+            <div class="header-right" @click.stop="onClickConfirm">{{$t('component.selectbox.done')}}</div>
           </div>
         </div>
 
@@ -27,14 +27,14 @@
         </div>
         <div class="input-search-container" v-show="searchResult.length === 0">
           <p>
-            搜索结果为空
+            {{$t('component.selectbox.blanksearch')}}
           </p>
         </div>
       </div>
 
       <div class="item-container" v-show="!inputLen">
         <div class="selectbox-container-item item-history">
-          <div class="item-title">最近查询</div>
+          <div class="item-title">{{$t('component.selectbox.recentsearch')}}</div>
           <ul class="item-list">
             <li v-for="item in recentSearch">
               <span class="item" @click.stop="onClickSearchItem({name: item})">
@@ -42,12 +42,12 @@
               </span>
             </li>
           </ul>
-          <p v-show="recentSearch.length === 0" style="color: white;">暂无查询记录</p>
+          <p v-show="recentSearch.length === 0" style="color: white;">{{$t('component.selectbox.nosearchrecorde')}}</p>
         </div>
         
         <!-- 热门快递公司 -->
         <div class="selectbox-container-item item-hot">
-          <div class="item-title">热门快递</div>
+          <div class="item-title">{{$t('component.selectbox.hotexpress')}}</div>
           <ul class="item-list">
             <li v-for="item in hotExpress">
               <span class="item" @click.stop="onClickSearchItem({name: item})">

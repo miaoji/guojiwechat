@@ -4,7 +4,7 @@
         <div class="list">
           <div class="tools">
             <section>
-              筛选
+              {{'promoteE.screen' | translate}}
             </section>
             <section @click.stop="handleDatePicker">
               <img class="datetimepicker" src="../../assets/images/promote/datetimepicker.png"></img>
@@ -12,7 +12,7 @@
           </div>
           <div v-show="isNoData">
             <p class="no-data">
-              暂未产生收益~
+              {{'promoteE.noProfit' | translate}}~
             </p>
           </div>
           <scroller
@@ -175,8 +175,8 @@ export default {
     handleDatePicker () {
       const _this = this
       this.$vux.datetime.show({
-        cancelText: '取消',
-        confirmText: '确定',
+        cancelText: this.$t('promoteE.cancel'),
+        confirmText: this.$t('promoteE.confirm'),
         format: 'YYYY-MM',
         value: _this.datePickerVal,
         minYear: 2017,

@@ -15,7 +15,9 @@
                 </p>
               </div>
               <p class="add-cnno" v-show="orderInfo['type'] === 1 && parentId === 0" @click.stop="packageShow = true">
-                <button class="">{{!cnNo ? '立即添加' : '点击修改'}}</button>
+                <button class="">
+                  {{!cnNo ? '立即添加' : '点击修改'}}
+                </button>
               </p>
               <express-route
                 :cnNo="cnNo"
@@ -40,20 +42,35 @@
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
-            <x-input title="产品名称" type="text" v-model="orderInfo.orderName" disabled></x-input>
-            <x-input title="产品价值" type="text" :value="totalFee" disabled></x-input>
+            <x-input 
+              :title="$t('business.productname')"
+              type="text" 
+              v-model="orderInfo.orderName" 
+              disabled></x-input>
+            <x-input 
+              :title="$t('business.productvalue')" 
+              type="text" 
+              :value="totalFee" 
+              disabled></x-input>
             <x-input
-              title="快递公司"
-              placeholder="点击选择快递公司"
+              :title="$t('business.expresscom')"
+              :placeholder="$t('business.selectexpresscom')"
               v-model="newPackage['companyName']"
               @click.native="onClickExSelect"
             >
             </x-input>
-            <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
+            <x-input 
+              :title="$t('business.chineseordernoslim')"
+              type="text" 
+              v-model="newPackage['cnNo']"></x-input>
           </group>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">取消</button>
-            <button type="" class="pdialog-form__confrim--sure" @click="changeOrder">确定</button>
+            <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">
+              {{$t('cancle')}}
+            </button>
+            <button type="" class="pdialog-form__confrim--sure" @click="changeOrder">
+              {{$t('confirm')}}
+            </button>
           </div>
         </div>
       </x-dialog>

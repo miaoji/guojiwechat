@@ -6,23 +6,23 @@
       </div>
       <group label-width="11rem" label-align="left">
         <cell
-          title="微信名"
+          :title="$t('promoteUD.wechat')"
           :value="userInfo.nickName"
         ></cell>
         <cell
-          title="消费金额"
+          :title="$t('promoteUD.amount')"
           :value="'￥' + userInfo.totalAmount / 100"
         ></cell>
         <cell
-          title="分润金额"
-          value="待查询"
+          :title="$t('promoteUD.profitAmount')"
+          :value="$t('promoteUD.inquire')"
         ></cell>
         <cell
-          title="关注日期"
+          :title="$t('promoteUD.followTime')"
           :value="userInfo.subscribeTime"
         ></cell>
         <cell
-          title="性别"
+          :title="$t('promoteUD.sex')"
           :value="userInfo.sex"
         ></cell>
       </group>
@@ -42,9 +42,9 @@ export default {
   },
   created () {
     const sex = {
-      0: '未知',
-      1: '男',
-      2: '女'
+      0: this.$t('promoteUD.unknown'),
+      1: this.$t('promoteUD.boy'),
+      2: this.$t('promoteUD.girl')
     }
     this.userInfo = this.$route.query
     this.userInfo.subscribeTime = formatedatestamp(this.userInfo.subscribeTime, 2)

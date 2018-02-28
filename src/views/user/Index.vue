@@ -5,10 +5,10 @@
         <img :src="userinfo.headimgurl" alt="用户背景">
       </div>
       <div class="usercenter-info__detail">
-        <div class="refresh-btn submit-btn" v-show="showRefresh">
-          <button type="" class="normal" @click.stop="refreshUser">
-            {{'refresh' | translate}}
-          </button>
+        <div class="setting-elem">
+          <router-link to="/user/setting">
+            <img src="../../assets/images/setting.png" alt="">
+          </router-link>
         </div>
         <div class="usercenter-info__detail--image">
           <img :src="userAvar" alt="用户头像" @click="usershow = true">
@@ -265,10 +265,14 @@ export default {
   padding-top: 4vh;
   padding-bottom: 4vh;
   min-height: 94vh;
-  .refresh-btn {
+  .setting-elem {
     position: absolute;
-    top: 0;
+    top: 2rem;
     right: 10px;
+    img {
+      width: 3.5rem;
+      height: 3.5rem;
+    }
   }
   &-info {
     margin: 0;
