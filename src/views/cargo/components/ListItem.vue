@@ -3,19 +3,19 @@
     <div class="detail">
       <div class="detail-address">
         <div class="detail-address--icon address-icon--small">
-          <span class="bgblack">收</span>
+          <span class="bgblack">{{'pickS' | translate}}</span>
         </div>
         <p class="detail-address--detail">
           <span>
             {{item.receiverCountry}}{{item.receiverProv}}{{item.receiverCity}}{{item.receiverCounty}}&nbsp;
           </span>
           <span class="order-no">
-            批次号:&nbsp;{{item.batch}}
+            {{'cargo.item.batchno' | translate}}:&nbsp;{{item.batch}}
           </span>
         </p>
       </div>
       <span class="detail-state" v-show="item.parentId !== 0">{{item.status | orderstatus}}</span>
-      <span class="detail-state" v-show="item.parentId === 0">待合单</span>
+      <span class="detail-state" v-show="item.parentId === 0">{{'cargo.item.waitcargo' | translate}}</span>
     </div>
     <div class="package">
       <div class="package-info" @click.stop="goPath('/orderdetail', {'id': orderId})">
@@ -42,19 +42,19 @@
         </div>
       </div>
       <div class="package-detail">
-        <p v-show="item.parentId !== 0">订单号:{{item.orderNo}}</p>
+        <p v-show="item.parentId !== 0">{{'cargo.item.orderno' | translate}}:{{item.orderNo}}</p>
         <p v-show="item.parentId !== 0">
-          共{{item.orderDetailList.length}}条订单&nbsp;集运类型-{{cargoType}}&nbsp;实付款:&nbsp;{{realPay}}
+          {{$t('cargo.item.ordernum', {'num': item.orderDetailList.length})}}&nbsp;{{'cargo.item.cargoorder' | translate}}-{{cargoType}}&nbsp;{{'cargo.item.realpay' | translate}}:&nbsp;{{realPay}}
         </p>
         <p v-show="item.parentId === 0">
-          共1条订单
+          {{$t('cargo.item.ordernum', {'num': 1})}}
         </p>
       </div>
     </div>
     <div class="edit">
       <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
-        <button class="gosend-btn" @click="goPath('/orderroute', {'id': orderId})">查看物流</button>
+        <button class="gosend-btn" @click="goPath('/orderroute', {'id': orderId})">{{'cargo.item.checkroute' | translate}}</button>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 export default {
   // 通用
+  'comname': '国际快递服务中心',
   'yes': '是',
   'no': '否',
   'remark': '备注',
@@ -9,11 +10,13 @@ export default {
   'rmb': '元',
   'add': '添加',
   'submit': '提交',
+  'submiting': '正在提交',
   'confirm': '确定',
   'save': '保存',
   'edit': '编辑',
   'cancle': '取消',
   'delete': '删除',
+  'refresh': '刷新',
   'length': '长度{unit}',
   'width': '宽度{unit}',
   'height': '高度{unit}',
@@ -24,8 +27,14 @@ export default {
   'pushtorefresh': '下拉刷新',
   'nodata': '没有更多数据啦',
   'copy': '复制',
+  'create': '创建',
+  'confirmedit': '确认修改',
   // 页面动作 click
   'click.add': '点击添加',
   'click.copy': '点击复制',
-  'click.check': '点击查看'
+  'click.check': '点击查看',
+  // 业务通用
+  'business.batchno': '批次号',
+  'business.chineseorderno': '国内段单号',
+  'business.addchineseorderno': '添加国内段单号'
 }

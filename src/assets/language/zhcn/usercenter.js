@@ -9,5 +9,8 @@ export default {
   'usercenter.sendorder': '直邮订单',
   'usercenter.cargoorder': '集运订单',
   'usercenter.mysale': '我的推广',
-  'usercenter.mycoupon': '我的卡包'
+  'usercenter.mycoupon': '我的卡包',
+  'usercenter.verifyrealname': '实名认证',
+  'usercenter.customerservicephone': '客服热线',
+  'usercenter.customerserviceqr': '客服二维码'
 }

@@ -8,19 +8,25 @@
               <img src="../../assets/images/coupon_logo.jpg" alt="卡券logo">
             </div>
             <p class="coupon-intro-name">{{detailData.coupon_name}}</p>
-            <p class="coupon-intro-func">{{detailData.coupon_value / 100}}元代金券</p>
+            <p class="coupon-intro-func">
+              {{detailData.coupon_value / 100}}{{'coupon.detail.money' | translate}}
+            </p>
             <!-- 立即使用 -->
             <div class="use-now"> 
-              <button class="pay" @click="useNow">立即使用</button>
+              <button class="pay" @click="useNow">
+                {{'coupon.detail.immediateuse' | translate}}
+              </button>
             </div>
           </div>
           <div class="divider">
           </div>
           <div class="coupon-use">
-            <cell title="有效日期" :value="validity">
+            <cell 
+              :title="'coupon.detail.effectivedate' | translate" 
+              :value="validity">
             </cell>
             <cell 
-              title="使用须知" 
+              :title="'coupon.detail.notes' | translate" 
               isLink
               @click.native="useInfoShow = true"
             >
@@ -31,14 +37,19 @@
       <!-- 使用须知信息弹出框 -->
       <div v-transfer-dom>
         <x-dialog v-model="useInfoShow" class="detail-package-dialog">
-          <h1>使用须知</h1>
+          <h1>{{'coupon.detail.notes' | translate}}</h1>
           <div class="package-close" @click="useInfoShow = false">
             <span class="vux-close"></span>
           </div>
           <div class="package-info">
-            <p>本券可用于冲抵直邮或集运运费，消费满{{detailData.coupon_minimum / 100 || 17}}元即可使用。</p>
-            <p>每次下单限用一张，不可叠加使用。寄件须知请参考：微信公众号->个人中心->新手指南，也可以直接下载
-              <a href="http://www.mingz-tech.com/新手指南.png">新手指南.png</a>
+            <p>
+              {{'coupon.detail.note1' | translate}}{{detailData.coupon_minimum / 100 || 17}}{{'coupon.detail.note2' | translate}}
+            </p>
+            <p>
+              {{'coupon.detail.note3' | translate}}
+              <a href="http://www.mingz-tech.com/新手指南.png">
+                {{'coupon.detail.note4' | translate}}
+              </a>
             </p>
           </div>
         </x-dialog>

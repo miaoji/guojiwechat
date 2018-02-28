@@ -9,20 +9,20 @@
     <div class="addressitem-func">
       <span class="is-default" v-show="item.is_default === 1">
         <img src="../../../assets/images/add_ico_che.png" alt="默认地址">
-        <span>默认地址</span>
+        <span>{{'address.defaultaddress' | translate}}</span>
       </span>
       <span class="not-default" v-show="item.is_default === 0 || !item.is_default" @click.stop="changeChecked(item.id, item.start, item.userid)">
         <img src="../../../assets/images/add_ico_nor.png" alt="">
-        <span>设为默认</span>
+        <span>{{'address.setdefaultaddress' | translate}}</span>
       </span>
       <div>
         <span class="edit" @click.stop="goPath('/address/handle', {id: item.id, type: addressType, pagetype: 'edit'})">
           <img src="../../../assets/images/add_ico_cha.png" alt="">
-          <span>编辑</span>
+          <span>{{'edit' | translate}}</span>
         </span>
         <span class="edit" @click.stop="deleteItem(item.id, addressType)">
           <img src="../../../assets/images/add_ico_del.png" alt="删除该地址">
-          <span>删除</span>
+          <span>{{'delete' | translate}}</span>
         </span>
       </div>
     </div>
@@ -108,7 +108,7 @@ export default {
       }
       this.$vux.confirm.show({
         // 组件除show外的属性
-        title: '确定将这一地址设置为默认地址吗?',
+        title: _this.$i18n.translate('address.item.setdefaultnotice'),
         onCancel () {
         },
         onConfirm () {
@@ -125,12 +125,12 @@ export default {
       const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
       this.$vux.confirm.show({
         // 组件除show外的属性
-        title: '确定删除这一地址吗?',
+        title: _this.$i18n.translate('address.item.deletenotice'),
         onCancel () {
         },
         async onConfirm () {
           _this.$vux.loading.show({
-            text: '正在提交'
+            text: _this.$i18n.translate('submiting')
           })
           const delRes = await _this.delAddress({ids, type: addressType})
           _this.$vux.loading.hide()

@@ -6,27 +6,27 @@
         label-align="left"
       >
         <x-input
-          title="联系人"
+          :title="'address.contactman' | translate"
+          :placeholder="'address.contactmantips' | translate"
           type="text"
           v-model="name"
           :max="50"
-          placeholder="请填写您的真实姓名" 
           text-align="right"
           required
         ></x-input>
         <x-input 
-          title="电话" 
+          :title="'address.mobile' | translate"
+          :placeholder="'address.mobiletips' | translate"
           v-model="mobile"
           type="text"
-          placeholder="请输入手机号" 
           required
           text-align="right"
         ></x-input>
         <x-input
-          title="国家/地区"
+          :title="'address.countryregion' | translate"
+          :placeholder="'address.countryregiontips' | translate"
           @click.native="onClickCountry"
           disabled
-          placeholder="请选择国家/地区" 
           type="text"
           required 
           v-model="country['name']" 
@@ -34,17 +34,17 @@
         ></x-input>
         <cascade-address
           v-show="typecn==='send'&&country['name']==='中国'"
-          title="地区选择"
-          placeholder="请选择地区"
+          :title="'address.regionselect' | translate"
+          :placeholder="'address.regionselecttips' | translate"
           :defaultSelect="cascaAddrData"
           @listenValChange="onCasAddrChange"
         >
         </cascade-address>
         <x-textarea 
-          title="地址"
+          :title="'address.address' | translate"
+          :placeholder="'address.addresstips' | translate"
           type="text"
           :max="800"
-          placeholder="         请详细到门牌号(必填)" 
           :show-counter="false"
           v-model="address"
           :height="address.length + 22"
@@ -53,19 +53,19 @@
           text-align="right"
         ></x-textarea>
         <x-input
-          title="邮编"
+          :title="'address.postcode' | translate"
+          :placeholder="'address.postcodetips' | translate"
           type="text"
           required
           v-model="postcode"
           :max="20"
-          placeholder="请填写邮编" 
           text-align="right"
         ></x-input>
         <x-textarea
-          title="备注"
+          :title="'address.remark' | translate"
+          :placeholder="'address.remarktips' | translate"
           type="text"
           :max="50"
-          placeholder="         请添加备注 (限50字)" 
           :show-counter="false" 
           v-model="remark" 
           :rows="1"
@@ -73,7 +73,7 @@
           required
         ></x-textarea>
         <x-switch
-          title="设为默认地址"
+          :title="'address.setdefaultaddress' | translate"
           class="mj-switch"
           v-model="isDefault"
         ></x-switch>
@@ -81,7 +81,12 @@
       <div class="addaddress-container-add">
         <div class="submit-btn">
           <button class="normal" @click.stop="handleAddress">
-            {{pagetype === 'add' ? '创建' : '确认修改'}}
+            <span v-show="pagetype === 'add'">
+              {{'create' | translate}}
+            </span>
+            <span v-show="pagetype !== 'add'">
+              {{'confirmedit' | translate}}
+            </span>
           </button>
         </div>
       </div>

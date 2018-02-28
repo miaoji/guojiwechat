@@ -4,23 +4,23 @@
       <div class="cargolist-container-tab">
         <tab active-color='#ffa414'>
           <tab-item :selected="show ==='all'" @on-item-click="changeShow('all')">
-            <span class="tab-info">全部</span>
+            <span class="tab-info">{{'cargo.list.all' | translate}}</span>
             <span class="tab-num">{{countList['all']}}</span>
           </tab-item>
           <tab-item :selected="show ==='waitcargo'" @on-item-click="changeShow('waitcargo')">
-            <span class="tab-info">待合单</span>
+            <span class="tab-info">{{'cargo.list.waitcargo' | translate}}</span>
             <span class="tab-num">{{countList['waitcargo']}}</span>
           </tab-item>
           <tab-item :selected="show ==='waitpay'" @on-item-click="changeShow('waitpay')">
-            <span class="tab-info">待付款</span>
+            <span class="tab-info">{{'cargo.list.waitpay' | translate}}</span>
             <span class="tab-num">{{countList['waitpay']}}</span>
           </tab-item>
           <tab-item :selected="show ==='waitdelivery'" @on-item-click="changeShow('waitdelivery')">
-            <span class="tab-info">待收货</span>
+            <span class="tab-info">{{'cargo.list.waitdelivery' | translate}}</span>
             <span class="tab-num">{{countList['waitdelivery']}}</span>
           </tab-item>
           <tab-item :selected="show ==='done'" @on-item-click="changeShow('done')">
-            <span class="tab-info">已完成</span>
+            <span class="tab-info">{{'cargo.list.done' | translate}}</span>
             <span class="tab-num">{{countList['done']}}</span>
           </tab-item>
         </tab>
@@ -189,7 +189,7 @@ export default {
     async cancle (item) {
       const _this = this
       this.$vux.confirm.show({
-        title: '确定取消这一订单吗?',
+        title: _this.$i18n.translate('cargo.list.deletetips'),
         onCancel () {
         },
         async onConfirm () {

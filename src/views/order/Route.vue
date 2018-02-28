@@ -7,8 +7,12 @@
             <!-- 路由信息 -->
             <div class="express">
               <div class="express-info" v-show="orderInfo['type'] === 1">
-                <p>批次号: {{orderInfo['batch']}}</p>
-                <p v-show="orderInfo['parentId'] === 0">国内段单号: {{orderInfo['cnNo']}}</p>
+                <p>
+                  {{'business.batchno' | translate}}: {{orderInfo['batch']}}
+                </p>
+                <p v-show="orderInfo['parentId'] === 0">
+                  {{'business.chineseorderno' | translate}}: {{orderInfo['cnNo']}}
+                </p>
               </div>
               <p class="add-cnno" v-show="orderInfo['type'] === 1 && parentId === 0" @click.stop="packageShow = true">
                 <button class="">{{!cnNo ? '立即添加' : '点击修改'}}</button>
@@ -30,7 +34,7 @@
     <!-- 添加国内段单号 -->
     <div>
       <x-dialog v-model="packageShow" class="pdialog">
-        <h1>添加国内段单号</h1>
+        <h1>{{'business.addchineseorderno' | translate}}</h1>
         <div class="package-close" @click="packageShow = false">
           <span class="vux-close"></span>
         </div>

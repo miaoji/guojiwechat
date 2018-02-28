@@ -6,7 +6,21 @@ import orderlist from './orderlist'
 import bottom from './bottom'
 import orderdetail from './orderdetail'
 import address from './address'
+import coupon from './coupon'
+import route from './route'
 
-const locale = Object.assign(common, send, cargo, usercenter, orderlist, bottom, orderdetail, address, {})
+const locale = Object.assign(
+common,
+send,
+cargo,
+usercenter,
+orderlist,
+bottom,
+orderdetail,
+address,
+coupon,
+route,
+{}
+)
 
 export default locale

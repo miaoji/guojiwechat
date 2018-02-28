@@ -6,7 +6,9 @@
       </div>
       <div class="usercenter-info__detail">
         <div class="refresh-btn submit-btn" v-show="showRefresh">
-          <button type="" class="normal" @click.stop="refreshUser">刷新</button>
+          <button type="" class="normal" @click.stop="refreshUser">
+            {{'refresh' | translate}}
+          </button>
         </div>
         <div class="usercenter-info__detail--image">
           <img :src="userAvar" alt="用户头像" @click="usershow = true">
@@ -27,11 +29,11 @@
     <div v-transfer-dom>
       <x-dialog v-model="dialogshow" class="dialog-demo" hide-on-blur>
         <div class="customer-service">
-          <p>客服热线:&nbsp;&nbsp;</p>
+          <p>{{'usercenter.customerservicephone' | translate}}:&nbsp;&nbsp;</p>
           <p><a :href="telHotline">{{hotline}}</a></p>
         </div>
         <div class="customer-service">
-          <p>客服二维码:&nbsp;&nbsp;</p>
+          <p>{{'usercenter.customerserviceqr' | translate}}:&nbsp;&nbsp;</p>
           <p>
             <img class="customer-qrpic" src="../../assets/images/wechat_customer.jpg" alt="客服二维码">
           </p>
@@ -47,11 +49,14 @@
         <div class="img-box" :style="'background-image:url(' + userAvar + ')'">
         </div>
         <div class="user-info">
-          <p>微信昵称: {{userinfo.nickName}}</p>
-          <p>手机号: {{userinfo.mobile || '未绑定手机号'}} 
+          <p>{{'usercenter.wxnickname' | translate}}: {{userinfo.nickName}}</p>
+          <p>
+            <span>{{'usercenter.phoneno' | translate}}: </span>
+            <span>{{userinfo.mobile}}</span>
+            <span v-show="!userinfo.mobile">{{'usercenter.nophoneno' | translate}}</span>
             <span v-show="!userinfo.mobile">
               <router-link to="/bindphone">
-                点击此处绑定
+                {{'usercenter.clicktobindphone' | translate}}
               </router-link>
             </span>
           </p>
@@ -106,37 +111,37 @@ export default {
     orderfunc () {
       return [{
         src: require('../../assets/images/min_ico_add.png'),
-        name: '地址管理',
+        name: this.$i18n.translate('usercenter.address'),
         path: '/address',
         show: true
       }, {
         src: require('../../assets/images/min_ico_kef.png'),
-        name: '客服中心',
+        name: this.$i18n.translate('usercenter.customerservice'),
         func: 'showDialog',
         show: true
       }, {
         src: require('../../assets/images/min_ico_pac.png'),
-        name: '直邮订单',
+        name: this.$i18n.translate('usercenter.sendorder'),
         path: '/order/list',
         show: true
       }, {
         src: require('../../assets/images/cargo_ico.png'),
-        name: '集运订单',
+        name: this.$i18n.translate('usercenter.cargoorder'),
         path: '/cargo/list',
         show: true
       }, {
         src: require('../../assets/images/promote/sales.png'),
-        name: '我的推广',
+        name: this.$i18n.translate('usercenter.mysale'),
         path: '/promote',
         show: (this.spreadUserId !== null)
       }, {
         src: require('../../assets/images/coupon.png'),
-        name: '我的卡包',
+        name: this.$i18n.translate('usercenter.mycoupon'),
         path: '/coupon',
         show: true
       }, {
         src: require('../../assets/images/min_ico_rea.png'),
-        name: '实名认证',
+        name: this.$i18n.translate('usercenter.verifyrealname'),
         show: false
       }]
     }
@@ -189,7 +194,6 @@ export default {
         if (res.success && res.code === 200) {
           const userData = res.obj
           this.spreadUserId = userData.spreadUserId
-          console.log('12', this.spreadUserId)
         }
       } catch (err) {
         console.error(err)

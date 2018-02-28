@@ -3,5 +3,22 @@ export default {
   'address.pickupaddr': '收件地址',
   'address.blankaddress': '暂未添加地址',
   'address.newlyincreased': '新增',
-  'address.address': '地址'
+  'address.address': '地址',
+  'address.defaultaddress': '默认地址',
+  'address.setdefaultaddress': '设为默认',
+  'address.contactman': '联系人',
+  'address.contactmantips': '请填写您的真实姓名',
+  'address.mobile': '电话',
+  'address.mobiletips': '请输入手机号',
+  'address.countryregion': '国家/地区',
+  'address.countryregiontips': '请选择国家/地区',
+  'address.regionselect': '地区选择',
+  'address.regionselecttips': '请选择地区',
+  'address.addresstips': '          请详细到门牌号(必填)',
+  'address.postcode': '邮编',
+  'address.postcodetips': '请填写邮编',
+  'address.remark': '备注',
+  'address.remarktips': '         请添加备注(限50字)',
+  'address.item.setdefaultnotice': '确定将这一地址设置为默认地址吗?',
+  'address.item.deletenotice': '确定删除这一地址吗?'
 }
