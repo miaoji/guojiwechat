@@ -10,7 +10,7 @@
         <div class="last-earnings">
           <group label-width="8rem" label-align="left">
             <cell
-              title="昨日收益"
+              :title='"promote.profit" | translate'
               :value="yesterdayIncomeShow"
             >
             </cell>
@@ -18,63 +18,63 @@
         </div>
         <div class="qr">
           <p class="qr-title">
-            我的二维码
+            {{'promote.myQr' | translate}}
             <button class="promote-btn" @click.stop="handleShare">
-              点击分享
+              {{'promote.share' | translate}}
             </button>
           </p>
-          <img :src="qrSrc" alt="推广二维码" @click.native="checkQrImg">
+          <img :src="qrSrc" :alt="'promote.spreaQr' | translate" @click.native="checkQrImg">
           <div class="withdraw-tips">
-            可提现金额：
+            {{'promote.amountOfCash' | translate}}：
             <span class="money">
               ￥{{netIncome / 100 || 0}}
             </span>
           </div>
           <div class="divide-tips">
-            当前分润比例
-            <span class="scale">一级{{ratio}}%</span>
-            <span class="scale">，二级{{ratioSecond}}%</span>
-            <span class="divide-tips--link" @click.stop="promotionruleShow = true">查看规则</span>
+            {{'promote.proportion' | translate}}
+            <span class="scale">{{'promote.one' | translate}}{{ratio}}%</span>
+            <span class="scale">，{{'promote.two' | translate}}{{ratioSecond}}%</span>
+            <span class="divide-tips--link" @click.stop="promotionruleShow = true">{{'promote.rule' | translate}}</span>
           </div>
           <div class="divide-tips">
-            月末分红等级-
+            {{'promote.bonusGrade' | translate}} - 
             <span class="scale">{{consumptionName}}</span>
-            ，比例
-            <span class="scale">一级{{consumptionRatio}}%</span>
-            <span class="scale">，二级{{consumptionRatioSecond}}%</span>
+            ，{{'promote.proportioninfo' | translate}}
+            <span class="scale">{{'promote.one' | translate}}{{consumptionRatio}}%</span>
+            <span class="scale">，{{'promote.two' | translate}}{{consumptionRatioSecond}}%</span>
             <span v-show="spreadConsumption">
-              ，团队还需消费
-              <span class="money">{{spreadConsumption / 100}}元</span>
-              即可提升
+              ，{{'promote.needConsume' | translate}}
+              <span class="money">{{spreadConsumption / 100}}{{'promote.RMB' | translate}}</span>
+              {{'promote.canPromote' | translate}}
             </span>
           </div>
         </div>
         <div class="junior">
           <group label-width="8rem" label-align="left">
             <cell
-              title="累计收益"
+              :title="'promote.profits' | translate"
               :value="totalIncomeShow"
               :link="'/promote/earnings?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
             <cell
-              title="用户管理"
+              :title="'promote.user' | translate"
               value=""
               :link="'/promote/users?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
             <cell
-              title="提现记录"
+              :title="'promote.record' | translate"
               value=""
               :link="'/promote/withdraw?spreadUserId=' + spreadUserId"
               is-link
             >
             </cell>
             <cell
-              title="推广设置"
-              value="推送时间"
+              :title="'promote.setup' | translate"
+              :value="'promote.pushtime' | translate"
               v-show="false"
               :link="'/promote/setting?spreadUserId=' + spreadUserId"
               is-link
@@ -87,17 +87,17 @@
     </scroller>
     <router-link :to="'/promote/handlewithdraw?spreadUserId=' + spreadUserId">
       <div class="withdraw">
-        <span><img src="../../assets/images/promote/withdraw.png" alt="">申请提现</span>
+        <span><img src="../../assets/images/promote/withdraw.png" alt="">{{'promote.withdrawals' | translate}}</span>
       </div>
     </router-link>
     <!-- 分润比例规则说明 -->
     <x-dialog v-model="promotionruleShow" class="send-package-dialog" hide-on-blur>
-      <h1>分润比例规则说明</h1>
+      <h1>{{'promote.ruleExplain' | translate}}</h1>
       <div class="package-close" @click="promotionruleShow = false">
         <span class="vux-close"></span>
       </div>
       <div class="package-prompt-info">
-        分润比例为一级分润8%，二级分润5%不可改变。分红等级可变，当团队累计消费金额达到一定额度时分红等级便会提升，每次提升月末分红金额都会增加。最高不超过100%。
+        {{'promote.explainInfo' | translate}}
       </div>
     </x-dialog>
   </div>
@@ -238,17 +238,17 @@ export default {
         link = link.replace('promote', 'promoteqr')
         console.log('link', link)
         window.wx.onMenuShareAppMessage({
-          title: '推广二维码',
-          desc: '我的二维码',
+          title: "'promote.spreaQr' | translate",
+          desc: "'promote.myQr' | translate",
           link,
           imgUrl: 'http://wx.qlogo.cn/mmopen/vi_32/UDZGqoED7TrhHdA34JSlmVdIcz2X30emabQGKekkAviadjJFu98dhadicT8ibY32aoYmEd2o2BwGedFAE7hG3ibYLA/0',
           type: 'link',
           dataUrl: '',
           success: function () {
-            alert('分享朋友成功!')
+            alert("'promote.shareSuccess' | translate")
           },
           cancel: function () {
-            console.log('已经取消')
+            console.log("'promote.cancel' | translate")
           }
         })
       })
@@ -258,14 +258,14 @@ export default {
       link = link.replace('promote', 'promoteqr')
       window.wx.ready(function () {
         window.wx.onMenuShareTimeline({
-          title: '推广二维码',
+          title: "'promote.spreaQr' | translate",
           link,
           imgUrl: 'http://wx.qlogo.cn/mmopen/vi_32/UDZGqoED7TrhHdA34JSlmVdIcz2X30emabQGKekkAviadjJFu98dhadicT8ibY32aoYmEd2o2BwGedFAE7hG3ibYLA/0',
           success: function () {
-            alert('分享朋友圈成功!')
+            alert("'promote.shareSuccess' | translate")
           },
           cancel: function () {
-            console.log('已经取消')
+            console.log("'promote.cancel' | translate")
           }
         })
       })

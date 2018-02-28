@@ -6,39 +6,40 @@
         label-align="left"
       >
         <x-input
-          title="联系人"
+          :title="$t('promoteHW.name')"
           type="text"
           v-model="name"
           :max="20"
-          placeholder="请填写您的真实姓名" 
+          :placeholder="$t('promoteHW.fillInName')"
           text-align="right"
           required
         ></x-input>
         <x-input
-          title="手机号"
+          :title="$t('promoteHW.mobile')"
           type="text"
           v-model="mobile"
           :max="20"
-          placeholder="请填写手机号" 
+          :placeholder="$t('promoteHW.fillInMobile')"
           textAlign="right"
           required
           :isType="checkMobileForVux"
           shouldToasterror
         ></x-input>
         <x-input
-          title="提现金额"
+          :title="$t('promoteHW.money')"
           type="text"
           v-model="money"
-          :placeholder="`可提现金额${netIncome}元`"
+          
+          :placeholder="$t('promoteHW.fillInMoney', {'num': netIncome})"
           text-align="right"
           required
         >
         </x-input>
         <div class="tips-container">
-          <tips content="最低提现100元"></tips>
+          <tips :content="$t('promoteHW.mixMoney')"></tips>
         </div>
         <selector 
-          title="提现方式" 
+          :title="$t('promoteHW.withdrawType')" 
           v-model="withdrawType" 
           :options="withdrawTypeOption"
           direction="rtl">
@@ -48,7 +49,7 @@
           type="text"
           v-show="withdrawType"
           v-model="accountNumber"
-          :placeholder="'请填写您的' + accountTitle" 
+          :placeholder="$t('promoteHW.pleaseFill') + accountTitle" 
           text-align="right"
           required
         ></x-input>
@@ -59,7 +60,7 @@
             :class="{'normal': canSubmit['res'], 'disabled': !canSubmit['res']}"
             @click.stop="submit"
           >
-            提交
+            {{'promoteHW.send' | translate}}
           </button>
         </div>
       </div>
@@ -87,10 +88,10 @@ export default {
       withdrawType: null,
       withdrawTypeOption: [{
         key: 'wx',
-        value: '微信'
+        value: this.$t('promoteHW.weChat')
       }, {
         key: 'alipay',
-        value: '支付宝'
+        value: this.$t('promoteHW.aliPay')
       }],
       accountNumber: '',
       inLoading: false
@@ -112,30 +113,30 @@ export default {
     }),
     accountTitle () {
       const withdrawType = this.withdrawType
-      return withdrawType === 'wx' ? '微信帐号' : '支付宝帐号'
+      return withdrawType === 'wx' ? this.$t('promoteHW.weChatNo') : this.$t('promoteHW.aliPayNo')
     },
     canSubmit () {
       if (this.money < 100) {
         return {
           res: false,
-          msg: '最低提现100元'
+          msg: this.$t('promoteHW.mixMoney')
         }
       }
       if (!checkMobile(this.mobile)) {
         return {
           res: false,
-          msg: '手机号码格式不对'
+          msg: this.$t('promoteHW.mobileError')
         }
       }
       if (!this.accountNumber) {
         return {
           res: false,
-          msg: '请填写收款帐号'
+          msg: this.$t('promoteHW.pleaseFillNo')
         }
       }
       return {
         res: true,
-        msg: '可以提交'
+        msg: this.$t('promoteHW.sendSuccess')
       }
     },
     postData () {
@@ -170,13 +171,13 @@ export default {
       const valid = regFor.test(str) || regCN.test(str)
       return {
         valid,
-        msg: valid ? '正确' : '请输入正确的手机号'
+        msg: valid ? this.$t('promoteHW.yes') : this.$t('promoteHW.pleaseFillMobile')
       }
     },
     async submit () {
       if (this.inLoading) {
         this.$vux.toast.show({
-          text: '正在提交，请稍后再试',
+          text: this.$t('promoteHW.sending'),
           width: '18rem',
           type: 'warn'
         })
@@ -198,7 +199,7 @@ export default {
         })
         if (res.success && res.code === 200) {
           this.$vux.toast.show({
-            text: '提现请求已提交',
+            text: "'promoteHW.Submission' | translate",
             width: '18rem',
             type: 'success'
           })
@@ -211,7 +212,7 @@ export default {
           return
         } else {
           this.$vux.toast.show({
-            text: res.msg || '提交失败',
+            text: res.msg || "'promoteHW.sendError' | translate",
             width: '18rem',
             type: 'warn'
           })

@@ -1,8 +1,8 @@
 <template>
   <div class="qrimage">
     <div class="qrimage-container">
-      <p>{{nickName}}的二维码(长按识别)</p>
-      <img :src="qrSrc" alt="二维码">
+      <p>{{nickName}}{{$t('promoteQ.nameDetail')}}</p>
+      <img :src="qrSrc" :alt="$t('promoteQ.qr')">
     </div>
     <!-- 分享选择 -->
     <div class="share-arrows" v-show="shareShow">
@@ -11,9 +11,9 @@
     <x-dialog v-model="shareShow" hide-on-blur>
       <div class="share-modal">
         <div>
-          点击右上角分享给
-          <img src="../../assets/images/wx/icon64_appwx_logo.png">朋友和
-          <img src="../../assets/images/wx/icon_res_download_moments.png" alt="">朋友圈
+          {{$t('promoteQ.clickShare')}}
+          <img src="../../assets/images/wx/icon64_appwx_logo.png">{{$t('promoteQ.friend')}}
+          <img src="../../assets/images/wx/icon_res_download_moments.png" alt="">{{$t('promoteQ.friends')}}
         </div>
       </div>
     </x-dialog>
