@@ -26,5 +26,6 @@ export default {
   'copy': '复制',
   // 页面动作 click
   'click.add': '点击添加',
-  'click.copy': '点击复制'
+  'click.copy': '点击复制',
+  'click.check': '点击查看'
 }

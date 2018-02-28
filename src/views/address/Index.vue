@@ -3,8 +3,8 @@
     <div class="address-container">
       <div class="address-container-tab" v-show="tabshow === 1">
         <tab active-color='#ffa414'>
-          <tab-item :selected="addressType === 'send'" @on-item-click="changeShow('send')">寄件地址</tab-item>
-          <tab-item :selected="addressType === 'pickup'" @on-item-click="changeShow('pickup')">收件地址</tab-item>
+          <tab-item :selected="addressType === 'send'" @on-item-click="changeShow('send')">{{'address.sendaddr' | translate}}</tab-item>
+          <tab-item :selected="addressType === 'pickup'" @on-item-click="changeShow('pickup')">{{'address.pickupaddr' | translate}}</tab-item>
         </tab>
       </div>
       <div class="address-container-list">
@@ -16,7 +16,7 @@
           :class="{'address-scroller': tabshow === 0, 'address-scroller--tabshow': tabshow === 1}">
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
           <div v-show="addressList[addressType] ? addressList[addressType].length === 0 : false">
-            <h2 class="no-data">暂未添加地址</h2>
+            <h2 class="no-data">{{'address.blankaddress' | translate}}</h2>
           </div>
           <div class="address-container-list__item" v-for="item in addressList[addressType]" :key="item.id" v-show="item.hidden_status === 1">
             <address-item
@@ -35,7 +35,9 @@
     <div class="address-add" @click="goPath('/address/handle', {type: addressType, pagetype: 'add'})">
       <div class="address-add-content">
         <img src="../../assets/images/add_add.png" alt="新增地址">
-        <span>新增{{addressTypeCn}}地址</span>
+        <span>
+          {{'address.newlyincreased' | translate}}{{addressTypeCn}}{{'address.address' | translate}}
+        </span>
       </div>
     </div>
   </div>

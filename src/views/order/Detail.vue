@@ -8,7 +8,7 @@
               <!-- 寄件地址 -->
               <div class="address-box btg"  v-show="orderType === 0">
                 <div class="address-box__icon">
-                  <span class="bgred">寄</span>
+                  <span class="bgred">{{'sendS' | translate}}</span>
                 </div>
                 <div class="address-box__detail">
                   <p>{{orderInfo.senderName}}&nbsp;{{orderInfo.senderMobile}}</p>
@@ -18,7 +18,7 @@
               <!-- 收件地址 -->
               <div class="address-box">
                 <div class="address-box__icon">
-                  <span class="bgblack">收</span>
+                  <span class="bgblack">{{'pickS' | translate}}</span>
                 </div>
                 <div class="address-box__detail">
                   <p>{{orderInfo.receiverName}}&nbsp;{{orderInfo.receiverMobile}}</p>
@@ -31,30 +31,30 @@
             <!-- 直邮订单状态 -->
             <div class="detail" v-show="orderInfo['type'] === 0">
               <div class="detail-box">
-                <colon-span title="订单编号">
+                <colon-span :title="'orderdetail.orderno' | translate">
                   <template slot="content">
                     <div>
                       <span id="orderno">{{orderInfo.orderNo}}</span>
-                      <button class="pay" id="copyBtn1" data-clipboard-target="#orderno">复制</button>
+                      <button class="pay" id="copyBtn1" data-clipboard-target="#orderno">{{'copy' | translate}}</button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="下单时间" :value="createTime"></colon-span>
+                <colon-span :title="'orderdetail.ordertime' | translate" :value="createTime"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="订单状态">
+                <colon-span :title="'orderdetail.orderstatus' | translate">
                   <template slot="content">
                     <div>
                       {{orderInfo.status | orderstatus}}
-                      <button class="pay" @click.stop="wxPay" v-show="orderInfo.status === 1">立即付款</button>
+                      <button class="pay" @click.stop="wxPay" v-show="orderInfo.status === 1">{{'orderdetail.immediatepay' | translate}}</button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="预付金额">
+                <colon-span :title="'orderdetail.amountadvanced' | translate">
                   <template slot="content">
                     <div>
                       <span class="money">{{totalFee}}</span>
@@ -63,43 +63,43 @@
                 </colon-span>
               </div>
               <div class="detail-box" v-show='orderInfo.insuredAmount===0?false:true'>
-                <colon-span title="保价金额">
+                <colon-span :title="'orderdetail.offermoney' | translate">
                   <template slot="content">
                     <div>
-                      <span class="money">{{orderInfo.insuredAmount}}</span>元
+                      <span class="money">{{orderInfo.insuredAmount}}</span>{{'rmb' | translate}}
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box"  v-show='orderInfo.insuredAmount===0?false:true'>
-                <colon-span title="保费">
+                <colon-span :title="'orderdetail.offermoney1' | translate">
                   <template slot="content">
                     <div>
-                      <span class="money">{{orderInfo.insuredPrice}}</span>元
+                      <span class="money">{{orderInfo.insuredPrice}}</span>{{'rmb' | translate}}
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="是否补价">
+                <colon-span :title="'orderdetail.isboot' | translate">
                   <template slot="content">
                     <load-more v-show="!getBootStatusDone" :show-loading="!getBootStatusDone"></load-more>
                     <div v-show="getBootStatusDone">
                       {{bootStatus['val'] === 0 ? '无' : '有'}}
-                      <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
+                      <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">{{'orderdetail.immediateboot' | translate}}</button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="补价记录">
+                <colon-span :title="'orderdetail.bootrecord' | translate">
                   <template slot="content">
-                    <button class="pay" @click.stop="goBootList">点击查看</button>
+                    <button class="pay" @click.stop="goBootList">{{'click.check' | translate}}</button>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box" v-show="orderInfo['remark']">
-                <colon-span title="备注信息">
+                <colon-span :title="'orderdetail.remarkinfo' | translate">
                   <template slot="content">
                     <div class="remark-info">
                       {{orderInfo['remark']}}
@@ -111,23 +111,25 @@
             <!-- 集运未合单的状态 -->
             <div class="detail" v-show="orderInfo['type'] === 1 && orderInfo.parentId === 0">
               <div class="detail-box">
-                <colon-span title="国内单号">
+                <colon-span :title="'orderdetail.chineseno' | translate">
                   <template slot="content">
                     <div>
                       <span id="cargoingCnNo">{{orderInfo.cnNo}}</span>
-                      <button class="pay" id="copyBtn2" data-clipboard-target="#cargoingCnNo">复制</button>
+                      <button class="pay" id="copyBtn2" data-clipboard-target="#cargoingCnNo">{{'copy' | translate}}</button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="批次单号" :value="orderInfo.batch"></colon-span>
+                <colon-span :title="'orderdetail.batchno' | translate" :value="orderInfo.batch"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="下单时间" :value="createTime"></colon-span>
+                <colon-span :title="'orderdetail.ordertime' | translate" :value="createTime"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="订单状态" value="待填写单号">
+                <colon-span 
+                  :title="'orderdetail.orderstatus' | translate" 
+                  :value="'orderdetail.blanknumber' | translate">
                   <template slot="content">
                     <div>
                       <span class="money">{{cargoStatus | cargostatus}}</span>
@@ -136,10 +138,12 @@
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="产品名称" :value="orderInfo.orderName"></colon-span>
+                <colon-span 
+                  :title="'orderdetail.productname' | translate"
+                  :value="orderInfo.orderName"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="产品价值">
+                <colon-span :title="'orderdetail.productvalue' | translate">
                   <template slot="content">
                     <div>
                       <span class="money">{{totalFee}}</span>
@@ -151,33 +155,33 @@
             <!-- 集运合单后的订单状态 -->
             <div class="detail" v-show="orderInfo['type'] === 1 && orderInfo.parentId !== 0">
               <div class="detail-box">
-                <colon-span title="订单编号">
+                <colon-span :title="'orderdetail.orderno' | translate">
                   <template slot="content">
                     <div>
                       <span id="cargoDoneOrderno">{{orderInfo.orderNo}}</span>
-                      <button class="pay" id="copyBtn3" data-clipboard-target="#cargoDoneOrderno">复制</button>
+                      <button class="pay" id="copyBtn3" data-clipboard-target="#cargoDoneOrderno">{{'copy' | translate}}</button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="批次单号" :value="orderInfo.batch"></colon-span>
+                <colon-span :title="'orderdetail.batchno' | translate" :value="orderInfo.batch"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="下单时间" :value="createTime"></colon-span>
+                <colon-span :title="'orderdetail.ordertime' | translate" :value="createTime"></colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="订单状态">
+                <colon-span :title="'orderdetail.orderstatus' | translate">
                   <template slot="content">
                     <div>
                       {{orderInfo.status | orderstatus}}
-                      <button class="pay" @click.stop="wxPay" v-show="orderInfo.status === 1">立即付款</button>
+                      <button class="pay" @click.stop="wxPay" v-show="orderInfo.status === 1">{{'orderdetail.immediatepay' | translate}}</button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="预付金额">
+                <colon-span :title="'orderdetail.amountadvanced' | translate">
                   <template slot="content">
                     <div>
                       <span class="money">{{totalFee}}</span>
@@ -186,43 +190,51 @@
                 </colon-span>
               </div>
               <div class="detail-box" v-show='orderInfo.insuredAmount===0?false:true'>
-                <colon-span title="保价金额">
+                <colon-span :title="'orderdetail.offermoney' | translate">
                   <template slot="content">
                     <div>
-                      <span class="money">{{orderInfo.insuredAmount}}</span>元
+                      <span class="money">
+                        {{orderInfo.insuredAmount}}
+                      </span>{{'rmb' | translate}}
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box"  v-show='orderInfo.insuredAmount===0?false:true'>
-                <colon-span title="保费">
+                <colon-span :title="'orderdetail.offermoney1' | translate">
                   <template slot="content">
                     <div>
-                      <span class="money">{{orderInfo.insuredPrice}}</span>元
+                      <span class="money">
+                        {{orderInfo.insuredPrice}}
+                      </span>{{'rmb' | translate}}
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="是否补价">
+                <colon-span :title="'orderdetail.isboot' | translate">
                   <template slot="content">
                     <load-more v-show="!getBootStatusDone" :show-loading="!getBootStatusDone"></load-more>
                     <div v-show="getBootStatusDone">
                       {{bootStatus['val'] === 0 ? '无' : '有'}}
-                      <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">立即补价</button>
+                      <button class="pay" @click.stop="goBootDetail({id: bootStatus['id']})" v-show="bootStatus['val'] === 1">
+                        {{'orderdetail.immediateboot' | translate}}
+                      </button>
                     </div>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box">
-                <colon-span title="补价记录">
+                <colon-span :title="'orderdetail.bootrecord' | translate">
                   <template slot="content">
-                    <button class="pay" @click.stop="goBootList">点击查看</button>
+                    <button class="pay" @click.stop="goBootList">
+                      {{'click.check' | translate}}
+                    </button>
                   </template>
                 </colon-span>
               </div>
               <div class="detail-box" v-show="orderInfo['remark']">
-                <colon-span title="备注信息">
+                <colon-span :title="'orderdetail.remarkinfo' | translate">
                   <template slot="content">
                     <div class="remark-info">
                       {{orderInfo['remark']}}
@@ -231,21 +243,23 @@
                 </colon-span>
               </div>
               <div class="detail-box" v-show="WarehouseManagementExpenses > 0">
-                <colon-span title="仓管费用">
+                <colon-span :title="'orderdetail.warehousecost' | translate">
                   <template slot="content">
                     <div>
-                      <span class="money">{{WarehouseManagementExpenses}}</span>元
+                      <span class="money">
+                        {{WarehouseManagementExpenses}}
+                      </span>{{'rmb' | translate}}
                     </div>
                   </template>
                 </colon-span>
-                <tips content="仓库管理费用，货物在仓库中超过21天时收取，每天1元"></tips>
+                <tips :content="'orderdetail.warehousecosttips' | translate"></tips>
               </div>
             </div>
           </div>
         </jag-container>
       </div>
       <div class="container" v-show="orderInfo['type'] === 1 && parentId !== 0">
-        <p class="intro-p">包裹信息</p>
+        <p class="intro-p">{{'orderdetail.packageinfo' | translate}}</p>
         <jag-container>
           <div slot="content" class="content">
             <!-- 包裹信息 -->
@@ -255,11 +269,11 @@
                   <img src="../../assets/images/package.png" alt="">
                   <div class="packagelist-item--intro">
                     <p>
-                      {{item['orderName']}}, 价值:￥{{item['totalFee']/100}}
+                      {{item['orderName']}}, {{'value' | translate}}:￥{{item['totalFee']/100}}
                     </p>
                     <p>
                       {{item['kdCompany'] ? ('物流公司:' + item['kdCompany']['companyName'] || '') : ''}}
-                      国内段单号:{{item['cnNo']}}
+                      {{'orderdetail.chineseno' | translate}}:{{item['cnNo']}}
                     </p>
                   </div>
                 </div>
@@ -269,7 +283,7 @@
         </jag-container>
       </div>
       <div class="container">
-        <p class="intro-p">物流信息</p>
+        <p class="intro-p">{{'orderdetail.expressinfo' | translate}}</p>
         <jag-container>
           <div slot="content" class="content">
             <!-- 路由信息 -->
@@ -294,26 +308,37 @@
     <!-- 添加国内段单号 -->
     <div>
       <x-dialog v-model="packageShow" class="pdialog">
-        <h1>添加国内段单号</h1>
+        <h1>{{'orderdetail.addchineseno' | translate}}</h1>
         <div class="package-close" @click="packageShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="pdialog-form">
           <group label-width="7rem" label-align="left">
-            <x-input title="产品名称" type="text" v-model="orderInfo.orderName" disabled></x-input>
-            <x-input title="产品价值" type="text" :value="totalFee" disabled></x-input>
+            <x-input 
+              :title="'orderdetail.productname' | translate" 
+              type="text" 
+              v-model="orderInfo.orderName" 
+              disabled></x-input>
+            <x-input 
+              :title="'orderdetail.productvalue' | translate"
+              type="text"
+              :value="totalFee"
+              disabled></x-input>
             <x-input
-              title="快递公司"
-              placeholder="点击选择快递公司"
+              :title="'orderdetail.expresscom' | translate"
+              :placeholder="'orderdetail.selectexpresscom' | translate"
               v-model="newPackage['companyName']"
               @click.native="onClickExSelect"
             >
             </x-input>
-            <x-input title="国内单号" type="text" v-model="newPackage['cnNo']"></x-input>
+            <x-input
+              :title="'orderdetail.chineseno' | translate"
+              type="text"
+              v-model="newPackage['cnNo']"></x-input>
           </group>
           <div class="pdialog-form__confrim">
-            <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">取消</button>
-            <button type="" class="pdialog-form__confrim--sure" @click="changeOrder">确定</button>
+            <button type="" class="pdialog-form__confrim--cancle" @click="packageShow = false">{{'cancle' | translate}}</button>
+            <button type="" class="pdialog-form__confrim--sure" @click="changeOrder">{{'confirm' | translate}}</button>
           </div>
         </div>
       </x-dialog>
