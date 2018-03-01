@@ -1,11 +1,11 @@
 export default {
   'address.sendaddr': 'Mailing Address',
-  'address.pickupaddr': 'consignee address ',
+  'address.pickupaddr': 'Consignee address ',
   'address.blankaddress': 'No address has been added',
   'address.newlyincreased': 'newly increased',
   'address.address': 'address',
   'address.defaultaddress': 'default address',
-  'address.setdefaultaddress': 'Set as Default',
+  'address.setdefaultaddress': 'set as default',
   'address.contactman': 'person to contact',
   'address.contactmantips': 'Please fill in your real name.',
   'address.mobile': 'mobile phone',
@@ -20,5 +20,11 @@ export default {
   'address.remark': 'remark',
   'address.remarktips': '         please add remark(50 words limit)',
   'address.item.setdefaultnotice': 'Are you sure to set this address to the default address?',
-  'address.item.deletenotice': 'Are you sure to delete this address.?'
+  'address.item.deletenotice': 'Are you sure to delete this address.?',
+  'address.selectcountry.countryregiontips': 'Select Country/Region',
+  'address.selectcountry.blanksearch': 'blank search',
+  'address.selectcountry.recentsearch': 'recent search',
+  'address.selectcountry.hotarea': 'hot country/region',
+  'address.selectcountry.placeholder': 'search by country name',
+  'address.selectcountry.errorsearch': '暂无首字母为 {pinyin} 的国家或地区'
 }

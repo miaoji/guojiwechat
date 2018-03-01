@@ -97,10 +97,16 @@ router.afterEach((to, from) => {
     window.document.title = to.meta.intro
   }
   // 决定系统语言
-  const locale = storage({
+  let locale = storage({
     type: 'get',
     key: 'locale'
-  }) || 'zh-cn'
+  })
+  let {language} = store.state.user.userinfo
+  language = language.toLowerCase()
+  language = language === 'zh_cn' ? 'zh-cn' : 'en'
+  if (!locale) {
+    locale = language
+  }
   Vue.i18n.set(locale)
 })
 

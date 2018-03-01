@@ -3,6 +3,7 @@ export default {
   'business.batchno': '批次号',
   'business.orderno': '订单号',
   'business.ordertotalmoney': '订单总额',
+  'business.orderstatus': '订单状态',
   'business.chineseorderno': '国内段单号',
   'business.chineseordernoslim': '国内单号',
   'business.addchineseorderno': '添加国内段单号',
@@ -47,5 +48,6 @@ export default {
   'business.transferaddr': '中转地址',
   'business.transferaddrtips': '用户电商平台下单地址,下单时请在地址后加上客户编号哦',
   'business.price': '价值/元',
-  'business.clicktoselectpickupaddr': '点击选择收件地址'
+  'business.clicktoselectpickupaddr': '点击选择收件地址',
+  'business.submittopay': '提交付款'
 }

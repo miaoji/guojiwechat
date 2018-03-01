@@ -2,16 +2,16 @@
   <div class="customservice">
     <div>
       <div class="customservice-title">
-        <p>国际快递服务中心</p>
+        <p>{{$t('comname')}}</p>
       </div>
       <div class="customservice-num flex">
-        <p>登录失败!</p>
+        <p>{{$t('error.login')}}!</p>
       </div>
       <div class="customservice-num flex">
-        <p>您可以从公众号重新点击进入或者拨打客服热线咨询</p>
+        <p>{{$t('error.tips')}}</p>
       </div>
       <div class="customservice-num flex">
-        <p>客服热线</p>
+        <p>{{$t('error.hotline')}}</p>
         <p>{{hotline}}</p>
       </div>
     </div>

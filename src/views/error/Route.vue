@@ -5,19 +5,19 @@
         <p>404</p>
       </div>
       <div class="customservice-num flex">
-        <p>该页面不存在!</p>
+        <p>{{$t('error.notfound')}}!</p>
       </div>
       <div class="customservice-num flex">
-        <p>您可以从公众号重新点击进入或者拨打客服热线咨询</p>
+        <p>{{$t('error.tips')}}</p>
       </div>
       <div class="customservice-num flex">
-        <p>客服热线</p>
+        <p>{{$t('error.hotline')}}</p>
         <p>{{hotline}}</p>
       </div>
       <!-- 提交按钮 -->
       <div class="submit-btn">
         <router-link to="/send" class="normal">
-          返回首页
+          {{$t('backhome')}}
         </router-link>
       </div>
     </div>

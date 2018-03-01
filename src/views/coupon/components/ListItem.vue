@@ -14,7 +14,7 @@
     <div class="listitem-intro">
       <p class="listitem-intro-name">{{name}}</p>
       <p class="listitem-intro-func">
-        {{func/100}}元代金券
+        {{func/100}}{{$t('coupon.detail.money')}}
       </p>
     </div>
   </div>

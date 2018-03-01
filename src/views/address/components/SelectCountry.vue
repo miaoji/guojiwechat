@@ -4,8 +4,9 @@
       <div class="fix-box">
         <div class="head-box">
           <div class="header">
-            <p>选择国家/地区</p> 
-            <div class="header-right" @click.stop="confirmNation">完成</div>
+            <p>{{$t('address.selectcountry.countryregiontips')}}</p> 
+            <div class="header-right" @click.stop="confirmNation">  {{$t('confirm')}}
+            </div>
           </div>
         </div>
 
@@ -21,20 +22,20 @@
 
       <div v-show="inputLen" class="input-search">
         <div class="input-search-container" v-show="searchResult.length !== 0">
-          <p v-for="item in searchResult" v-show="item.hidden_status === 1" @click.stop="onClickSearchRes(item)">
+          <p v-for="item in searchResult" v-show="item.hidden_status === 1" @click.stop="onCountryConfirm(item)">
             {{item.country_cn}}&nbsp;{{item.country_en}}
           </p>
         </div>
         <div class="input-search-container" v-show="searchResult.length === 0">
           <p>
-            搜索结果为空
+            {{$t('address.selectcountry.blanksearch')}}
           </p>
         </div>
       </div>
 
       <div class="city-container" v-show="!inputLen">
         <div class="selectcountry-container-city city-history">
-          <div class="country-title">最近查询</div>
+          <div class="country-title">{{$t('address.selectcountry.recentsearch')}}</div>
           <ul class="city-list">
             <li v-for="item in recentSearch">
               <span class="city" @click.stop="onClickCity({name: item})">
@@ -46,11 +47,14 @@
         
         <!-- 热门国家、地区 -->
         <div class="selectcountry-container-city city-hot">
-          <div class="country-title">热门国家/地区</div>
+          <div class="country-title">{{$t('address.selectcountry.hotarea')}}</div>
           <ul class="city-list">
             <li v-for="item in hotNation">
-              <span class="city" @click.stop="onCountryConfirm(item)">
+              <span class="city" @click.stop="onCountryConfirm(item)" v-show="locale === 'zh-cn'">
                 {{item.country_cn}}
+              </span>
+              <span class="city" @click.stop="onCountryConfirm(item)" v-show="locale === 'en'">
+                {{item.country_en}}
               </span>
             </li>
           </ul>
@@ -93,7 +97,7 @@
             </li>
           </ul>
           <p v-show="alphabetResult.length === 0" style="color: white;font-size: 1.6rem;">
-            暂无首字母为 {{selectPinyin}} 的国家或地区
+            {{$t('address.selectcountry.errorsearch', {'pinyin': selectPinyin})}}
           </p>
         </div>
 
@@ -154,7 +158,8 @@ export default {
       ]
     }
   },
-  async created () {
+  created () {
+    console.log('111', this.$i18n.locale())
   },
   computed: {
     inputLen () {
@@ -165,7 +170,11 @@ export default {
       return false
     },
     inputPlaceHolder () {
-      return this.countryName || '输入国家名搜索'
+      const defaultT = this.$t('address.selectcountry.placeholder')
+      return this.countryName || defaultT
+    },
+    locale () {
+      return this.$i18n.locale()
     }
   },
   methods: {
@@ -272,23 +281,10 @@ export default {
      * @return {[type]}              [description]
      */
     onCountryConfirm (item) {
+      const name = this.locale === 'zh-cn' ? item.country_cn : item.country_en
       const country = {
         id: item.id,
-        name: item.country_cn,
-        code: item.country_code
-      }
-      this.$emit('listenCountryConfirm', country)
-      this.$router.go(-1)
-    },
-    /**
-     * [用户点击搜索结果的事件，返回新增页面]
-     * @param  {[type]} item [description]
-     * @return {[type]}      [description]
-     */
-    onClickSearchRes (item) {
-      const country = {
-        id: item.id,
-        name: item.country_cn,
+        name,
         code: item.country_code
       }
       this.$emit('listenCountryConfirm', country)
@@ -360,8 +356,16 @@ export default {
       this.inSearching = true
       this.$vux.loading.show()
       try {
+        let name = ''
+        let nameEn = ''
+        if (this.locale === 'zh-cn') {
+          name = val
+        } else {
+          nameEn = val
+        }
         const res = await geographyService.queryCountry({
-          name: val,
+          name,
+          nameEn,
           page: 1,
           rows: 50
         })

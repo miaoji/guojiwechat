@@ -20,5 +20,11 @@ export default {
   'address.remark': '备注',
   'address.remarktips': '         请添加备注(限50字)',
   'address.item.setdefaultnotice': '确定将这一地址设置为默认地址吗?',
-  'address.item.deletenotice': '确定删除这一地址吗?'
+  'address.item.deletenotice': '确定删除这一地址吗?',
+  'address.selectcountry.countryregiontips': '选择国家/地区',
+  'address.selectcountry.blanksearch': '搜索结果为空',
+  'address.selectcountry.recentsearch': '最近搜索',
+  'address.selectcountry.hotarea': '热门国家/地区',
+  'address.selectcountry.placeholder': '输入国家名搜索',
+  'address.selectcountry.errorsearch': '暂无首字母为 {pinyin} 的国家或地区'
 }

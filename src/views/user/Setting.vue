@@ -2,7 +2,7 @@
   <div class="setting">
     <div class="container">
       <group
-        label-width="10rem"
+        label-width="11rem"
         label-align="left"
       >
         <selector 

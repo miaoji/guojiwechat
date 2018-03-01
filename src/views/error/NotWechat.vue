@@ -2,17 +2,17 @@
   <div class="customservice">
     <div>
       <div class="customservice-title">
-        <p>国际快递服务中心</p>
+        <p>{{$t('comname')}}</p>
       </div>
       <div class="customservice-num flex">
-        <p>请在微信中访问!</p>
+        <p>{{$t('error.viewinwechat')}}!</p>
       </div>
       <div class="customservice-num flex">
-        <p>客服热线</p>
+        <p>{{$t('error.hotline')}}</p>
         <p>{{hotline}}</p>
       </div>
       <div class="customservice-num flex">
-        <p>公众号二维码</p>
+        <p>{{$t('error.publicwechatqrcode')}}</p>
         <p>
           <img src="../../assets/images/wechat_qr.jpg" alt="公众号二维码">
         </p>

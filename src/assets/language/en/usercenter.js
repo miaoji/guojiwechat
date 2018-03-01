@@ -11,6 +11,6 @@ export default {
   'usercenter.mysale': 'My promotion',
   'usercenter.mycoupon': 'My coupons',
   'usercenter.verifyrealname': 'Certification',
-  'usercenter.customerservicephone': 'customer service hotline',
-  'usercenter.customerserviceqr': 'Customer service qr code'
+  'usercenter.customerservicephone': 'hotline',
+  'usercenter.customerserviceqr': 'QR code'
 }

@@ -11,6 +11,8 @@ import route from './route'
 import bottom from './bottom'
 import component from './component'
 import bussiness from './bussiness'
+import boot from './boot'
+import error from './error'
 
 const locale = Object.assign(
 common,
@@ -26,6 +28,8 @@ route,
 promote,
 component,
 bussiness,
+boot,
+error,
 {}
 )
 

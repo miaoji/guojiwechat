@@ -28,13 +28,16 @@ export default {
   'nodata': '没有更多数据啦',
   'copy': '复制',
   'create': '创建',
+  'createtime': '创建时间',
   'confirmedit': '确认修改',
   'saveedit': '保存修改',
   'backhome': '返回首页',
   'leftdeleteandedit': '左滑删除/编辑',
   'systemlanguage': '系统语言',
+  'recorde': '记录',
   // 页面动作 click
   'click.add': '点击添加',
   'click.copy': '点击复制',
-  'click.check': '点击查看'
+  'click.check': '点击查看',
+  'click.goback': '点击返回'
 }

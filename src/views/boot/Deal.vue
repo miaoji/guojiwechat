@@ -3,37 +3,37 @@
     <div class="container">
       <div class="bootdetail-detail">
         <div class="bootdetail-detail-box">
-          <span class="bootdetail-detail-box__title">订单号</span>
+          <span class="bootdetail-detail-box__title">{{$t('business.orderno')}}</span>
           <span class="bootdetail-detail-box__yin">:</span>
           <span class="bootdetail-detail-box__content">{{bootData.orderNo}}</span>
         </div>
         <div class="bootdetail-detail-box">
-          <span class="bootdetail-detail-box__title">补价金额</span>
+          <span class="bootdetail-detail-box__title">{{$t('boot.money')}}</span>
           <span class="bootdetail-detail-box__yin">:</span>
           <span class="bootdetail-detail-box__content">{{bootData.priceSpread / 100}}元</span>
         </div>
         <div class="bootdetail-detail-box">
-          <span class="bootdetail-detail-box__title">补价原因</span>
+          <span class="bootdetail-detail-box__title">{{$t('boot.reason')}}</span>
           <span class="bootdetail-detail-box__yin">:</span>
           <span class="bootdetail-detail-box__content">{{bootData.reason}}</span>
         </div>
         <div class="bootdetail-detail-box">
-          <span class="bootdetail-detail-box__title">创建时间</span>
+          <span class="bootdetail-detail-box__title">{{$t('createtime')}}</span>
           <span class="bootdetail-detail-box__yin">:</span>
           <span class="bootdetail-detail-box__content">{{bootData.createTime | formatedatestamp}}</span>
         </div>
         <div class="bootdetail-detail-box">
-          <span class="bootdetail-detail-box__title">补价状态</span>
+          <span class="bootdetail-detail-box__title">{{$t('boot.status')}}</span>
           <span class="bootdetail-detail-box__yin">:</span>
           <span class="bootdetail-detail-box__content">{{bootData.status | bootstatus}}</span>
         </div>
       </div>
       <div class="submit-btn" v-show="bootData.status !== 2"> 
-        <button class="normal" @click="submitBoot">提交付款</button>
+        <button class="normal" @click="submitBoot">{{$t('business.submittopay')}}</button>
       </div>
       <div class="pay-btn linkto" v-show="bootData.status === 2">
         <h1>
-          <router-link to="usercenter">前往主页</router-link>
+          <router-link to="usercenter">{{$t('backhome')}}</router-link>
         </h1>
       </div>
     </div>

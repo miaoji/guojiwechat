@@ -4,33 +4,33 @@
       <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
       <div v-if="error" class="error">
         <div class="error-item">{{error}}</div>
-        <button class="pay" @click.stop="goBack">点击返回</button>
+        <button class="pay" @click.stop="goBack">{{$t('click.goback')}}</button>
       </div>
       <div v-else>
         <div v-for="item, index in data"class="list-main" >
-          <div class="box-title"><span>|</span>记录 {{index+1}}</div>
+          <div class="box-title"><span>|</span>{{$t('recorde')}} {{index+1}}</div>
           <div class="box-item">
-            <span class="list-box-left">订单号</span>
+            <span class="list-box-left">{{$t('business.orderno')}}</span>
             <span class="list-box-ico">:</span>
             <span class="list-box-right">{{orderNo}}</span>
           </div>
           <div class="box-item">
-            <span class="list-box-left">补价金额</span>
+            <span class="list-box-left">{{$t('boot.money')}}</span>
             <span class="list-box-ico">:</span>
             <span class="list-box-right">¥{{item.priceSpread / 100}}</span>
           </div>
           <div class="box-item">
-            <span class="list-box-left">补价原因</span>
+            <span class="list-box-left">{{$t('boot.reason')}}</span>
             <span class="list-box-ico">:</span>
             <span class="list-box-right">{{item.reason}}</span>
           </div>
           <div class="box-item">
-            <span class="list-box-left">订单状态</span>
+            <span class="list-box-left">{{$t('business.orderstatus')}}</span>
             <span class="list-box-ico">:</span>
             <span class="list-box-right">{{item.status | bootstatus}}</span>
           </div>
           <div class="box-item">
-            <span class="list-box-left">创建时间</span>
+            <span class="list-box-left">{{$t('createtime')}}</span>
             <span class="list-box-ico">:</span>
             <span class="list-box-right">{{item.createTime | formatedatestamp}}</span>
           </div>
@@ -63,10 +63,10 @@ export default {
     if (res.code === 200 && res.obj) {
       this.data = res.obj
     } else if (res.code === 200 && !res.obj) {
-      this.error = '暂无改价记录'
+      this.error = this.$t('boot.blank')
       return
     } else if (res.code !== 200) {
-      this.error = '网络错误'
+      this.error = this.$t('error.internet')
     }
   },
   methods: {
