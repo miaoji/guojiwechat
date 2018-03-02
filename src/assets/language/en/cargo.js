@@ -2,7 +2,7 @@ export default {
   'cargo.list': 'Consolidation list',
   'cargo.addpackgetips': '您的快递可能合并成普货和特货走不同渠道，最多添加50件',
   'cargo.list.all': 'All',
-  'cargo.list.waitcargo': 'Mergeing',
+  'cargo.list.waitcargo': 'Merging',
   'cargo.list.waitpay': 'Paying',
   'cargo.list.waitdelivery': 'Picking',
   'cargo.list.done': 'Done',

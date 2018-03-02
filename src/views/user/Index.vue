@@ -21,6 +21,7 @@
         <div class="usercenter-orderfunc-box--info">
           <img :src="item.src" alt="">
           <span>{{item.name}}</span>
+          <span class="drawing-pin" v-show="item.key === 'coupon'">{{couponsLen}}</span>
         </div>
         <span class="arrow-left"></span>
       </div>
@@ -75,6 +76,7 @@ import { storage } from '@/utils'
 import { hotline } from '@/utils/config'
 import logoPng from '@/assets/images/logo.jpg'
 import { getUserinfo as getSpreadUserinfo } from '@/services/promote'
+import { query as queryCoupon } from '@/services/coupon'
 
 export default {
   name: 'usercenter',
@@ -83,6 +85,8 @@ export default {
     this.hotline = hotline
     this.logoPng = logoPng
     this.getSpreadUser()
+    // 获取优惠券数量
+    this.getCouponNum()
   },
   directives: {
     TransferDom
@@ -110,36 +114,43 @@ export default {
     },
     orderfunc () {
       return [{
+        key: 'address',
         src: require('../../assets/images/min_ico_add.png'),
         name: this.$i18n.translate('usercenter.address'),
         path: '/address',
         show: true
       }, {
+        key: 'customerservice',
         src: require('../../assets/images/min_ico_kef.png'),
         name: this.$i18n.translate('usercenter.customerservice'),
         func: 'showDialog',
         show: true
       }, {
+        key: 'orderlist',
         src: require('../../assets/images/min_ico_pac.png'),
         name: this.$i18n.translate('usercenter.sendorder'),
         path: '/order/list',
         show: true
       }, {
+        key: 'cargolist',
         src: require('../../assets/images/cargo_ico.png'),
         name: this.$i18n.translate('usercenter.cargoorder'),
         path: '/cargo/list',
         show: true
       }, {
+        key: 'promote',
         src: require('../../assets/images/promote/sales.png'),
         name: this.$i18n.translate('usercenter.mysale'),
         path: '/promote',
         show: (this.spreadUserId !== null)
       }, {
+        key: 'coupon',
         src: require('../../assets/images/coupon.png'),
         name: this.$i18n.translate('usercenter.mycoupon'),
         path: '/coupon',
         show: true
       }, {
+        key: 'verifyrealname',
         src: require('../../assets/images/min_ico_rea.png'),
         name: this.$i18n.translate('usercenter.verifyrealname'),
         show: false
@@ -154,7 +165,8 @@ export default {
       isShow: false,
       spreadUserId: null,
       isReresh: false,
-      dialogshow: false
+      dialogshow: false,
+      couponsLen: 0
     }
   },
   methods: {
@@ -178,6 +190,19 @@ export default {
     },
     showDialog () {
       this.dialogshow = true
+    },
+    async getCouponNum () {
+      const openid = storage({key: 'openid'})
+      try {
+        const couponRes = await queryCoupon({
+          openid
+        })
+        if (couponRes.code === 200) {
+          this.couponsLen = couponRes.obj.length
+        }
+      } catch (e) {
+        console.error(e)
+      }
     },
     refreshUser () {
       storage({
@@ -347,6 +372,14 @@ export default {
         background-position-x: 87%;
       }
     }
+  }
+
+  .drawing-pin {
+    background: red;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 1.2rem;
+    color: white;
   }
 }
 </style>
