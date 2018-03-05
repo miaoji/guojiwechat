@@ -13,6 +13,7 @@ import component from './component'
 import bussiness from './bussiness'
 import boot from './boot'
 import error from './error'
+import assess from './assess'
 
 const locale = Object.assign(
 common,
@@ -30,6 +31,7 @@ component,
 bussiness,
 boot,
 error,
+assess,
 {}
 )
 

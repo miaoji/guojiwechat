@@ -2,87 +2,91 @@
   <div class="assess">
     <div class="assess-container" v-show="mainContainerShow">
       <div class="assess-container-select" >
-        <div class="assess-container-title">运费估算</div>
+        <div class="assess-container-:title">{{$t('assess.freight')}}</div>
         <group label-width="8rem" label-align="left">
           <x-input
-            title="国家/地区"
+            :title="$t('assess.country')"
             @click.native="onClickCountry"
-            placeholder="请选择国家/地区"
+            :placeholder="$t('assess.selectCountries')"
             type="text"
             required
             v-model="country['name']"
             text-align="right"
           ></x-input>
           <PackageProduct
-            title="产品类型"
-            placeholder="请选择产品类型"
-            showWarningText="请先选择国家"
+            :title="$t('assess.product')"
+            :placeholder="$t('assess.selectProductType')"
+            :showWarningText="$t('assess.selectCountry')"
             :countryId="country['id']"
             @listenValChange="onProductChange"
           >
           </PackageProduct>
           <x-input
-            title="包裹重量/kg"
+            :title="$t('assess.weight')"
             type="number"
             v-model="weight"
             text-align='right'
-            placeholder="请填写包裹重量"
+            :placeholder="$t('assess.fillWeight')"
           >
           </x-input>
           <selector 
             direction="rtl"
             v-model="isOffer"
-            placeholder="是否保价"
-            title="是否保价"
+            :placeholder="$t('assess.selectFreight')"
+            :title="$t('assess.selectFreight')"
             name="isoffer"
             :options="isOfferOption"
             @on-change='isofferShowChange'
           >
           </selector>
-          <div class="float-icon"><span class="float-icon-img" @click='isofferPromptInfoShow = true'><img src="../../assets/images/question.png"></span></div>
+          <div class="float-icon">
+            <span class="float-icon-img" @click='isofferPromptInfoShow = true'>
+              <img src="../../assets/images/question.png">
+            </span>
+          </div>
           <x-input
-            title="保价金额"
+            :title="$t('assess.premium')"
             v-model="offer"
             v-show='isofferShow'
             :max="maxOffer"
             type="number"
             text-align='right'
-            placeholder="请填写保价金额"
+            :placeholder="$t('assess.fillFreight')"
             @on-change='offerChange'
           >
           </x-input>
         </group>
       </div>
       <div class="submit-btn"> 
-        <button class="normal" @click="validateInfo">提交</button>
+        <button class="normal" @click="validateInfo">{{$t('assess.send')}}</button>
       </div>
-      <div style="height:200px"></div>
+      <!-- <div style="height:200px"></div> -->
     </div>
     <!-- 估价信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="popupShow" class="send-package-dialog">
-        <h1>估价结果</h1>
+        <h1>{{$t('assess.result')}}</h1>
         <div class="package-close" @click="popupShow = false">
           <span class="vux-close"></span>
         </div>
         <br/>
         <div class="package-prompt-info">
-          运费价格 : {{price}} 元
+          {{$t('assess.price', {'num': price})}}
         </div>
         <div class="submit-btn"> 
-          <button class="normal" @click="toSend">前往寄件</button>
+          <button class="normal" @click="toSend">{{$t('assess.goSend')}}</button>
         </div>
       </x-dialog>
     </div>
     <!-- 保价提示信息弹出框 -->
     <div v-transfer-dom>
       <x-dialog v-model="isofferPromptInfoShow" class="send-package-dialog">
-        <h1>保价说明</h1>
+        <h1>{{$t('assess.insuredTitle')}}</h1>
         <div class="package-close" @click="isofferPromptInfoShow = false">
           <span class="vux-close"></span>
         </div>
         <div class="offer-prompt-info">
-          此项服务以自愿为原则。寄件人选择此项服务时，应确定保价金额与每个邮件内件实际价值一致，每个邮件保价金额最高限额为二十万元人民币，保价费按申报的保价金额的0.5%收取，每件最低收取1.00元人民币。未按规定交纳保价费的快件，不属于保价快件。
+          {{$t('assess.insuredInfo')}}
         </div>
       </x-dialog>
     </div>
@@ -158,10 +162,10 @@ export default {
       // 0 不保价 1 保价
       isOfferOption: [{
         key: 0,
-        value: '否'
+        value: this.$t('assess.no')
       }, {
         key: 1,
-        value: '是'
+        value: this.$t('assess.yes')
       }],
       // 订单配置 包裹类型&&产品类型
       packagePrductVal: []
@@ -169,9 +173,9 @@ export default {
   },
   computed: {
     packageTypeSelectContrl () {
-      let placeholder = '选择包裹类型'
+      let placeholder = this.$t('assess.fillPackageType')
       if (!this.pickupAddress['countryId']) {
-        placeholder = '请先选择收件地址'
+        placeholder = this.$t('assess.fillReceiver')
       }
       return {
         placeholder
@@ -184,7 +188,7 @@ export default {
         this.$refs.packagePrductPicker.onHide()
         this.$vux.toast.show({
           type: 'warn',
-          text: '请选择国家',
+          text: this.$t('assess.selectCountry'),
           width: '15rem'
         })
         return
@@ -234,7 +238,7 @@ export default {
       if (!this.country.id) {
         this.$vux.toast.show({
           type: 'warn',
-          text: '请选择国家',
+          text: this.$t('assess.selectCountry'),
           width: '15rem'
         })
         return
@@ -243,7 +247,7 @@ export default {
       if (!(this.weight !== 0 && JSON.parse(this.packageType).maxRange >= this.weight && JSON.parse(this.packageType).minRange <= this.weight)) {
         this.$vux.toast.show({
           type: 'warn',
-          text: '请根据产品类型的范围填写重量',
+          text: this.$t('assess.fillProductType'),
           width: '20rem'
         })
         return
@@ -251,7 +255,7 @@ export default {
       if (this.isOffer === 1 && !(this.offer)) {
         this.$vux.toast.show({
           type: 'warn',
-          text: '请填写保费',
+          text: this.$t('assess.fillPremium'),
           width: '15rem'
         })
         return
@@ -283,7 +287,7 @@ export default {
         this.$vux.loading.hide()
         this.$vux.toast.show({
           type: 'warn',
-          text: '获取失败,请重试',
+          text: this.$t('assess.restart'),
           width: '15rem'
         })
       }
@@ -310,9 +314,15 @@ export default {
 @import '~vux/src/styles/close';
 
 .assess {
+  position: absolute;
+  top: 0px;
+  bottom:0px;
+  left: 0px;
+  right: 0px;
+
   .purple-bg;
-  padding: 10px;
-  min-height: 95vh;
+  padding: 3rem 1rem 0px;
+  // min-height: 95vh;
   &-container {
     border-radius: 5px;
     font-size: 1.5rem;
@@ -362,16 +372,17 @@ export default {
 
 .assess {
   &-container {
-    .purple-bg;
-    padding: 0px;
-    padding-top: 39px;
+    // height: 90vh;
+    // .purple-bg;
+    padding: 0.5rem;
+    // padding-top: 39px;
     overflow: hidden;
     a {
       .send-container-address {
         color: #333;
       }
     }
-    &-title {
+    &-:title {
       color: #333;
       padding-top: 0.6rem;
       font-size: 2rem;
@@ -458,7 +469,7 @@ export default {
       .container-padding {
         padding: 0 11px 10px 18px;
       }
-      &__title {
+      &__:title {
         padding-bottom: 1rem;
         align-content: center;
         justify-content: space-between;
