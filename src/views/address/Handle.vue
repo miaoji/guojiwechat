@@ -108,7 +108,7 @@ import * as mailingAddrService from '@/services/mailingAddr'
 import * as receiveAddrService from '@/services/receiveAddr'
 import * as redisService from '@/services/redis'
 import { selectProvCityCounty } from '@/services/geography'
-import { reg as regUtil, storage, onlyCnOrEn } from '@/utils'
+import { reg as regUtil, storage } from '@/utils'
 import CascadeAddress from '@/components/CascadeAddress'
 import * as map from '@/utils/map'
 
@@ -363,14 +363,14 @@ export default {
         })
         return false
       }
-      if (!onlyCnOrEn(this.name) || !onlyCnOrEn(this.address)) {
-        this.$vux.toast.show({
-          text: '姓名和地址只能为中文或者英文',
-          type: 'warn',
-          width: '22rem'
-        })
-        return false
-      }
+      // if (!onlyCnOrEn(this.name) || !onlyCnOrEn(this.address)) {
+      //   this.$vux.toast.show({
+      //     text: '姓名和地址只能为中文或者英文',
+      //     type: 'warn',
+      //     width: '22rem'
+      //   })
+      //   return false
+      // }
       const region = this.region
       if (this.country['name'] === '中国' && (!region['prov'] || !region['city'] || !region['county'])) {
         this.$vux.toast.show({
