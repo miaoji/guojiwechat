@@ -34,6 +34,8 @@ https://github.com/zenorocha/clipboard.js
 
 ### Git
 
+add test
+
 git log remotes/origin/master
 
 ### cn NO
