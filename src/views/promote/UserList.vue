@@ -21,13 +21,10 @@
           class="userlist_scroller"
         >
           <mj-spinner type="line" slot="refresh-spinner"></mj-spinner>
-          <div class="content" v-for="(value, key, index) in incomeList">
-            <p class="time">
-              {{key}}
-            </p>
+          <div class="content">
             <group label-width="11rem" label-align="left">
               <cell
-                v-for="(items, index) in value" :key="index"
+                v-for="(items, index) in incomeList" :key="index"
                 :title="items.nickName"
                 :value="$t('promoteUD.amount')+'￥' + items.totalAmount / 100"
                 @click.native="showUserDetail(items)"
@@ -58,9 +55,9 @@ export default {
     return {
       nickNameV: '',
       nickName: '',
-      incomeList: null,
+      incomeList: [],
       page: 1,
-      rows: 10,
+      rows: 20,
       total: 0,
       spreadUserId: 0,
       datePickerVal: '2017-02',
@@ -81,7 +78,6 @@ export default {
   methods: {
     searchNickname () {
       if (this.nickNameV) {
-        console.log('nickName', this.nickName)
         this.nickName = this.nickNameV
         this.initData()
         this.nickName = ''
@@ -137,19 +133,36 @@ export default {
         }
         return
       }
+      if (this.page === 1) {
+        this.incomeList = data
+        return
+      }
+      this.incomeList.push.apply(this.incomeList, data)
+    },
+    reduceDataOld (data) {
+      if (!Array.isArray(data)) {
+        if (this.page === 1) {
+          this.incomeList = {}
+        }
+        return
+      }
+      if (this.page === 1) {
+        this.incomeList = {}
+      }
+      let newList = {}
       const len = data.length
-      this.incomeList = {}
       for (let i = 0; i < len; i++) {
         let item = data[i]
         const date = new Date(item['subscribeTime'])
         const yearMonth = format('yyyy-MM', date)
         const monthDay = format('MM-dd', date)
-        if (!this.incomeList[yearMonth]) {
-          this.incomeList[yearMonth] = []
+        if (!newList.hasOwnProperty(yearMonth)) {
+          newList[yearMonth] = []
         }
         item.day = monthDay
-        this.incomeList[yearMonth].push(this.dealEarningItem(item))
+        newList[yearMonth].push(this.dealEarningItem(item))
       }
+      this.incomeList = Object.assign({}, this.incomeList, newList)
     },
     dealEarningItem (item) {
       let data = {}
@@ -161,7 +174,6 @@ export default {
       return data
     },
     async refresh (done) {
-      this.incomeList = null
       this.initData()
       setTimeout(() => {
         done(true)
@@ -247,6 +259,7 @@ export default {
         padding-top: 48px!important;
         box-sizing: border-box;
         .content {
+          padding-top: 10px;
           p.time {
             text-align: left;
             padding: 10px 15px;

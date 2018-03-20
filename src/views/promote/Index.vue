@@ -36,7 +36,7 @@
             <span class="scale">，{{'promote.two' | translate}}{{ratioSecond}}%</span>
             <span class="divide-tips--link" @click.stop="promotionruleShow = true">{{'promote.rule' | translate}}</span>
           </div>
-          <div class="divide-tips">
+          <div class="divide-tips" v-show="false">
             {{'promote.bonusGrade' | translate}} - 
             <span class="scale">{{consumptionName}}</span>
             ，{{'promote.proportioninfo' | translate}}

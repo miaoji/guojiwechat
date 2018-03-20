@@ -21,7 +21,7 @@ export default {
   'promote.pushtime': '推送时间',
   'promote.withdrawals': '申请提现',
   'promote.ruleExplain': '分润比例规则说明',
-  'promote.explainInfo': '分润比例为一级分润8%，二级分润5%不可改变。分红等级可变，当团队累计消费金额达到一定额度时分红等级便会提升，每次提升月末分红金额都会增加。最高不超过100%。',
+  'promote.explainInfo': '分润比例为一级分润3%，二级分润6%不可改变。分红等级可变，当团队累计消费金额达到一定额度时分红等级便会提升，每次提升月末分红金额都会增加。最高不超过100%。',
   'promote.shareSuccess': '分享朋友成功!',
   // EarningDetail.vue
   'promoteED.IncomeType': '收益类型',
