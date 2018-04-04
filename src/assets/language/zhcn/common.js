@@ -21,6 +21,7 @@ export default {
   'width': '宽度{unit}',
   'height': '高度{unit}',
   'weight': '重量{unit}',
+  'weightNounit': '重量',
   'volumeweight': '体积重',
   'pickS': '收',
   'sendS': '寄',

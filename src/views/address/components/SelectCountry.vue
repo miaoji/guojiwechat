@@ -159,7 +159,6 @@ export default {
     }
   },
   created () {
-    console.log('111', this.$i18n.locale())
   },
   computed: {
     inputLen () {

@@ -602,7 +602,7 @@ export default {
       }
       let weight = options.weight
       let volumeWeight = options.volumeWeight
-      const textWeight = this.$t('weight')
+      const textWeight = this.$t('weightNounit')
       const textVolumeweight = this.$t('volumeweight')
       return `${textWeight}${weight}kg，${textVolumeweight}${volumeWeight}`
     },

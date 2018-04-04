@@ -56,7 +56,6 @@
           :title="'address.postcode' | translate"
           :placeholder="'address.postcodetips' | translate"
           type="text"
-          required
           v-model="postcode"
           :max="20"
           text-align="right"
@@ -388,14 +387,14 @@ export default {
         })
         return false
       }
-      if (!regUtil.checkMobile(this.mobile)) {
-        this.$vux.toast.show({
-          text: '手机号格式不对，请重新填写',
-          type: 'warn',
-          width: '19rem'
-        })
-        return false
-      }
+      // if (!regUtil.checkMobile(this.mobile)) {
+      //   this.$vux.toast.show({
+      //     text: '手机号格式不对，请重新填写',
+      //     type: 'warn',
+      //     width: '19rem'
+      //   })
+      //   return false
+      // }
       return true
     },
     async handleAddress () {
