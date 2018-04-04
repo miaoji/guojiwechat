@@ -33,6 +33,7 @@ export default {
   'backhome': 'back homepage',
   'leftdeleteandedit': 'The left slide to delete/edit',
   'systemlanguage': 'system language',
+  'selecttoput': 'optional',
   // 页面动作 click
   'click.add': 'click to add',
   'click.copy': 'click to copy',

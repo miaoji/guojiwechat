@@ -124,19 +124,6 @@
             @on-change='offerChange'
           >
           </x-input>
-          <selector 
-            :title="$t('business.isback')"
-            :placeholder="$t('business.isbackexplain')"
-            direction="rtl"
-            v-model="isBack"
-            name="district"
-            :options="isBackOption"
-          >
-          </selector>
-          <div class="float-icon">
-            <span class="float-icon-img" @click='districtPromptInfoShow = true'>
-            <img src="../../assets/images/question.png"></span>
-          </div>
           <x-textarea
             type="text"
             :title="$t('remark')"
@@ -153,58 +140,9 @@
       </div>
       <img class="bor-bottom" src="../../assets/images/bor_bot.png" alt="bor-bottom">
       <!-- 订单包裹展示 -->
-      <p  class="intro-p">{{$t('business.packagedetail')}}</p>
       <div class="send-container-package">
         <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
-          <div class="send-container-package__title">
-            <div class="question-icon" @click.stop='packagePromptInfoShow = true'>
-              <span>
-                {{'business.packagedetail' | translate}}
-              </span>
-              <img src="../../assets/images/question.png" />
-            </div>
-            <div @click="handlePackageShow">
-              <button type="" class="pay" >{{'click.add' | translate}}</button>
-            </div>
-          </div>
-          <div class="packages__table">
-            <table>
-              <thead>
-                <tr>
-                  <th>{{'business.chinesename' | translate}}</th>
-                  <th>{{'number' | translate}}</th>
-                  <th>{{'price' | translate}}/{{'rmb' | translate}}</th>
-                  <th>{{'value' | translate}}/{{'rmb' | translate}}</th>
-                </tr>
-              </thead>
-              <tbody class="package-table">
-                <tr v-for="item, index in packageTable">
-                  <td>
-                    {{item['nameCn']}}
-                  </td>
-                  <td>
-                    {{item['quantity']}}
-                  </td>
-                  <td>
-                    {{item['unitPrice']}}
-                  </td>
-                  <td>
-                    {{item['quantity']*item['unitPrice']}}
-                  </td>
-                  <td class="tools">
-                    <button type="" class="pay" @click="delTableItem(index)">{{'delete' | translate}}</button>
-                    <button type="" class="pay" @click="editTableItem(item, index)">{{'edit' | translate}}</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="tips" v-show="packageTable.length > 0">           
-            <tips :content="$t('leftdeleteandedit')"></tips>
-            <tips 
-              :content="$t('send.presentpackagenumber', {'num': packageTableLength})"></tips>
-          </p>
           <div class="send-container-package__money">
             {{'send.prepay' | translate}}：￥ <span>{{advanceShow}}</span>
           </div>
@@ -239,7 +177,7 @@
         </div>
         <div class="dialog-content">
           <div class="dialog-content--weight">
-            {{'business.productvolumweight' | translate}}
+            {{'business.productvolumweight' | translate}}({{'selecttoput' | translate}})
           </div>
           <div class="dialog-content--input volume">
            <input 
@@ -249,14 +187,14 @@
              :placeholder="$t('length', {'unit': '/cm'})"></input>
            <span>x</span>
            <input 
-             title="" 
-             type="number" 
+             title=""
+             type="number"
              show-clear="false" 
-             required 
+             required
              v-model="width" 
              :placeholder="$t('width', {'unit': '/cm'})"></input>
            <span>x</span>
-           <input 
+           <input
              title="" 
              type="number" 
              required 
@@ -597,7 +535,7 @@ export default {
     }),
     showProductSpecs () {
       const options = this.orderOptions
-      if (Number(options.weight) === 0 || !options.weight || Number(options.volume) === 0 || !options.volume) {
+      if (Number(options.weight) === 0 || !options.weight) {
         return this.$t('business.selectproductspecification')
       }
       let weight = options.weight
@@ -1053,14 +991,6 @@ export default {
       if (Number(this.weight) > this.maxWeight || Number(this.weight) < this.minWeight || !this.weight) {
         this.$vux.toast.show({
           text: `重量不能大于${this.maxWeight}kg不能小于${this.minWeight}kg`,
-          width: '18rem',
-          type: 'warn'
-        })
-        return
-      }
-      if (Number(this.volume) <= 0 || !this.volume) {
-        this.$vux.toast.show({
-          text: '体积不能小于0',
           width: '18rem',
           type: 'warn'
         })

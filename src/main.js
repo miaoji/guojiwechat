@@ -102,8 +102,7 @@ router.afterEach((to, from) => {
     key: 'locale'
   })
   let {language} = store.state.user.userinfo
-  language = language.toLowerCase()
-  language = language === 'zh_cn' ? 'zh-cn' : 'en'
+  language = language === 'zh_CN' ? 'zh-cn' : 'en'
   if (!locale) {
     locale = language
   }

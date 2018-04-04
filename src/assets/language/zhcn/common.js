@@ -36,6 +36,7 @@ export default {
   'leftdeleteandedit': '左滑删除/编辑',
   'systemlanguage': '系统语言',
   'recorde': '记录',
+  'selecttoput': '选填',
   // 页面动作 click
   'click.add': '点击添加',
   'click.copy': '点击复制',
