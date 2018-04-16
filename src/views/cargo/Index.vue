@@ -50,7 +50,7 @@
           </router-link>
           <!-- 订单配置选择 -->
           <div class="options">
-            <group label-width="8rem" label-align="left">
+            <group label-width="6rem" label-align="left">
               <cell
                 :title="$t('business.customerno')"
                 :value="userinfo.customerNo"
@@ -75,6 +75,7 @@
                         ['0',
                           [
                             ['provinces', ['province']],
+                            ['districts', ['district']],
                             'transferAddress', 
                             'transferName',
                             'transferMobile'
