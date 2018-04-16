@@ -48,3 +48,11 @@ export async function getWithdrawList (data) {
     data
   })
 }
+
+export async function getBankList () {
+  return request({
+    url: promoteApi.bankList,
+    method: 'get',
+    auth: true
+  })
+}

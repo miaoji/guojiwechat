@@ -47,10 +47,27 @@
         <x-input
           :title="accountTitle"
           type="text"
-          v-show="withdrawType"
+          v-show="withdrawType ==='wx'||withdrawType === 'alipay'"
           v-model="accountNumber"
           :placeholder="$t('promoteHW.pleaseFill') + accountTitle" 
           text-align="right"
+          required
+        ></x-input>
+        <selector
+          title="银行"
+          v-show="withdrawType === 'bank'"
+          placeholder="请选择银行卡"
+          :options="bankOptions"
+          v-model="bankCode"
+          direction="rtl"
+          required
+        ></selector>
+        <x-input
+          v-show="withdrawType === 'bank'"
+          title="银行卡账号"
+          placeholder="请输入您的银行卡账号"
+          text-align="right"
+          v-model="accountNumber"
           required
         ></x-input>
       </group>
@@ -74,16 +91,23 @@ import { mapGetters } from 'vuex'
 /* eslint-disable no-unused-vars */
 import { checkMobile } from '@/utils/reg'
 import Tips from '@/components/Tips'
-import { getUserinfo, createWithdraw } from '@/services/promote'
+import { getUserinfo, createWithdraw, getBankList } from '@/services/promote'
 
 export default {
   name: 'handlewithdraw',
   data () {
     return {
+      bankCode: '',
+      bankNumber: '',
+      bankOptions: [{
+        key: '1003',
+        value: '邮政'
+      }],
       spreadUserId: 0,
       netIncome: 0,
-      name: '',
-      mobile: '',
+      name: '汪留印',
+      mobile: '18255458650',
+      accountNumber: '6221883640004379047',
       money: null,
       withdrawType: null,
       withdrawTypeOption: [{
@@ -92,8 +116,10 @@ export default {
       }, {
         key: 'alipay',
         value: this.$t('promoteHW.aliPay')
+      }, {
+        key: 'bank',
+        value: '银行卡'
       }],
-      accountNumber: '',
       inLoading: false
     }
   },
@@ -104,6 +130,7 @@ export default {
   },
   async created () {
     await this.initData()
+    await this.getBankList()
   },
   mounted () {
   },
@@ -140,17 +167,44 @@ export default {
       }
     },
     postData () {
+      let type
+      switch (this.withdrawType) {
+        case 'wx':
+          type = 0
+          break
+        case 'alipay':
+          type = 1
+          break
+        case 'bank':
+          type = 2
+          break
+        default:
+          break
+      }
       return {
         spreadUserId: this.spreadUserId,
         trueName: this.name,
         cash: this.money * 100,
         mobile: this.mobile,
-        type: this.withdrawType === 'wx' ? 0 : 1,
-        accountNumber: this.accountNumber
+        type,
+        accountNumber: this.accountNumber,
+        bankCode: this.bankCode
       }
     }
   },
   methods: {
+    async getBankList () {
+      const res = await getBankList()
+      console.log('res', res)
+      if (res.code === 200) {
+        this.bankOptions = res.obj.map((item) => {
+          return {
+            key: item.bank_code,
+            value: item.bank_name
+          }
+        })
+      }
+    },
     async initData () {
       try {
         const wxUserId = this.userid
@@ -191,15 +245,24 @@ export default {
         })
         return
       }
+      if (!this.bankCode) {
+        this.$vux.toast.show({
+          text: '请选择银行卡所在银行',
+          width: '20rem',
+          type: 'warn'
+        })
+        return
+      }
       try {
         this.inLoading = true
         const postData = this.postData
+        console.log('postData', postData)
         const res = await createWithdraw({
           ...postData
         })
         if (res.success && res.code === 200) {
           this.$vux.toast.show({
-            text: "'promoteHW.Submission' | translate",
+            text: this.$t('promoteHW.Submission'),
             width: '18rem',
             type: 'success'
           })
@@ -212,7 +275,7 @@ export default {
           return
         } else {
           this.$vux.toast.show({
-            text: res.msg || "'promoteHW.sendError' | translate",
+            text: res.msg || this.$t('promoteHW.sendError'),
             width: '18rem',
             type: 'warn'
           })

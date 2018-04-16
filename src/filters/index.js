@@ -289,7 +289,8 @@ export const withdrawtype = function (val) {
   }
   const list = {
     0: '微信',
-    1: '支付宝'
+    1: '支付宝',
+    2: '银行卡'
   }
   return list[val]
 }

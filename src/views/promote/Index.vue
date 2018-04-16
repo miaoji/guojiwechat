@@ -238,17 +238,17 @@ export default {
         link = link.replace('promote', 'promoteqr')
         console.log('link', link)
         window.wx.onMenuShareAppMessage({
-          title: "'promote.spreaQr' | translate",
-          desc: "'promote.myQr' | translate",
+          title: this.$t('promote.spreaQr'),
+          desc: this.$t('promote.myQr'),
           link,
           imgUrl: 'http://wx.qlogo.cn/mmopen/vi_32/UDZGqoED7TrhHdA34JSlmVdIcz2X30emabQGKekkAviadjJFu98dhadicT8ibY32aoYmEd2o2BwGedFAE7hG3ibYLA/0',
           type: 'link',
           dataUrl: '',
           success: function () {
-            alert("'promote.shareSuccess' | translate")
+            alert(this.$t('promote.shareSuccess'))
           },
           cancel: function () {
-            console.log("'promote.cancel' | translate")
+            console.log(this.$t('promote.cancel'))
           }
         })
       })
@@ -258,14 +258,14 @@ export default {
       link = link.replace('promote', 'promoteqr')
       window.wx.ready(function () {
         window.wx.onMenuShareTimeline({
-          title: "'promote.spreaQr' | translate",
+          title: this.$t('promote.spreaQr'),
           link,
           imgUrl: 'http://wx.qlogo.cn/mmopen/vi_32/UDZGqoED7TrhHdA34JSlmVdIcz2X30emabQGKekkAviadjJFu98dhadicT8ibY32aoYmEd2o2BwGedFAE7hG3ibYLA/0',
           success: function () {
-            alert("'promote.shareSuccess' | translate")
+            alert(this.$t('promote.shareSuccess'))
           },
           cancel: function () {
-            console.log("'promote.cancel' | translate")
+            console.log(this.$t('promote.cancel'))
           }
         })
       })
