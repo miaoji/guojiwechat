@@ -54,9 +54,9 @@
           required
         ></x-input>
         <selector
-          title="银行"
+          :title="$t('promoteHW.bank')"
           v-show="withdrawType === 'bank'"
-          placeholder="请选择银行卡"
+          :placeholder="$t('promoteHW.bankSelect')"
           :options="bankOptions"
           v-model="bankCode"
           direction="rtl"
@@ -64,8 +64,8 @@
         ></selector>
         <x-input
           v-show="withdrawType === 'bank'"
-          title="银行卡账号"
-          placeholder="请输入您的银行卡账号"
+          :title="$t('promoteHW.bankAccount')"
+          :placeholder="$t('promoteHW.fillBankAccount')"
           text-align="right"
           v-model="accountNumber"
           required
@@ -99,15 +99,12 @@ export default {
     return {
       bankCode: '',
       bankNumber: '',
-      bankOptions: [{
-        key: '1003',
-        value: '邮政'
-      }],
+      bankOptions: [],
       spreadUserId: 0,
       netIncome: 0,
-      name: '汪留印',
-      mobile: '18255458650',
-      accountNumber: '6221883640004379047',
+      name: '',
+      mobile: '',
+      accountNumber: '',
       money: null,
       withdrawType: null,
       withdrawTypeOption: [{
@@ -118,7 +115,7 @@ export default {
         value: this.$t('promoteHW.aliPay')
       }, {
         key: 'bank',
-        value: '银行卡'
+        value: this.$t('promoteHW.bankCard')
       }],
       inLoading: false
     }
@@ -247,7 +244,7 @@ export default {
       }
       if (!this.bankCode) {
         this.$vux.toast.show({
-          text: '请选择银行卡所在银行',
+          text: this.$t('promoteHW.bankSelect'),
           width: '20rem',
           type: 'warn'
         })
