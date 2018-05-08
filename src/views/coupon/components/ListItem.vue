@@ -98,14 +98,14 @@ export default {
   &--sended {
   }
   &--used {
-    background: url('http://oxou6bzgv.bkt.clouddn.com/coupon_used.png');
+    background: url('http://cms.mingz-tech.com/cdn/coupon_used.png');
     background-color: white;
     background-size: 20% 80%;
     background-position: 94% 43%;
     background-repeat: no-repeat;
   }
   &--expired {
-    background: url('http://oxou6bzgv.bkt.clouddn.com/coupon_expired.png');
+    background: url('http://cms.mingz-tech.com/cdn/coupon_expired.png');
     background-color: white;
     background-size: 20% 80%;
     background-position: 94% 43%;
