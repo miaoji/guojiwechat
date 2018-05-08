@@ -4,7 +4,7 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟本地
-    // url = 'http://192.168.0.231:8077/'
+    // url = 'http://192.168.231.239:8077/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/mzkd/'
     // 正式 app 云端服务 Wechat
@@ -201,7 +201,8 @@ export const promote = {
   levelinfo: url + 'api/spreadLevel/getByLevel',
   income: url + 'api/incomeRecord/index',
   withdraw: url + 'api/withdrawalsRecord/add',
-  withdrawlist: url + 'api/withdrawalsRecord/index'
+  withdrawlist: url + 'api/withdrawalsRecord/index',
+  bankList: url + 'api/wxBank/getAllBank'
 }
 
 // 推广-用户管理

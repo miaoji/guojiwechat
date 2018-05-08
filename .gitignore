@@ -59,6 +59,7 @@ typings/
 .node_repl_history
 
 config/index.js
+config/index_copy.js
 
 # Optional eslint cache
 .eslintcache
