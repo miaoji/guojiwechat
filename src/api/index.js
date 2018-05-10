@@ -167,7 +167,8 @@ export const sms = {
 // 物流信息
 export const expressRoute = {
   zto: url + 'wx/order/getOrderInfo',
-  kd100: url + 'api/order/queryByCompany'
+  kd100: url + 'api/order/queryByCompany',
+  bengal: url + 'api/route/getByOrderId'
 }
 
 // 快递公司

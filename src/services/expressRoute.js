@@ -22,3 +22,12 @@ export async function getKD100 (data) {
     data
   })
 }
+
+export async function getBengal (data) {
+  return request({
+    url: expressRouteApi.bengal,
+    method: 'get',
+    auth: true,
+    data
+  })
+}

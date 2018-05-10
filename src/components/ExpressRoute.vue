@@ -18,8 +18,8 @@
           </div>
         </div>
         <div class="expressroute-content--part">
-          <p>{{part.context}}</p>
-          <p>{{part.time}}</p>
+          <p >{{part.context || part.route}}</p>
+          <p>{{part.time || part.routeTime}}</p>
         </div>
       </div>
       <!-- 国内路由信息 -->
@@ -31,8 +31,8 @@
           </div>
         </div>
         <div class="expressroute-content--part">
-          <p >{{part.context}}</p>
-          <p>{{part.time}}</p>
+          <p >{{part.context || part.route}}</p>
+          <p>{{part.time || part.routeTime}}</p>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { getKD100 } from '@/services/expressRoute'
+import { getKD100, getBengal } from '@/services/expressRoute'
 import LoadToshow from '@/components/load/WithoutService'
 
 export default {
@@ -49,6 +49,10 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    bengalOrder: {
+      type: Boolean,
+      default: false
     },
     cnNo: {
       type: String,
@@ -88,11 +92,18 @@ export default {
     }
   },
   created () {
+    if (this.bengalOrder) {
+      console.log('这个订单是一个孟加拉订单')
+    }
     this.getRoute()
   },
   methods: {
     async getRoute () {
       this.state = 0
+      if (this.bengalOrder) {
+        this.handleBengalOrder()
+        return
+      }
       if (this.onlycn) {
         this.handelCnRoute()
         return
@@ -104,6 +115,23 @@ export default {
       if (!this.onlycn && !this.onlyintel) {
         this.handelAllRoute()
         return
+      }
+    },
+    async handleBengalOrder () {
+      try {
+        // 查询孟加拉信息
+        const Routes = await getBengal({orderId: this.$route.query.id})
+        if (Routes.code === 200 && Routes.obj && Routes.obj.length > 0) {
+          this.state = 1
+          this.intelTraces = Routes.obj
+          this.msg = '查询物流信息成功'
+        } else {
+          this.state = 2
+          this.msg = '暂未接入国际物流'
+        }
+      } catch (e) {
+        this.state = 2
+        this.msg = e.message
       }
     },
     async handelAllRoute () {
@@ -237,6 +265,9 @@ export default {
     cnNo (val, oldval) {
       this.getRoute()
     },
+    bengalOrder (val, oldval) {
+      this.getRoute()
+    },
     onlycn (val, oldval) {
       this.getRoute()
     },
@@ -257,8 +288,6 @@ export default {
 @import '../assets/styles/vars.less';
 
 .expressroute {
-  .container {
-  }
   &-load {
     text-align: center;
     padding: 10px;

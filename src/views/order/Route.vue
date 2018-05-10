@@ -21,6 +21,7 @@
               </p>
               <express-route
                 :cnNo="cnNo"
+                :bengalOrder="bengalOrder"
                 :cnCompany="cnCompany || 'zhongtong'"
                 :intelNo="intelNo"
                 :intelCompany="intelCompany"
@@ -120,6 +121,7 @@ export default {
       getBootStatusDone: false,
       cnCompany: '',
       cnNo: '',
+      bengalOrder: false,
       intelNo: '',
       intelCompany: '',
       packageShow: false,
@@ -176,8 +178,14 @@ export default {
             width: '18rem'
           })
         }
+        console.log('res', res)
         let orderInfo = res.obj
         this.orderInfo = orderInfo
+        // 当订单的orderType===4的时候表示这个订单是一个孟加拉订单
+        if (orderInfo.orderType === 4) {
+          this.bengalOrder = true
+          return
+        }
         // 订单类型 0 直邮 1 集运
         this.orderType = orderInfo.type || 0
         this.cnNo = orderInfo.cnNo
