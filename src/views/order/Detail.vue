@@ -293,6 +293,7 @@
               </p>
               <express-route
                 :cnNo="cnNo"
+                :bengalOrder="bengalOrder"
                 :cnCompany="cnCompany || 'zhongtong'"
                 :intelNo="intelNo"
                 :intelCompany="intelCompany"
@@ -392,6 +393,7 @@ export default {
         val: 0,
         id: 0
       },
+      bengalOrder: false,
       payloading: false,
       getBootStatusDone: false,
       cnCompany: '',
@@ -508,7 +510,11 @@ export default {
           })
         }
         let orderInfo = res.obj
+        console.log('orderInfo', orderInfo)
         this.orderInfo = orderInfo
+        if (orderInfo.orderType === 4) {
+          this.bengalOrder = true
+        }
         this.cnNo = orderInfo.cnNo
         this.cnCompany = orderInfo.kdCompanyCodeCn
         this.intelNo = orderInfo.intlNo
