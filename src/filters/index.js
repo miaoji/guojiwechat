@@ -50,9 +50,9 @@ export const formatdate = function (date) {
   date = new Date(date)
   const year = date.getFullYear()
   let month = date.getMonth() + 1
-  month = month > 10 ? month : '0' + month
+  month = month >= 10 ? month : '0' + month
   let day = date.getDate()
-  day = day > 10 ? day : '0' + day
+  day = day >= 10 ? day : '0' + day
   return year + '-' + month + '-' + day
 }
 
@@ -60,6 +60,7 @@ export const formatedatestamp = function (timpstamp) {
   if (!timpstamp) {
     return ''
   }
+  console.log('timpstamp', timpstamp)
   let date = new Date(Number(timpstamp))
   const year = date.getFullYear()
   let month = date.getMonth() + 1

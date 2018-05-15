@@ -42,7 +42,7 @@
 <script>
 import { getKD100, getBengal } from '@/services/expressRoute'
 import LoadToshow from '@/components/load/WithoutService'
-
+import { formatdate } from '@/filters'
 export default {
   name: 'expressroute',
   props: {
@@ -122,8 +122,12 @@ export default {
         // 查询孟加拉信息
         const Routes = await getBengal({orderId: this.$route.query.id})
         if (Routes.code === 200 && Routes.obj && Routes.obj.length > 0) {
+          const intelTraces = Routes.obj.map((item) => {
+            item.routeTime = formatdate(item.routeTime)
+            return item
+          })
           this.state = 1
-          this.intelTraces = Routes.obj
+          this.intelTraces = intelTraces
           this.msg = '查询物流信息成功'
         } else {
           this.state = 2
