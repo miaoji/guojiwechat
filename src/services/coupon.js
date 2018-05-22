@@ -12,3 +12,12 @@ export async function query (params) {
     auth: true
   })
 }
+
+export async function getCouponByOpenId (params) {
+  return request({
+    url: couponApi.getCouponByOpenId,
+    method: 'get',
+    data: params,
+    auth: true
+  })
+}

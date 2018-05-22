@@ -100,6 +100,7 @@
             is-link
           >
           </cell>
+          <!-- 是否保价 -->
           <selector
             :title="'business.isoffer' | translate"
             :placeholder="'business.isoffer' | translate"
@@ -110,11 +111,13 @@
             @on-change="isofferShowChange"
           >
           </selector>
+          <!-- 保价提示信息 -->
           <div class="float-icon">
             <span class="float-icon-img" @click='isofferPromptInfoShow = true'>
               <img src="../../assets/images/question.png">
             </span>
           </div>
+          <!-- 保费 -->
           <x-input
             :title="'business.offermoney' | translate"
             :placeholder="'business.offermoneytips' | translate"
@@ -124,6 +127,16 @@
             @on-change='offerChange'
           >
           </x-input>
+          <!-- 优惠券 -->
+          <selector
+            title="优惠券"
+            direction="rtl"
+            v-model="coupon"
+            name="coupon"
+            :options="couponOption"
+            @on-change="couponChange"
+          >
+          </selector>
           <x-textarea
             type="text"
             :title="$t('remark')"
@@ -184,7 +197,7 @@
              title="" 
              type="number" 
              v-model="length" 
-             :placeholder="$t('length', {'unit': '/cm'})"></input>
+             :placeholder="$t('length', {'unit': '/cm'})" />
            <span>x</span>
            <input 
              title=""
@@ -192,14 +205,14 @@
              show-clear="false" 
              required
              v-model="width" 
-             :placeholder="$t('width', {'unit': '/cm'})"></input>
+             :placeholder="$t('width', {'unit': '/cm'})" />
            <span>x</span>
            <input
              title="" 
              type="number" 
              required 
              v-model="height" 
-             :placeholder="$t('height', {'unit': '/cm'})"></input>
+             :placeholder="$t('height', {'unit': '/cm'})" />
            <span>=</span>
            <input 
              title="" 
@@ -207,7 +220,7 @@
              type="number" 
              required 
              v-model="volumeWeight" 
-             placeholder=""></input>            
+             placeholder="" />         
           </div>
         </div>
         <p class="dialog-tips">
@@ -327,6 +340,7 @@ import * as orderInfoService from '@/services/orderInfo'
 import { storage, cache as cacheUtil, getAddress as getAddressUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 import { bindSwiper } from '@/utils/swiper'
+import { getCouponByOpenId } from '@/services/coupon'
 
 export default {
   name: 'send',
@@ -344,13 +358,17 @@ export default {
   },
   data () {
     return {
+      // 优惠券
+      coupon: '',
+      initCoupon: '',
+      couponOption: [],
       loading: false,
       dialogshow: false,
       // 收件国家 id
       pickupCountryId: 0,
       // 订单重量体积的配置信息
       orderOptions: {
-        weight: null,
+        weight: 0,
         width: null,
         length: null,
         height: null,
@@ -495,6 +513,7 @@ export default {
       window.scrollTo(0, 0)
       this.$store.commit('SET_PAGE', {page: 'send'})
       this.$vux.loading.show()
+      await this.getCouponOption()
       await wxUtil.init()
       await this.getAddressByType({type: 'send'})
       await this.getAddressByType({type: 'pickup'})
@@ -545,6 +564,10 @@ export default {
       return `${textWeight}${weight}kg，${textVolumeweight}${volumeWeight}`
     },
     advanceShow () {
+      let coupon = ''
+      if (this.initCoupon !== '不使用' && this.initCoupon !== '') {
+        coupon = JSON.parse(this.initCoupon).couponMoney
+      }
       if (!this.advanceStatus['status']) {
         return this.advanceStatus['text']
       }
@@ -557,7 +580,7 @@ export default {
         this.insuredPrice = 0
       }
       const insuredPrice = Number(this.insuredPrice)
-      return (advance + insuredPrice).toFixed(2)
+      return (advance + insuredPrice - coupon).toFixed(2)
     },
     packageTableLength () {
       const len = this.packageTable.length
@@ -568,6 +591,36 @@ export default {
     ...mapActions([
       'setOrderList'
     ]),
+    couponChange (val) {
+      let value = ''
+      if (val !== '不使用' && val !== '') {
+        value = JSON.parse(val)
+      }
+      console.log('123123123', this.coupon)
+      console.log('444444', this.initCoupon)
+      if (this.advanceShow < value.couponThreshold) {
+        this.$vux.toast.show({
+          type: 'warn',
+          text: '该优惠券暂不满足使用条件',
+          width: '15rem'
+        })
+        this.coupon = '不使用'
+      }
+      this.initCoupon = this.coupon
+    },
+    async getCouponOption () {
+      const openId = storage({key: 'openid'})
+      const data = await getCouponByOpenId({openId})
+      if (data.code === 200) {
+        const options = data.obj.map((item) => {
+          return {
+            value: `满${item.couponType.couponThreshold}减${item.couponType.couponMoney}元`,
+            key: JSON.stringify(item.couponType)
+          }
+        })
+        this.couponOption = [...options, {value: '不使用', key: '不使用'}]
+      }
+    },
     /**
      * [根据localStorage中数据，获取地址信息]
      * @param  {[type]} options.type [description]
@@ -735,7 +788,6 @@ export default {
         this.editPackage['quantity'] = quantityCheckNum['value']
       }
       let complete = []
-      console.log(_this.editPackage)
       Object.keys(_this.editPackage).forEach(function (key) {
         if (!_this.editPackage[key] && key !== 'worth' && key !== 'index') {
           complete.push(false)
