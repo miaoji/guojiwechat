@@ -2,14 +2,14 @@
   <div
     :class="{
       'listitem': true,
+      'listitem--used': itemDis,
       'listitem--sended': realStatus === 'SENDED',
-      'listitem--used': realStatus === 'USED',
       'listitem--expired': realStatus === 'EXPIRED'
     }"
     @click.stop.prevent="goPath"
   >
     <div class="listitem-image">
-      <img src="../../../assets/images/coupon_logo.jpg" alt="卡券图标">
+      <img src="../../../assets/images/coupons.png" alt="卡券图标">
     </div>
     <div class="listitem-intro">
       <p class="listitem-intro-name">满{{data.couponThreshold}}减{{func}}</p>
@@ -40,6 +40,10 @@ export default {
     endtime: {
       type: String,
       default: ''
+    },
+    totalFee: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -52,6 +56,19 @@ export default {
     }
   },
   computed: {
+    itemDis () {
+      if (this.totalFee === '') {
+        console.log(1)
+        return true
+      }
+      if (new Date().getTime() < Number(moment(this.data.effectiveDate).unix() + '000')) {
+        return false
+      }
+      if (this.totalFee > this.data.couponThreshold) {
+        return false
+      }
+      return true
+    },
     startTime () {
       return moment(this.data.effectiveDate).format('YYYY-MM-DD')
     },
@@ -109,9 +126,9 @@ export default {
     background-repeat: no-repeat;
   }
   &--expired {
-    background: url('http://cms.mingz-tech.com/cdn/coupon_expired.png');
+    background: url('../../../assets/images/overdue.png');
     background-color: white;
-    background-size: 20% 80%;
+    background-size: 13%;
     background-position: 94% 43%;
     background-repeat: no-repeat;
   }
