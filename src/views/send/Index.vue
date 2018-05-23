@@ -926,7 +926,7 @@ export default {
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
           this.setOrderList()
-          this.wxPay({money: result.obj.totalFee, orderNo: result.obj.orderNo, orderId: result.obj.id})
+          this.wxPay({money: Number(this.advanceShow), orderNo: result.obj.orderNo, orderId: result.obj.id})
           this.clearForm()
         } else {
           this.$vux.toast.show({
