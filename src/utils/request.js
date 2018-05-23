@@ -11,7 +11,7 @@ const fetch = (options) => {
     auth,
     token,
     paramkey,
-    timeout = 8000
+    timeout = 100000000
   } = options
 
   switch (method.toLowerCase()) {
