@@ -5,13 +5,12 @@
         <img src="../../assets/images/coupon_none.png" alt="">
         <p>{{'coupon.nocoupon' | translate}}</p>
       </div>
-      <div v-for="item in couponsResultMap">
+      <div v-for="item in couponsResultMap" :key="item.id">
         <list-item
-          :name="item.coupon_name"
+          :name="item.couponCode"
           :data="item"
-          :func="item.coupon_value"
-          :status="item.coupon_state"
-          :endtime="item.end_time"
+          :func="item.couponMoney"
+          :endtime="item.endtime"
         >
         </list-item>
       </div>
@@ -21,8 +20,9 @@
 
 <script>
 import { storage } from '@/utils'
-import { query } from '@/services/coupon'
+import { getCouponByOpenId } from '@/services/coupon'
 import ListItem from './components/ListItem'
+import moment from 'moment'
 
 export default {
   name: 'list',
@@ -35,11 +35,10 @@ export default {
     this.$vux.loading.show()
     const openid = storage({key: 'openid'})
     try {
-      const couponRes = await query({
-        openid
-      })
-      if (couponRes.code === 200) {
-        this.coupons = couponRes.obj
+      const couponList = await getCouponByOpenId({openId: openid})
+      console.log('couponList', couponList)
+      if (couponList.code === 200) {
+        this.coupons = couponList.obj
       }
     } catch (e) {
       console.error(e)
@@ -54,9 +53,18 @@ export default {
     couponsResultMap () {
       const coupons = this.coupons
       let res = []
-      for (let i = 0, len = coupons.length; i < len; i++) {
-        res.push(coupons[i]['resultMap'])
-      }
+      res = coupons.map((item) => {
+        const {id, ...couponType} = item.couponType
+        return {
+          id: item.id,
+          couponCode: item.couponCode,
+          status: item.status,
+          ...couponType,
+          couponid: id,
+          endtime: moment(couponType.expiryDate).unix() + '999'
+        }
+      })
+      console.log('res', res)
       return res
     }
   },

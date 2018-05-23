@@ -12,15 +12,16 @@
       <img src="../../../assets/images/coupon_logo.jpg" alt="卡券图标">
     </div>
     <div class="listitem-intro">
-      <p class="listitem-intro-name">{{name}}</p>
+      <p class="listitem-intro-name">满{{data.couponThreshold}}减{{func}}</p>
       <p class="listitem-intro-func">
-        {{func/100}}{{$t('coupon.detail.money')}}
+        有效期: {{startTime}} - {{endTime}}
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 // 代金券状态：SENDED-可用，USED-已实扣，EXPIRED-已过期
 export default {
   name: 'listitem',
@@ -33,12 +34,8 @@ export default {
       default: '国际快递'
     },
     func: {
-      type: String,
-      default: '代金券'
-    },
-    status: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     },
     endtime: {
       type: String,
@@ -55,11 +52,18 @@ export default {
     }
   },
   computed: {
+    startTime () {
+      return moment(this.data.effectiveDate).format('YYYY-MM-DD')
+    },
+    endTime () {
+      return moment(this.data.expiryDate).format('YYYY-MM-DD')
+    },
     realStatus () {
-      let endtime = this.endtime + '000'
+      // 判断优惠券是否失效
+      let endtime = this.endtime
       endtime = Number(endtime)
       const isExpired = endtime >= new Date().getTime()
-      return isExpired ? this.status : 'EXPIRED'
+      return isExpired ? 'SENDED' : 'EXPIRED'
     },
     statusTxt () {
       return this.statusList[this.realStatus] || ''
@@ -72,6 +76,8 @@ export default {
       if (this.realStatus === 'SENDED') {
         let query = this.data
         query.with_data = 1
+        query.startTime = this.startTime
+        query.endTime = this.endTime
         this.$router.push({path: '/coupon/detail', query})
       } else {
         this.$vux.toast.show({
@@ -95,8 +101,6 @@ export default {
   margin: 1rem;
   background: white;
   border-radius: 6px;
-  &--sended {
-  }
   &--used {
     background: url('http://cms.mingz-tech.com/cdn/coupon_used.png');
     background-color: white;
@@ -123,10 +127,10 @@ export default {
       text-align: left;
     }
     &-name {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
     }
     &-func {
-      font-size: 1.8rem;
+      font-size: 1.2rem;
     }
   }
 }

@@ -7,9 +7,9 @@
             <div class="coupon-intro-img">
               <img src="../../assets/images/coupon_logo.jpg" alt="卡券logo">
             </div>
-            <p class="coupon-intro-name">{{detailData.coupon_name}}</p>
+            <p class="coupon-intro-name">{{queryData.couponCode}}</p>
             <p class="coupon-intro-func">
-              {{detailData.coupon_value / 100}}{{'coupon.detail.money' | translate}}
+              满 {{queryData.couponThreshold}} 减 {{queryData.couponMoney}} 元
             </p>
             <!-- 立即使用 -->
             <div class="use-now"> 
@@ -23,7 +23,8 @@
           <div class="coupon-use">
             <cell 
               :title="'coupon.detail.effectivedate' | translate" 
-              :value="validity">
+              :value="validity"
+            >
             </cell>
             <cell 
               :title="'coupon.detail.notes' | translate" 
@@ -43,10 +44,10 @@
           </div>
           <div class="package-info">
             <p>
-              {{'coupon.detail.note1' | translate}}{{detailData.coupon_minimum / 100 || 17}}{{'coupon.detail.note2' | translate}}
+              {{'coupon.detail.note1' | translate}}{{queryData.couponThreshold}}{{'coupon.detail.note2' | translate}}
             </p>
             <p>
-              {{'coupon.detail.note3' | translate}}
+              {{queryData.superposition === '0'?'每次下单限用一张，不可叠加':'可叠加'}}使用。寄件须知请参考：微信公众号->个人中心->新手指南，也可以直接下载
               <a href="http://www.mingz-tech.com/新手指南.png">
                 {{'coupon.detail.note4' | translate}}
               </a>
@@ -62,7 +63,6 @@
 import JagContainer from '../../components/JagContainer'
 import Cell from './components/Cell'
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
-import { time } from '@/utils'
 import { query } from '@/services/coupon'
 
 export default {
@@ -78,37 +78,15 @@ export default {
     }
   },
   computed: {
-    detailData () {
-      let res
-      const withData = Number(this.queryData.with_data) || 0
-      switch (withData) {
-        case 1:
-          res = this.queryData
-          break
-        case 0:
-          res = this.coupon
-          break
-        default:
-          res = {
-            coupon_name: '',
-            coupon_value: 0
-          }
-      }
-      return res
-    },
     validity () {
-      const couponData = this.detailData
-      let beginTime = couponData.begin_time + '000'
-      beginTime = new Date(Number(beginTime))
-      let endTime = couponData.end_time + '000'
-      endTime = new Date(Number(endTime))
-      beginTime = time.format('yyyy.MM.dd', beginTime)
-      endTime = time.format('yyyy.MM.dd', endTime)
+      const beginTime = this.queryData.startTime
+      const endTime = this.queryData.endTime
       return beginTime + '-' + endTime
     }
   },
   async created () {
     const {query} = this.$route
+    console.log('quert', query)
     this.queryData = query
     if (Number(query.with_data) !== 1) {
       const coupon = await this.getCoupon()
@@ -153,10 +131,6 @@ export default {
         this.$vux.loading.hide()
       }
     }
-  },
-  watch: {
-  },
-  beforeDestroy () {
   }
 }
 </script>

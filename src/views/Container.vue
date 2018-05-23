@@ -8,38 +8,44 @@
   </div>
 </template>
 <script>
+import config from 'config'
 import MJFooter from '@/components/Footer'
 import SubscribeTool from '@/components/SubscribeTool'
 import { storage } from '@/utils'
+import { getToken } from '@/services/developmentToken'
 
 export default {
   name: 'container',
-  created () {
+  async created () {
     if (process.env.NODE_ENV === 'development') {
-      storage({
-        type: 'set',
-        key: 'openid',
-        val: 'osdH7vw74PjKl4x8jvxplraC-tiE'
-      })
-      storage({
-        type: 'set',
-        key: 'unionid',
-        val: 'ofgJC0pki0DBx7apxj1JObf7AUro'
-      })
-      // storage({
-      //   type: 'set',
-      //   key: 'openid',
-      //   val: 'oPg2ZwgAsvftQplQTEe13lBlb2XQ'
-      // })
-      // storage({
-      //   type: 'set',
-      //   key: 'unionid',
-      //   val: 'ofgJC0k0vHeG-mFeM6_iyuSKg2Ms'
-      // })
+      const data = await getToken()
+      if (config.dev.developer === 'winnerwly') {
+        storage({
+          type: 'set',
+          key: 'openid',
+          val: 'oPg2Zwkc9-yHFoWv2ZcIjDd12i4I'
+        })
+        storage({
+          type: 'set',
+          key: 'unionid',
+          val: 'ofgJC0uljrqfl60mFA1TbSW1bdJY'
+        })
+      } else {
+        storage({
+          type: 'set',
+          key: 'openid',
+          val: 'osdH7vw74PjKl4x8jvxplraC-tiE'
+        })
+        storage({
+          type: 'set',
+          key: 'unionid',
+          val: 'ofgJC0pki0DBx7apxj1JObf7AUro'
+        })
+      }
       storage({
         type: 'set',
         key: 'token',
-        val: 'eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVUaW1lIjoxNTI2OTgyODQxOTQxLCJ1c2VyaWQiOjl9.nxBi6aBYFmWbS1nX042Qc4jKQdLto2sPrxK_pwkN4wQ'
+        val: data.stringData
       })
       return
     }
