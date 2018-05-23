@@ -905,7 +905,7 @@ export default {
           insuredAmount: this.offer ? Number(this.offer) : 0,
           insuredPrice: Number(this.insuredPrice),
           priceId: this.priceId,
-          totalFee: advance * 100,
+          totalFee: Number(this.advanceShow) * 100,
           remark: this.remark,
           // 寄件人地址
           senderCountry: this.sendAddress['country'],
@@ -926,7 +926,7 @@ export default {
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
           this.setOrderList()
-          this.wxPay({money: advance, orderNo: result.obj.orderNo, orderId: result.obj.id})
+          this.wxPay({money: result.obj.totalFee, orderNo: result.obj.orderNo, orderId: result.obj.id})
           this.clearForm()
         } else {
           this.$vux.toast.show({

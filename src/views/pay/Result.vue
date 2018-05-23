@@ -18,7 +18,7 @@
           </div>
           <div class="payresult-content-item">
             <span>{{$t('business.ordertotalmoney')}}:</span>
-            <span>{{totalFee}}元</span>
+            <span>{{totalFee / 100}}元</span>
           </div>
           <div class="payresult-content-btn">
             <router-link class="common check" :to="{path:'/orderdetail',query:{id:orderId}}">
