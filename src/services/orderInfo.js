@@ -57,3 +57,12 @@ export async function count (data) {
     data
   })
 }
+
+export async function cancel (params) {
+  return request({
+    url: orderInfoApi.cancel,
+    method: 'post',
+    auth: true,
+    params
+  })
+}

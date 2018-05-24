@@ -134,7 +134,9 @@ export const orderInfo = {
   show: url + 'api/orderInfo/getOrderInfoById',
   update: url + 'api/orderInfo/modOrderInfoById',
   delete: url + 'api/orderInfo/delOrderInfoById',
-  count: url + 'api/orderInfo/getOrderInfoCountByType'
+  count: url + 'api/orderInfo/getOrderInfoCountByType',
+  // 取消订单
+  cancel: url + 'api/orderInfo/modOrderInfoById'
 }
 
 // 集运订单

@@ -13,7 +13,8 @@
     <div class="listitem-edit" style="justify-content: space-between;">
       <p class="listitem-edit__time">{{item.CREATE_TIME | formatedatestamp}}</p>
       <div>
-        <button class="gosend-btn" @click="checkRoute('/orderroute', {'id': item.ID})">查询物流</button>
+        <button v-show="item.STATUS === 1" class="gosend-btn" @click="delOrder({'id': item.ID})">取消订单</button>
+        <button v-show="item.STATUS > 1 && item.STATUS !== 6" class="gosend-btn" @click="checkRoute('/orderroute', {'id': item.ID})">查询物流</button>
         <button class="gosend-btn" @click="goPath(item)">详情</button>
       </div>
     </div>
@@ -22,6 +23,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { cancel as cancelOrder } from '../../../services/orderInfo'
 
 export default {
   name: 'listitem',
@@ -41,29 +43,30 @@ export default {
   },
   methods: {
     ...mapActions([
-      'cancleSend'
+      'setOrderList'
     ]),
+    async delOrder ({id}) {
+      const _this = this
+      this.$vux.confirm.show({
+        title: '操作提示',
+        content: '确定要取消这条订单吗?',
+        async onConfirm () {
+          const data = await cancelOrder({id, status: 6, userId: 101})
+          if (data.code === 200) {
+            _this.$vux.toast.show({
+              text: '取消成功'
+            })
+            _this.setOrderList()
+          }
+        }
+      })
+    },
     checkRoute (path, query) {
       this.$router.push({path, query})
     },
     goPath (item) {
       const id = item.ID
       this.$router.push({path: '/orderdetail', query: {id}})
-    },
-    async cancle (item) {
-      const _this = this // 需要注意 onCancel 和 onConfirm 的 this 指向
-      this.$vux.confirm.show({
-        title: '确定取消这一订单吗?',
-        onCancel () {
-        },
-        async onConfirm () {
-          const res = await _this.cancleSend({
-            id: item.id,
-            type: 5
-          })
-          _this.$vux.toast.show(res)
-        }
-      })
     }
   }
 }
