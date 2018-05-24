@@ -143,7 +143,7 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
+<style lang="less" scoped>
 @import '../../assets/styles/colors.less';
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';

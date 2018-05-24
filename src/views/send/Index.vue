@@ -327,7 +327,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { Selector, XInput, XTextarea, Cell, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import PackageProduct from '@/components/PackageProduct'
 import Tips from '@/components/Tips'
@@ -338,7 +338,6 @@ import * as orderInfoService from '@/services/orderInfo'
 import { storage, cache as cacheUtil, getAddress as getAddressUtil } from '@/utils'
 import * as wxUtil from '@/utils/wx'
 import { bindSwiper } from '@/utils/swiper'
-import { getCouponByOpenId } from '@/services/coupon'
 
 export default {
   name: 'send',
@@ -359,12 +358,15 @@ export default {
     return {
       // 优惠券
       coupon: '',
-      initCoupon: '',
+      // 优惠额度
+      couponMoney: 0,
       couponOption: [],
       loading: false,
       dialogshow: false,
       // 收件国家 id
       pickupCountryId: 0,
+      // 没有优惠券参与的运费
+      advanceShowBefor: 0,
       // 订单重量体积的配置信息
       orderOptions: {
         weight: 0,
@@ -512,7 +514,6 @@ export default {
       window.scrollTo(0, 0)
       this.$store.commit('SET_PAGE', {page: 'send'})
       this.$vux.loading.show()
-      await this.getCouponOption()
       await wxUtil.init()
       await this.getAddressByType({type: 'send'})
       await this.getAddressByType({type: 'pickup'})
@@ -554,6 +555,9 @@ export default {
     }),
     // 优惠券表单提示文字
     couponPromptInfo () {
+      if (isNaN(Number(this.advanceShow))) {
+        return this.advanceShow + '后进行此操作'
+      }
       const couponListLength = Object.keys(this.couponList).length
       if (couponListLength === 0) {
         return '选择你要使用的优惠券'
@@ -562,6 +566,7 @@ export default {
       for (let key in this.couponList) {
         count = count + this.couponList[key]['couponMoney']
       }
+      this.couponMoney = count
       return `优惠${count}元`
     },
     showProductSpecs () {
@@ -576,10 +581,7 @@ export default {
       return `${textWeight}${weight}kg，${textVolumeweight}${volumeWeight}`
     },
     advanceShow () {
-      let coupon = ''
-      if (this.initCoupon !== '不使用' && this.initCoupon !== '') {
-        coupon = JSON.parse(this.initCoupon).couponMoney
-      }
+      const coupon = this.couponMoney
       if (!this.advanceStatus['status']) {
         return this.advanceStatus['text']
       }
@@ -592,6 +594,7 @@ export default {
         this.insuredPrice = 0
       }
       const insuredPrice = Number(this.insuredPrice)
+      this.advanceShowBefor = advance + insuredPrice
       return (advance + insuredPrice - coupon).toFixed(2)
     },
     packageTableLength () {
@@ -600,41 +603,17 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'SET_COUPON_LIST'
+    ]),
     ...mapActions([
       'setOrderList'
     ]),
     couponClick () {
-      this.$router.push('/coupon?type=select&totalFee=123')
-    },
-    couponChange (val) {
-      let value = ''
-      if (val !== '不使用' && val !== '') {
-        value = JSON.parse(val)
+      if (isNaN(Number(this.advanceShow))) {
+        return false
       }
-      console.log('123123123', this.coupon)
-      console.log('444444', this.initCoupon)
-      if (this.advanceShow < value.couponThreshold) {
-        this.$vux.toast.show({
-          type: 'warn',
-          text: '该优惠券暂不满足使用条件',
-          width: '15rem'
-        })
-        this.coupon = '不使用'
-      }
-      this.initCoupon = this.coupon
-    },
-    async getCouponOption () {
-      const openId = storage({key: 'openid'})
-      const data = await getCouponByOpenId({openId, type: 0})
-      if (data.code === 200) {
-        const options = data.obj.map((item) => {
-          return {
-            value: `满${item.couponType.couponThreshold}减${item.couponType.couponMoney}元`,
-            key: JSON.stringify(item.couponType)
-          }
-        })
-        this.couponOption = [...options, {value: '不使用', key: '不使用'}]
-      }
+      this.$router.push(`/coupon?type=select&totalFee=${this.advanceShowBefor}`)
     },
     /**
      * [根据localStorage中数据，获取地址信息]
@@ -913,6 +892,7 @@ export default {
         const result = await orderInfoService.save({
           ...orderOptions,
           wxUserId: this.userid,
+          couponNos: Object.keys(this.couponList).toString(),
           mailingAddrId: this.sendAddress['id'],
           receiveAddrId: this.pickupAddress['id'],
           returnGood: this.isBack,
@@ -940,6 +920,9 @@ export default {
         this.loading = false
         if (result.success && result.code === 200) {
           // 订单创建成功后，所有信息需要清空
+          this.SET_COUPON_LIST({
+            couponList: {}
+          })
           this.setOrderList()
           this.wxPay({money: Number(this.advanceShow), orderNo: result.obj.orderNo, orderId: result.obj.id})
           this.clearForm()
