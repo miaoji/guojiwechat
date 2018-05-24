@@ -1,9 +1,16 @@
 <template>
   <div class="list">
-    <tab v-if="type !== 'select'" active-color='#8a3ec2'>
-      <tab-item selected @on-item-click="onTabClick">可用优惠券</tab-item>
-      <tab-item @on-item-click="onTabClick">已失效优惠券</tab-item>
-    </tab>
+    <div class="list-tab">
+      <tab v-if="type !== 'select'" active-color='#8a3ec2'>
+        <tab-item selected @on-item-click="onTabClick">可用优惠券</tab-item>
+        <tab-item @on-item-click="onTabClick">已失效优惠券</tab-item>
+      </tab>
+    </div>
+    <div class="list-tab">
+      <tab :line-width=0 v-show="type === 'select'" active-color='#8a3ec2'>
+        <tab-item selected >选择优惠使用</tab-item>
+      </tab>
+    </div>
     <div class="list-container">
       <div class="none-coupon" v-show="couponsResultMap.length === 0">
         <img src="../../assets/images/coupon_none.png" alt="">
@@ -16,12 +23,18 @@
           :func="item.couponMoney"
           :endtime="item.endtime"
           :totalFee="totalFee"
+          :type="type"
         >
         </list-item>
       </div>
     </div>
     <div v-transfer-dom>
       <loading :show="showLoading" text="加载中..."></loading>
+    </div>
+    <div class="list-footer">
+      <tab :line-width=0 v-show="type === 'select'" active-color='#8a3ec2'>
+        <tab-item :disabled='!couponBtnDis' @on-item-click="onFooterTabClick">确实使用</tab-item>
+      </tab>
     </div>
   </div>
 </template>
@@ -31,7 +44,7 @@ import { storage } from '@/utils'
 import { getCouponByOpenId } from '@/services/coupon'
 import ListItem from './components/ListItem'
 import { Tab, TabItem, Loading, TransferDomDirective as TransferDom } from 'vux'
-import moment from 'moment'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'list',
@@ -48,14 +61,26 @@ export default {
     const { type, totalFee } = this.$route.query
     this.type = type
     this.totalFee = totalFee
-    console.log('totalFee', totalFee)
     this.$vux.loading.show()
     this.openid = storage({key: 'openid'})
     try {
       const couponList = await getCouponByOpenId({openId: this.openid, type: 0})
-      console.log('couponList', couponList)
       if (couponList.code === 200) {
-        this.coupons = couponList.obj
+        let successlist = []
+        let errorList = []
+        if (type === 'select') {
+          const now = new Date().getTime()
+          couponList.obj.map((item) => {
+            if (item.couponType.expiryDate > now && item.couponType.couponThreshold < totalFee) {
+              successlist.push(item)
+            } else {
+              errorList.push(item)
+            }
+          })
+          this.coupons = [...successlist, ...errorList]
+        } else {
+          this.coupons = couponList.obj
+        }
       }
     } catch (e) {
       console.error(e)
@@ -73,6 +98,9 @@ export default {
     Loading
   },
   computed: {
+    ...mapGetters({
+      couponBtnDis: 'getshowCouponBtn'
+    }),
     couponsResultMap () {
       const coupons = this.coupons
       let res = []
@@ -84,20 +112,23 @@ export default {
           status: item.status,
           ...couponType,
           couponid: id,
-          endtime: moment(couponType.expiryDate).unix() + '999'
+          endtime: couponType.expiryDate
         }
       })
-      console.log('res', res)
       return res
     }
   },
   methods: {
+    onFooterTabClick () {
+      if (this.couponBtnDis) {
+        this.$router.push('/send')
+      }
+      return false
+    },
     async onTabClick (index) {
       this.showLoading = true
       // type 1表示查询有效的优惠券 0表示查询失效优惠券
-      console.log('12312312', index)
       const couponList = await getCouponByOpenId({openId: this.openid, type: index})
-      console.log('couponList', couponList)
       if (couponList.code === 200) {
         this.coupons = couponList.obj
         this.showLoading = false
@@ -122,7 +153,26 @@ export default {
   border-bottom: 3px solid rgb(55, 174, 252) !important;
 }
 .list {
+  min-height: 100vh;
+  background: -webkit-linear-gradient(#571d79, #873ec1); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(#571d79, #873ec1); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(#571d79, #873ec1); /* Firefox 3.6 - 15 */
+  background: linear-gradient(#571d79, #873ec1); /* 标准的语法 */
+  &-tab {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  &-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
   &-container {
+    padding-top: 50px;
+    padding-bottom: 4rem;
     .none-coupon {
       padding: 2rem;
       img {

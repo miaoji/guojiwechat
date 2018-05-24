@@ -2,17 +2,18 @@
   <div
     :class="{
       'listitem': true,
-      'listitem--used': itemDis,
+      'listitem--used': itemDis && type === 'select',
       'listitem--sended': realStatus === 'SENDED',
-      'listitem--expired': realStatus === 'EXPIRED'
+      'listitem--expired': realStatus === 'EXPIRED',
+      'lisritem--select': itemClick
     }"
-    @click.stop.prevent="goPath"
+    @click.stop.prevent="goPath(data, itemDis)"
   >
     <div class="listitem-image">
       <img src="../../../assets/images/coupons.png" alt="卡券图标">
     </div>
     <div class="listitem-intro">
-      <p class="listitem-intro-name">满{{data.couponThreshold}}减{{func}}</p>
+      <p class="listitem-intro-name">满{{data.couponThreshold}}减{{func}} <span class='listitem-intro-name-span'>{{data.superposition?'可叠加使用':'仅限单个使用'}}</span></p>
       <p class="listitem-intro-func">
         有效期: {{startTime}} - {{endTime}}
       </p>
@@ -22,7 +23,8 @@
 
 <script>
 import moment from 'moment'
-// 代金券状态：SENDED-可用，USED-已实扣，EXPIRED-已过期
+import { mapGetters, mapMutations } from 'vuex'
+
 export default {
   name: 'listitem',
   props: {
@@ -44,24 +46,31 @@ export default {
     totalFee: {
       type: String,
       default: ''
+    },
+    type: {
+      type: String,
+      default: ''
     }
   },
   data () {
     return {
+      // 代金券状态：SENDED-可用，USED-未达标，EXPIRED-已过期
       statusList: {
         SENDED: '可用',
-        USED: '已实扣',
+        USED: '未达标',
         EXPIRED: '已过期'
       }
     }
   },
   computed: {
+    ...mapGetters({
+      couponList: 'getCouponList'
+    }),
     itemDis () {
       if (this.totalFee === '') {
-        console.log(1)
         return true
       }
-      if (new Date().getTime() < Number(moment(this.data.effectiveDate).unix() + '000')) {
+      if (new Date().getTime() < Number(this.data.effectiveDate)) {
         return false
       }
       if (this.totalFee > this.data.couponThreshold) {
@@ -70,10 +79,10 @@ export default {
       return true
     },
     startTime () {
-      return moment(this.data.effectiveDate).format('YYYY-MM-DD')
+      return moment(Number(this.data.effectiveDate)).format('YYYY.MM.DD')
     },
     endTime () {
-      return moment(this.data.expiryDate).format('YYYY-MM-DD')
+      return moment(Number(this.data.expiryDate)).format('YYYY.MM.DD')
     },
     realStatus () {
       // 判断优惠券是否失效
@@ -84,12 +93,56 @@ export default {
     },
     statusTxt () {
       return this.statusList[this.realStatus] || ''
+    },
+    itemClick () {
+      if (this.couponList[this.data.id]) {
+        return true
+      } else {
+        return false
+      }
     }
   },
-  created () {
-  },
   methods: {
-    goPath () {
+    ...mapMutations([
+      'SET_COUPON_LIST'
+    ]),
+    goPath (item, itemDis) {
+      if (itemDis) {
+        return false
+      }
+      // 如果当前页面的类型type是select则此组件将不进行页面的额跳转,作为可选择的组件
+      if (this.type === 'select') {
+        if (!this.itemClick) {
+          // this.itemClick === true 表示已经被选中, === false 表示未被选中
+          // 如果选择则将本条信息添加到vuex中
+          const objKeys = Object.keys(this.couponList)
+          // 选择的规则, 可叠加的优惠券可进行多选,不可叠加的优惠券只能单选
+          // 不能两种优惠一起选择
+          if (objKeys.length !== 0) {
+            if (this.couponList[objKeys[0]].superposition === 0) {
+              return false
+            }
+            if (this.couponList[objKeys[0]].superposition !== item.superposition) {
+              return false
+            }
+          }
+          this.SET_COUPON_LIST({
+            couponList: {
+              ...this.couponList,
+              [item.id]: item
+            }
+          })
+        } else {
+          // 如果取消了选择则将本条信息从vuex中去除
+          delete this.couponList[item.id]
+          this.SET_COUPON_LIST({
+            couponList: {
+              ...this.couponList
+            }
+          })
+        }
+        return false
+      }
       if (this.realStatus === 'SENDED') {
         let query = this.data
         query.with_data = 1
@@ -111,17 +164,25 @@ export default {
 
 <style lang="less" scoped>
 @import '../../../assets/styles/helpers.less';
-
+.lisritem--select {
+  background: url('../../../assets/images/select.png')!important;
+  background-color: white!important;
+  background-size: 8%!important;
+  background-position: 94% 43%!important;
+  background-repeat: no-repeat!important;
+}
 .listitem {
   .flex;
   padding: 1rem;
   margin: 1rem;
   background: white;
-  border-radius: 6px;
+  border: 1px solid #fff;
+  border-radius: 4px;
   &--used {
-    background: url('http://cms.mingz-tech.com/cdn/coupon_used.png');
+    // display: none;
+    background: url('../../../assets/images/unsatisfied.png');
     background-color: white;
-    background-size: 20% 80%;
+    background-size: 13%;
     background-position: 94% 43%;
     background-repeat: no-repeat;
   }
@@ -145,6 +206,10 @@ export default {
     }
     &-name {
       font-size: 1.6rem;
+      &-span {
+        font-size: 1.2rem;
+        color: #8a3ec2;
+      }
     }
     &-func {
       font-size: 1.2rem;

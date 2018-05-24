@@ -128,15 +128,13 @@
           >
           </x-input>
           <!-- 优惠券 -->
-          <selector
+          <cell
             title="优惠券"
-            direction="rtl"
-            v-model="coupon"
-            name="coupon"
-            :options="couponOption"
-            @on-change="couponChange"
+            :value="couponPromptInfo"
+            is-link
+            @click.native="couponClick"
           >
-          </selector>
+          </cell>
           <x-textarea
             type="text"
             :title="$t('remark')"
@@ -330,7 +328,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { Selector, XInput, XTextarea, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
+import { Selector, XInput, XTextarea, Cell, Spinner, XDialog, TransferDomDirective as TransferDom } from 'vux'
 import PackageProduct from '@/components/PackageProduct'
 import Tips from '@/components/Tips'
 import * as mailingAddrService from '@/services/mailingAddr'
@@ -354,7 +352,8 @@ export default {
     Spinner,
     XDialog,
     PackageProduct,
-    Tips
+    Tips,
+    Cell
   },
   data () {
     return {
@@ -550,8 +549,21 @@ export default {
   computed: {
     ...mapGetters({
       sendadd: 'getSendAdd',
-      userid: 'getUserId'
+      userid: 'getUserId',
+      couponList: 'getCouponList'
     }),
+    // 优惠券表单提示文字
+    couponPromptInfo () {
+      const couponListLength = Object.keys(this.couponList).length
+      if (couponListLength === 0) {
+        return '选择你要使用的优惠券'
+      }
+      let count = 0
+      for (let key in this.couponList) {
+        count = count + this.couponList[key]['couponMoney']
+      }
+      return `优惠${count}元`
+    },
     showProductSpecs () {
       const options = this.orderOptions
       if (Number(options.weight) === 0 || !options.weight) {
@@ -591,6 +603,9 @@ export default {
     ...mapActions([
       'setOrderList'
     ]),
+    couponClick () {
+      this.$router.push('/coupon?type=select&totalFee=123')
+    },
     couponChange (val) {
       let value = ''
       if (val !== '不使用' && val !== '') {
@@ -610,7 +625,7 @@ export default {
     },
     async getCouponOption () {
       const openId = storage({key: 'openid'})
-      const data = await getCouponByOpenId({openId})
+      const data = await getCouponByOpenId({openId, type: 0})
       if (data.code === 200) {
         const options = data.obj.map((item) => {
           return {

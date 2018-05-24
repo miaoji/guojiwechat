@@ -86,7 +86,6 @@ export default {
   },
   async created () {
     const {query} = this.$route
-    console.log('quert', query)
     this.queryData = query
     if (Number(query.with_data) !== 1) {
       const coupon = await this.getCoupon()

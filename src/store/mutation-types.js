@@ -13,3 +13,5 @@ export const SET_ORDERLIST = 'SET_ORDERLIST'
 export const SET_CARGOLIST = 'SET_CARGOLIST'
 
 export const SET_TIPSHOW = 'SET_TIPSHOW'
+
+export const SET_COUPON_LIST = 'SET_COUPON_LIST'
