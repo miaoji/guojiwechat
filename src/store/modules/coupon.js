@@ -2,12 +2,12 @@ import * as TYPES from '../mutation-types'
 
 export const state = {
   couponList: {},
-  showCouponBtn: false
+  couponTotalFee: 0
 }
 
 export const getters = {
   getCouponList: state => state.couponList,
-  getshowCouponBtn: state => state.showCouponBtn
+  getCouponTotalFee: state => state.couponTotalFee
 }
 
 export const actions = {
@@ -16,6 +16,8 @@ export const actions = {
 export const mutations = {
   [TYPES.SET_COUPON_LIST] (state, { couponList }) {
     state.couponList = couponList
-    state.showCouponBtn = true
+  },
+  [TYPES.SET_COUPON_TOTAL_FEE] (state, { totalFee }) {
+    state.couponTotalFee = totalFee
   }
 }

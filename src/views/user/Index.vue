@@ -76,7 +76,8 @@ import { storage } from '@/utils'
 import { hotline } from '@/utils/config'
 import logoPng from '@/assets/images/logo.jpg'
 import { getUserinfo as getSpreadUserinfo } from '@/services/promote'
-import { query as queryCoupon } from '@/services/coupon'
+// import { query as queryCoupon } from '@/services/coupon'
+import { getCouponByOpenId } from '@/services/coupon'
 
 export default {
   name: 'usercenter',
@@ -194,8 +195,9 @@ export default {
     async getCouponNum () {
       const openid = storage({key: 'openid'})
       try {
-        const couponRes = await queryCoupon({
-          openid
+        const couponRes = await getCouponByOpenId({
+          openId: openid,
+          type: 0
         })
         if (couponRes.code === 200) {
           this.couponsLen = couponRes.obj.length

@@ -13,10 +13,11 @@
       <img src="../../../assets/images/coupons.png" alt="卡券图标">
     </div>
     <div class="listitem-intro">
-      <p class="listitem-intro-name">满{{data.couponThreshold}}减{{func}} <span class='listitem-intro-name-span'>{{data.superposition?'可叠加使用':'仅限单个使用'}}</span></p>
+      <p class="listitem-intro-name">满{{data.couponThreshold}}减{{func}} </p>
       <p class="listitem-intro-func">
         有效期: {{startTime}} - {{endTime}}
       </p>
+      <p><span class='listitem-intro-name-span'>{{data.superposition?'可叠加使用':'仅限单个使用'}}</span></p>
     </div>
   </div>
 </template>
@@ -208,7 +209,7 @@ export default {
       font-size: 1.6rem;
       &-span {
         font-size: 1.2rem;
-        color: #8a3ec2;
+        color: #ffa414;
       }
     }
     &-func {

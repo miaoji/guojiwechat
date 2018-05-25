@@ -1,19 +1,19 @@
 <template>
   <div class="list">
     <div class="list-tab">
-      <tab v-if="type !== 'select'" active-color='#8a3ec2'>
+      <tab v-if="type !== 'select'" active-color='#ffa414'>
         <tab-item selected @on-item-click="onTabClick">可用优惠券</tab-item>
         <tab-item @on-item-click="onTabClick">已失效优惠券</tab-item>
       </tab>
     </div>
     <div class="list-tab">
-      <tab :line-width=0 v-show="type === 'select'" active-color='#8a3ec2'>
+      <tab :line-width=0 v-show="type === 'select'" active-color='#ffa414'>
         <tab-item selected >选择优惠使用</tab-item>
       </tab>
     </div>
     <div class="list-container">
       <div class="none-coupon" v-show="couponsResultMap.length === 0">
-        <img src="../../assets/images/coupon_none.png" alt="">
+        <img src="../../assets/images/coupon_none_2.png" alt="">
         <p>{{'coupon.nocoupon' | translate}}</p>
       </div>
       <div v-for="item in couponsResultMap" :key="item.id">
@@ -33,7 +33,7 @@
     </div>
     <div class="list-footer">
       <tab :line-width=0 v-show="type === 'select'" active-color='#8a3ec2'>
-        <tab-item :disabled='!couponBtnDis' @on-item-click="onFooterTabClick">确实使用</tab-item>
+        <tab-item @on-item-click="onFooterTabClick">选好了</tab-item>
       </tab>
     </div>
   </div>
@@ -44,7 +44,6 @@ import { storage } from '@/utils'
 import { getCouponByOpenId } from '@/services/coupon'
 import ListItem from './components/ListItem'
 import { Tab, TabItem, Loading, TransferDomDirective as TransferDom } from 'vux'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'list',
@@ -98,9 +97,6 @@ export default {
     Loading
   },
   computed: {
-    ...mapGetters({
-      couponBtnDis: 'getshowCouponBtn'
-    }),
     couponsResultMap () {
       const coupons = this.coupons
       let res = []
@@ -120,17 +116,17 @@ export default {
   },
   methods: {
     onFooterTabClick () {
-      if (this.couponBtnDis) {
-        this.$router.push('/send')
-      }
-      return false
+      this.$router.push('/send')
     },
     async onTabClick (index) {
       this.showLoading = true
       // type 1表示查询有效的优惠券 0表示查询失效优惠券
       const couponList = await getCouponByOpenId({openId: this.openid, type: index})
-      if (couponList.code === 200) {
+      if (couponList.code === 200 && couponList.obj) {
         this.coupons = couponList.obj
+        this.showLoading = false
+      } else {
+        this.coupons = []
         this.showLoading = false
       }
     }
@@ -169,6 +165,14 @@ export default {
     bottom: 0;
     left: 0;
     width: 100%;
+    .vux-tab-item {
+      background-color: #ffa414;
+      font-size: 1.4rem;
+      color: #fff;
+    }
+    .vux-tab-disabled {
+      color: #bbb!important;
+    }
   }
   &-container {
     padding-top: 50px;
@@ -181,7 +185,7 @@ export default {
       }
       p {
         font-size: 1.6rem;
-        color: #666;
+        color: #fff;
       }
     }
   }

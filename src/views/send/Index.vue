@@ -360,13 +360,13 @@ export default {
       coupon: '',
       // 优惠额度
       couponMoney: 0,
+      // 没有优惠券参与的运费
+      advanceShowBefor: 0,
       couponOption: [],
       loading: false,
       dialogshow: false,
       // 收件国家 id
       pickupCountryId: 0,
-      // 没有优惠券参与的运费
-      advanceShowBefor: 0,
       // 订单重量体积的配置信息
       orderOptions: {
         weight: 0,
@@ -551,7 +551,8 @@ export default {
     ...mapGetters({
       sendadd: 'getSendAdd',
       userid: 'getUserId',
-      couponList: 'getCouponList'
+      couponList: 'getCouponList',
+      couponTotalFee: 'getCouponTotalFee'
     }),
     // 优惠券表单提示文字
     couponPromptInfo () {
@@ -581,7 +582,11 @@ export default {
       return `${textWeight}${weight}kg，${textVolumeweight}${volumeWeight}`
     },
     advanceShow () {
-      const coupon = this.couponMoney
+      let coupon = this.couponMoney
+      // 处理用户的运费发生修改时需要重新选择优惠券
+      if (this.couponTotalFee === 0) {
+        coupon = 0
+      }
       if (!this.advanceStatus['status']) {
         return this.advanceStatus['text']
       }
@@ -604,7 +609,8 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'SET_COUPON_LIST'
+      'SET_COUPON_LIST',
+      'SET_COUPON_TOTAL_FEE'
     ]),
     ...mapActions([
       'setOrderList'
@@ -613,6 +619,7 @@ export default {
       if (isNaN(Number(this.advanceShow))) {
         return false
       }
+      this.SET_COUPON_TOTAL_FEE({totalFee: this.advanceShowBefor})
       this.$router.push(`/coupon?type=select&totalFee=${this.advanceShowBefor}`)
     },
     /**
@@ -1124,6 +1131,13 @@ export default {
     }
   },
   watch: {
+    advanceShowBefor (val, oldval) {
+      if (this.couponTotalFee === 0 || this.couponTotalFee <= val) return
+      this.SET_COUPON_TOTAL_FEE({totalFee: 0})
+      this.SET_COUPON_LIST({
+        couponList: {}
+      })
+    },
     length (val, oldval) {
       const _this = this
       if (val > 120) {

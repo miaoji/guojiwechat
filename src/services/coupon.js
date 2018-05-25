@@ -21,3 +21,12 @@ export async function getCouponByOpenId (params) {
     auth: true
   })
 }
+
+export async function createCoupon (params) {
+  return request({
+    url: couponApi.add,
+    method: 'post',
+    params,
+    auth: true
+  })
+}

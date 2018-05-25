@@ -194,7 +194,8 @@ export const boot = {
 export const coupon = {
   // ?openid=oPg2ZwgwuALccM_V8UIW4qmhkOwo
   query: url + 'api/wxCoupon/index',
-  getCouponByOpenId: url + 'api/coupon/getCouponByOpenId'
+  getCouponByOpenId: url + 'api/coupon/getCouponByOpenId',
+  add: url + 'api/coupon/add'
 }
 
 // 分销

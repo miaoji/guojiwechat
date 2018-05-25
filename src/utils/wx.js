@@ -1,5 +1,7 @@
 import * as wxService from '@/services/wx'
 import { getConfByEnv } from '@/utils'
+import { createCoupon } from '@/services/coupon'
+import store from '../store'
 
 /**
  * [初始化wx jssdk]
@@ -81,6 +83,7 @@ export const pay = function ({initParams, successParams}) {
         'signType': 'MD5',
         'paySign': wxpayCon.paySign,
         success: async function (res) {
+          await createCoupon({type: 1, wxUserId: store.getters.getUserId})
           resolve({
             text: '支付成功',
             type: 'success',
