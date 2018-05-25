@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="usercenter-orderfunc">
-      <div class="usercenter-orderfunc-box flex" v-for="item in orderfunc" @click="goPath(item.path, item.func)" v-if="item.show">
+      <div class="usercenter-orderfunc-box flex" v-for="(item, index) in orderfunc" :key="index" @click="goPath(item.path, item.func)" v-if="item.show">
         <div class="usercenter-orderfunc-box--info">
           <img :src="item.src" alt="">
           <span>{{item.name}}</span>
