@@ -155,7 +155,7 @@
         <img class="bor-top" src="../../assets/images/bor_top.png" alt="bor-top">
         <div class="container-padding">
           <div class="send-container-package__money">
-            {{'send.prepay' | translate}}：￥ <span>{{advanceShow}}</span>
+            {{'send.prepay' | translate}}：￥ <span>{{advanceShow}}&nbsp;&nbsp;&nbsp;<del>{{couponMoney? `&nbsp;原价:${advanceShowBefor.toFixed(2)}`:''}}</del></span>
           </div>
           <!-- 提交按钮 -->
           <div class="submit-btn">

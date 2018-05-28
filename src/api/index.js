@@ -4,11 +4,11 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟本地
-    url = 'http://192.168.231.239:8077/'
+    // url = 'http://192.168.231.239:8077/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/mzkd/'
     // 正式 app 云端服务 Wechat
-    // url = 'http://api.mingz-tech.com/'
+    url = 'http://api.mingz-tech.com/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/'
@@ -195,7 +195,8 @@ export const coupon = {
   // ?openid=oPg2ZwgwuALccM_V8UIW4qmhkOwo
   query: url + 'api/wxCoupon/index',
   getCouponByOpenId: url + 'api/coupon/getCouponByOpenId',
-  add: url + 'api/coupon/add'
+  add: url + 'api/coupon/add',
+  queryByCouponCode: `${url}api/coupon/getCouponByCode`
 }
 
 // 分销

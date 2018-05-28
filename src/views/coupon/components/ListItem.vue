@@ -5,7 +5,7 @@
       'listitem--used': itemDis && type === 'select',
       'listitem--sended': realStatus === 'SENDED',
       'listitem--expired': realStatus === 'EXPIRED',
-      'lisritem--select': itemClick
+      'lisritem--select': itemClick && type === 'select'
     }"
     @click.stop.prevent="goPath(data, itemDis)"
   >
@@ -107,10 +107,7 @@ export default {
     ...mapMutations([
       'SET_COUPON_LIST'
     ]),
-    goPath (item, itemDis) {
-      if (itemDis) {
-        return false
-      }
+    goPath (item) {
       // 如果当前页面的类型type是select则此组件将不进行页面的额跳转,作为可选择的组件
       if (this.type === 'select') {
         if (!this.itemClick) {

@@ -63,7 +63,8 @@
 import JagContainer from '../../components/JagContainer'
 import Cell from './components/Cell'
 import { XDialog, TransferDomDirective as TransferDom } from 'vux'
-import { query } from '@/services/coupon'
+import moment from 'moment'
+import { queryByCouponCode } from '@/services/coupon'
 
 export default {
   name: 'detail',
@@ -87,9 +88,9 @@ export default {
   async created () {
     const {query} = this.$route
     this.queryData = query
-    if (Number(query.with_data) !== 1) {
-      const coupon = await this.getCoupon()
-      this.coupon = coupon
+    if (!query.couponMoney) {
+      const queryData = await this.getCoupon({couponCode: query.couponCode})
+      this.queryData = queryData
     }
   },
   components: {
@@ -101,25 +102,20 @@ export default {
     useNow () {
       this.$router.push({path: '/send'})
     },
-    async getCoupon () {
-      let res = {
-        coupon_name: '',
-        coupon_value: 0
-      }
+    async getCoupon ({ couponCode }) {
+      let res = {}
       this.$vux.loading.show()
-      const openid = this.queryData['openid']
-      const couponId = this.queryData['coupon_id']
       try {
-        const couponRes = await query({
-          openid
+        const couponRes = await queryByCouponCode({
+          couponCode
         })
-        if (couponRes.code === 200) {
-          const couponList = couponRes.obj
-          for (let i = 0, len = couponList.length; i < len; i++) {
-            const item = couponList[i]
-            if (item.couponId === couponId) {
-              res = item['resultMap']
-            }
+        if (couponRes.code === 200 && couponRes.obj) {
+          res = {
+            couponCode: couponRes.obj.couponCode,
+            couponThreshold: couponRes.obj.couponType.couponThreshold,
+            couponMoney: couponRes.obj.couponType.couponMoney,
+            startTime: moment(couponRes.obj.couponType.effectiveDate / 1).format('YYYY.MM.DD'),
+            endTime: moment(couponRes.obj.couponType.expiryDate / 1).format('YYYY.MM.DD')
           }
         }
         return res

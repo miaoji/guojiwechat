@@ -30,3 +30,12 @@ export async function createCoupon (params) {
     auth: true
   })
 }
+
+export async function queryByCouponCode (params) {
+  return request({
+    url: couponApi.queryByCouponCode,
+    method: 'get',
+    data: params,
+    auth: true
+  })
+}

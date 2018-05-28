@@ -64,7 +64,7 @@ export default {
     this.openid = storage({key: 'openid'})
     try {
       const couponList = await getCouponByOpenId({openId: this.openid, type: 0})
-      if (couponList.code === 200) {
+      if (couponList.code === 200 && couponList.obj) {
         let successlist = []
         let errorList = []
         if (type === 'select') {
@@ -100,6 +100,9 @@ export default {
     couponsResultMap () {
       const coupons = this.coupons
       let res = []
+      if (this.coupons === []) {
+        return res
+      }
       res = coupons.map((item) => {
         const {id, ...couponType} = item.couponType
         return {
