@@ -60,7 +60,6 @@ export const formatedatestamp = function (timpstamp) {
   if (!timpstamp) {
     return ''
   }
-  console.log('timpstamp', timpstamp)
   let date = new Date(Number(timpstamp))
   const year = date.getFullYear()
   let month = date.getMonth() + 1

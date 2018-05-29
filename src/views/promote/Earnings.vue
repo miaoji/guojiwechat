@@ -182,7 +182,6 @@ export default {
         minYear: 2017,
         maxYear: 2018,
         onConfirm (val) {
-          console.log('plugin confirm', val)
           _this.datePickerVal = val
           _this.page = 1
           _this.startDate = val + '-01'

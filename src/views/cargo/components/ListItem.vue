@@ -20,7 +20,7 @@
     <div class="package">
       <div class="package-info" @click.stop="goPath('/orderdetail', {'id': orderId})">
         <div class="booklist" v-show="item.parentId !== 0 && item.orderDetailList.length > 1">
-          <div class="booklist-item" v-for="elem, index in item.orderDetailList" :key="index">
+          <div class="booklist-item" v-for="(elem, index) in item.orderDetailList" :key="index">
             <div>
               {{elem['orderName']}}
             </div>

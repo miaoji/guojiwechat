@@ -130,7 +130,7 @@
                 </tr>
               </thead>
               <tbody class="packageitem">
-                <tr v-for="item, index in packageTable" :key="index">
+                <tr v-for="(item, index) in packageTable" :key="index">
                   <td>
                     {{item['orderName']}}
                   </td>

@@ -265,7 +265,7 @@
             <!-- 包裹信息 -->
             <div class="package">
               <div class="packagelist">
-                <div class="packagelist-item" v-for="item in batchList">
+                <div class="packagelist-item" v-for="(item,index) in batchList" :key="index">
                   <img src="../../assets/images/package.png" alt="">
                   <div class="packagelist-item--intro">
                     <p>
@@ -510,7 +510,6 @@ export default {
           })
         }
         let orderInfo = res.obj
-        console.log('orderInfo', orderInfo)
         this.orderInfo = orderInfo
         if (orderInfo.orderType === 4) {
           this.bengalOrder = true

@@ -16,17 +16,24 @@
         <img src="../../assets/images/coupon_none_2.png" alt="">
         <p>{{'coupon.nocoupon' | translate}}</p>
       </div>
-      <div v-for="item in couponsResultMap" :key="item.id">
-        <list-item
-          :name="item.couponCode"
-          :data="item"
-          :func="item.couponMoney"
-          :endtime="item.endtime"
-          :totalFee="totalFee"
-          :type="type"
-        >
-        </list-item>
-      </div>
+      <scroller
+        :on-refresh="refresh"
+        :noDataText="scrollerNoDataText"
+        class="list-scroller"
+      >
+        <div v-for="item in couponsResultMap" :key="item.id">
+          <list-item
+            :name="item.couponCode"
+            :data="item"
+            :func="item.couponMoney"
+            :endtime="item.endtime"
+            :totalFee="totalFee"
+            :type="type"
+          >
+          </list-item>
+        </div>
+        <div class="seat"></div>
+      </scroller>
     </div>
     <div v-transfer-dom>
       <loading :show="showLoading" text="加载中..."></loading>
@@ -50,10 +57,12 @@ export default {
   data () {
     return {
       type: 'select',
+      scrollerNoDataText: '没有更多了',
       totalFee: '',
       coupons: [],
       showLoading: false,
-      openid: ''
+      openid: '',
+      index: 0
     }
   },
   async created () {
@@ -118,11 +127,17 @@ export default {
     }
   },
   methods: {
+    refresh (done) {
+      const _this = this
+      _this.onTabClick(_this.index)
+      done(true)
+    },
     onFooterTabClick () {
       this.$router.push('/send')
     },
     async onTabClick (index) {
       this.showLoading = true
+      this.index = index
       // type 1表示查询有效的优惠券 0表示查询失效优惠券
       const couponList = await getCouponByOpenId({openId: this.openid, type: index})
       if (couponList.code === 200 && couponList.obj) {
@@ -146,13 +161,19 @@ export default {
 @import '../../assets/styles/colors.less';
 @import '../../assets/styles/helpers.less';
 @import '~vux/src/styles/close';
-
+.list-scroller {
+  height: 100%;
+  padding-top: 3.8rem;
+  .seat {
+    height: 13.8rem;
+  }
+}
 .active-1 {
   color: rgb(55, 174, 252) !important;
   border-bottom: 3px solid rgb(55, 174, 252) !important;
 }
 .list {
-  min-height: 100vh;
+  height: 100vh;
   background: -webkit-linear-gradient(#571d79, #873ec1); /* Safari 5.1 - 6.0 */
   background: -o-linear-gradient(#571d79, #873ec1); /* Opera 11.1 - 12.0 */
   background: -moz-linear-gradient(#571d79, #873ec1); /* Firefox 3.6 - 15 */
@@ -162,6 +183,7 @@ export default {
     top: 0;
     left: 0;
     width: 100%;
+    z-index: 999;
   }
   &-footer {
     position: fixed;
@@ -178,10 +200,8 @@ export default {
     }
   }
   &-container {
-    padding-top: 50px;
-    padding-bottom: 4rem;
     .none-coupon {
-      padding: 2rem;
+      padding: 4rem;
       img {
         width: 10rem;
         height: 10rem;
