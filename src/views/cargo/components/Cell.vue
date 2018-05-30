@@ -7,15 +7,32 @@
     }"
     @click="onItemClick"
   >
-    <div class="cargolistitem-title">
-      <div class="cargolistitem-title-left">123123123</div>
-      <div class="cargolistitem-title-right">2018-05-28 11:11:11</div>
+    <!-- 未合单 -->
+    <div v-if="data.parentId<=0">
+      <div class="cargolistitem-title">
+        <div class="cargolistitem-title-left">{{data.cnNo}}</div>
+        <div class="cargolistitem-title-right">{{data.createTime | formatedatestamp}}</div>
+      </div>
+      <div class="cargolistitem-container">
+        <div class="cargolistitem-container-item1">{{data.companyName}}</div>
+        <div class="cargolistitem-container-item2">特货</div>
+        <div class="cargolistitem-container-item3">5.7KG</div>
+        <div class="cargolistitem-container-item4">待合单</div>
+      </div>
     </div>
-    <div class="cargolistitem-container">
-      <div class="cargolistitem-container-item1">顺丰速运</div>
-      <div class="cargolistitem-container-item2">特货</div>
-      <div class="cargolistitem-container-item3">5.7KG</div>
-      <div class="cargolistitem-container-item4">待合单</div>
+
+    <!-- 已合单 -->
+    <div v-if="data.parentId>0">
+      <div class="cargolistitem-title">
+        <div class="cargolistitem-title-left">{{data.orderNo}}</div>
+        <div class="cargolistitem-title-right">{{data.createTime | formatedatestamp}}</div>
+      </div>
+      <div class="cargolistitem-container">
+        <div class="cargolistitem-container-item1">发往{{data.receiverCountry}}</div>
+        <div class="cargolistitem-container-item2">特货</div>
+        <div class="cargolistitem-container-item3">5.7KG</div>
+        <div class="cargolistitem-container-item4">待合单</div>
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +47,7 @@ export default {
     }
   },
   created () {
+    console.log('data', this.data)
   },
   props: {
     data: {
@@ -56,10 +74,10 @@ export default {
           }
         })
       } else {
+        delete this.getCargoBuildList[this.data.id]
         this.SET_CAEGO_BUILD_LIST({
           cargoBuildList: {
-            ...this.getCargoBuildList,
-            [this.data.id]: undefined
+            ...this.getCargoBuildList
           }
         })
       }
@@ -79,8 +97,8 @@ export default {
   padding: 0.8rem 0.8rem 0.8rem 4rem;
   background: url('../../../assets/images/package.png');
   background-repeat: no-repeat;
-  background-size: auto 70%;
-  background-position: 0.4rem 0.8rem;
+  background-size: auto 50%;
+  background-position: 0.4rem 1.5rem;
   background-color: #fff;
   border: 2px solid #fff;
   border-radius: 3px;
@@ -88,27 +106,29 @@ export default {
     display: flex;
     line-height: 2.2em;
     &-left {
-      flex: 1;
+      flex: 2;
       text-align: left;
-      padding-left: 1rem;
     }
     &-right {
-      flex: 1;
+      flex: 3;
       text-align: right;
-      padding-right: 1rem;
     }
   }
   &-container {
     line-height: 2.2em;
     display: flex;
+    text-align: right;
     &-item1 {
-      flex: 1;
+      flex: 2;
+      text-align: left;
     }    
     &-item2 {
       flex: 1;
+      text-align: left;
     }    
     &-item3 {
       flex: 1;
+      text-align: left;
     }    
     &-item4 {
       flex: 1;

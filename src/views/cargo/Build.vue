@@ -16,7 +16,7 @@
 
     <div class="caogobuild-footer">
       <div class="caogobuild-footer-left">
-        <p class="caogobuild-footer-left-active">已选包裹: {{itemCount}}</p>
+        <p class="caogobuild-footer-left-active">已选包裹: {{itemCount}} 预付运费: ￥{{itemCount*100}}</p>
         <p>注：特货和普货合单将以特货价值结算</p>
       </div>
       <div class="caogobuild-footer-right">
@@ -54,6 +54,7 @@ export default {
       'getCargoBuildList'
     ]),
     itemCount () {
+      console.log('getCargoBuildList', this.getCargoBuildList)
       return Object.keys(this.getCargoBuildList).length
     }
   },
