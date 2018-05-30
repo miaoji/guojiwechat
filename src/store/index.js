@@ -6,6 +6,7 @@ import * as order from './modules/order'
 import * as promote from './modules/promote'
 import * as user from './modules/user'
 import * as coupon from './modules/coupon'
+import * as cargobuild from './modules/cargobuild'
 
 Vue.use(Vuex)
 
@@ -16,7 +17,8 @@ const store = new Vuex.Store({
     order,
     promote,
     user,
-    coupon
+    coupon,
+    cargobuild
   },
   state: {
     title: '国际快递服务中心',

@@ -146,7 +146,8 @@ export const cargo = {
   show: url + 'api/orderInfo/listCargoOrder',
   update: url + 'api/orderInfo/modOrderInfoById',
   delete: url + 'api/orderInfo/delOrderInfoById',
-  test: url + 'test/tt'
+  test: url + 'test/tt',
+  queryCargoByBatch: url + 'api/orderInfo/listCargoOrder'
 }
 
 // 用户信息等

@@ -59,3 +59,13 @@ export async function remove (params) {
     params
   })
 }
+
+export async function queryCargoByBatch (params) {
+  console.log('params', params)
+  return request({
+    url: cargoApi.queryCargoByBatch,
+    method: 'get',
+    auth: true,
+    data: { ...params, page: 1, rows: 10000 }
+  })
+}

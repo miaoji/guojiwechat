@@ -14,8 +14,12 @@
           </span>
         </p>
       </div>
+    </div>
+    <div class="order-status">
       <span class="detail-state" v-show="item.parentId !== 0">{{item.status | orderstatus}}</span>
       <span class="detail-state" v-show="item.parentId === 0">{{'cargo.item.waitcargo' | translate}}</span>
+      <span class="detail-state" v-show="item.cargoStatus === 0">未入库</span>
+      <span class="detail-state" v-show="item.cargoStatus === 1">已入库</span>
     </div>
     <div class="package">
       <div class="package-info" @click.stop="goPath('/orderdetail', {'id': orderId})">
@@ -46,15 +50,16 @@
         <p v-show="item.parentId !== 0">
           {{$t('cargo.item.ordernum', {'num': item.orderDetailList.length})}}&nbsp;{{'cargo.item.cargoorder' | translate}}-{{cargoType}}&nbsp;{{'cargo.item.realpay' | translate}}:&nbsp;{{realPay}}
         </p>
-        <p v-show="item.parentId === 0">
+        <!-- <p v-show="item.parentId === 0">
           {{$t('cargo.item.ordernum', {'num': 1})}}
-        </p>
+        </p> -->
       </div>
     </div>
     <div class="edit">
       <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
-        <button class="gosend-btn" @click="goPath('/orderroute', {'id': orderId})">{{'cargo.item.checkroute' | translate}}</button>
+        <button class="order-btn" v-show="item.parentId === 0 && item.cargoStatus === 1" @click="goPath('/cargo/build', {'batch': item.batch})">合单</button>
+        <button class="order-btn" @click="goPath('/orderroute', {'id': orderId})">{{'cargo.item.checkroute' | translate}}</button>
       </div>
     </div>
   </div>
@@ -69,6 +74,9 @@ export default {
       type: Object,
       default: {}
     }
+  },
+  created () {
+    console.log('thisss', this.item)
   },
   data () {
     return {
@@ -119,10 +127,15 @@ export default {
 .border-bottom-grey {
   border-bottom: 1px solid @borderbt;
 }
-
 .listitem {
   background: white;
   border-radius: @radius-size;
+  .order-status {
+    padding-left: 3rem;
+    span {
+      padding-right: 0.5rem;
+    }
+  }
   .listitem-box {
     padding: .5rem .6rem;
   }
@@ -179,6 +192,14 @@ export default {
     justify-content: space-between;
     &__time {
       font-size: @small-size;
+    }
+    .order-btn {
+      background-color: #ffa414;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 3px;
+      color: #fff;
+      margin-left: 1rem;
     }
   }
 }

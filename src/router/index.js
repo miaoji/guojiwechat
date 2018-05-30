@@ -39,6 +39,7 @@ const promotehandlewithdraw = r => require.ensure([], () => r(require('@/views/p
 const promotewithdrawdetail = r => require.ensure([], () => r(require('@/views/promote/WithdrawDetail')), 'promotewithdrawdetail')
 const promotesetting = r => require.ensure([], () => r(require('@/views/promote/Setting')), 'promotesetting')
 const usersetting = r => require.ensure([], () => r(require('@/views/user/Setting')), 'usersetting')
+const cargobuild = r => require.ensure([], () => r(require('@/views/cargo/Build')), 'cargobuild')
 
 export default new Router({
   base: __dirname,
@@ -240,6 +241,14 @@ export default new Router({
     component: cargolist,
     meta: {
       intro: '集运列表',
+      requiresAuth: true
+    }
+  }, {
+    path: '/cargo/build',
+    name: 'CargoBuild',
+    component: cargobuild,
+    meta: {
+      intro: '集运合单',
       requiresAuth: true
     }
   }, {
