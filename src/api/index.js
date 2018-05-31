@@ -14,7 +14,8 @@ switch (NODE_ENV) {
     url = 'http://api.mingz-tech.com/'
     break
   case 'test':
-    url = 'http://api.didalive.net/mzkd/'
+    url = 'http://192.168.231.239:8078/'
+    // url = 'http://api.didalive.net/mzkd/'
     break
   default:
     break

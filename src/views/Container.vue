@@ -17,9 +17,9 @@ import { getToken } from '@/services/developmentToken'
 export default {
   name: 'container',
   async created () {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
       const data = await getToken()
-      if (config.dev.developer === 'winnerwly') {
+      if (config.dev.developer === 'winnerwly' || config.test.developer === 'winnerwly') {
         storage({
           type: 'set',
           key: 'openid',
