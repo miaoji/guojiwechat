@@ -69,3 +69,31 @@ export async function queryCargoByBatch (params) {
     data: { ...params, page: 1, rows: 10000 }
   })
 }
+
+export async function getOrderByParentId (params) {
+  return request({
+    url: cargoApi.getOrderByParentId,
+    method: 'get',
+    auth: true,
+    data: params
+  })
+}
+
+export async function cancelMergeCargo (params) {
+  return request({
+    url: cargoApi.cancelMergeCargo,
+    method: 'post',
+    auth: true,
+    data: params
+  })
+}
+
+export async function mergeCargo ({ data, params }) {
+  return request({
+    url: cargoApi.mergeCargo,
+    method: 'post',
+    auth: true,
+    data,
+    params
+  })
+}

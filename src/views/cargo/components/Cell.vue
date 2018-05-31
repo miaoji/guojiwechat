@@ -5,16 +5,15 @@
       'cargolistitem': true,
       'cargolistitem-active': isChange && getCargoBuildList[data.id]
     }"
-    @click="onItemClick"
   >
     <!-- 未合单 -->
-    <div v-if="data.parentId<=0">
+    <div @click="onItemClick" v-if="!data.orderDetailList || data.orderDetailList.length===0">
       <div class="cargolistitem-title">
         <div class="cargolistitem-title-left">{{data.cnNo}}</div>
         <div class="cargolistitem-title-right">{{data.createTime | formatedatestamp}}</div>
       </div>
       <div class="cargolistitem-container">
-        <div class="cargolistitem-container-item1">{{data.companyName}}</div>
+        <div class="cargolistitem-container-item1">{{data.kdCompany.companyName}}</div>
         <div class="cargolistitem-container-item2">特货</div>
         <div class="cargolistitem-container-item3">5.7KG</div>
         <div class="cargolistitem-container-item4">待合单</div>
@@ -22,16 +21,16 @@
     </div>
 
     <!-- 已合单 -->
-    <div v-if="data.parentId>0">
+    <div v-if="data.orderDetailList && data.orderDetailList.length>0 ">
       <div class="cargolistitem-title">
         <div class="cargolistitem-title-left">{{data.orderNo}}</div>
         <div class="cargolistitem-title-right">{{data.createTime | formatedatestamp}}</div>
       </div>
       <div class="cargolistitem-container">
-        <div class="cargolistitem-container-item1">发往{{data.receiverCountry}}</div>
+        <div class="cargolistitem-container-item1">目的地:{{data.receiverCountry}}</div>
         <div class="cargolistitem-container-item2">特货</div>
         <div class="cargolistitem-container-item3">5.7KG</div>
-        <div class="cargolistitem-container-item4">待合单</div>
+        <div class="cargolistitem-container-item4">已合单</div>
       </div>
     </div>
   </div>
@@ -106,7 +105,7 @@ export default {
     display: flex;
     line-height: 2.2em;
     &-left {
-      flex: 2;
+      flex: 3;
       text-align: left;
     }
     &-right {

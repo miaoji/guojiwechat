@@ -1,40 +1,68 @@
 <template>
   <div class="caogobuild">
-    <div class="caogobuild-header-title">合并订单</div>
-    <div class="caogobuild-container">
-      <div class="none-list" v-show="showNoneList">
-        <img src="../../assets/images/coupon_none_2.png" alt="">
-        <p>{{'coupon.nocoupon' | translate}}</p>
-      </div>
-      <scroller
-        class="list-scroller"
-      >
-        <item-cell v-for="(item,index) in list" :key="index" :data='item'></item-cell>
-        <div class="seat"></div>
-      </scroller>
-    </div>
 
-    <div class="caogobuild-footer">
-      <div class="caogobuild-footer-left">
-        <p class="caogobuild-footer-left-active">已选包裹: {{itemCount}} 预付运费: ￥{{itemCount*100}}</p>
-        <p>注：特货和普货合单将以特货价值结算</p>
+    <div v-if="type === 'build'">
+      <div class="caogobuild-header-title">合并订单</div>
+      <div class="caogobuild-container">
+        <div class="none-list" v-show="showNoneList">
+          <img src="../../assets/images/coupon_none_2.png" alt="">
+          <p>{{'coupon.nocoupon' | translate}}</p>
+        </div>
+        <scroller
+          class="list-scroller"
+        >
+          <item-cell v-for="(item,index) in list" :key="index" :data='item'></item-cell>
+          <div class="seat"></div>
+        </scroller>
       </div>
-      <div class="caogobuild-footer-right">
-        <button>合单</button>
+
+      <div class="caogobuild-footer">
+        <div class="caogobuild-footer-left">
+          <p class="caogobuild-footer-left-active">已选包裹: {{itemCount}}</p>
+          <p>注：特货和普货合单将以特货价值结算</p>
+        </div>
+        <div class="caogobuild-footer-right">
+          <button @click="mergeCargoClick">合单</button>
+        </div>
       </div>
     </div>
     
     <div v-transfer-dom>
       <loading class="loading" :show="showLoading" text="加载中..."></loading>
     </div>
+    <actionsheet v-model="showActionsheet" :menus="menus" show-cancel @on-click-menu="onClickMenu">
+      <p slot="header" v-html="msg"></p>
+    </actionsheet>
+
+    <div v-if="type === 'cancel'">
+      <div class="caogobuild-header-title">修改合单</div>
+      <div class="caogobuild-container">
+        <div class="none-list" v-show="showNoneList">
+          <img src="../../assets/images/coupon_none_2.png" alt="">
+          <p>{{'coupon.nocoupon' | translate}}</p>
+        </div>
+        <scroller
+          class="list-scroller"
+        >
+          <div class="order-cancel" v-for="(item,index) in list" :key="index">
+            <div class="order-cancel-item1">{{item.CN_NO}}</div>
+            <div class="order-cancel-item2">顺丰速递</div>
+            <div class="order-cancel-item3">1.0kg</div>
+            <div class="order-cancel-item4">普货</div>
+            <div @click='cancelClick(item)' class="order-cancel-item5">删除</div>
+          </div>
+          <div class="seat"></div>
+        </scroller>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script>
-import { queryCargoByBatch } from '../../services/cargo'
+import { queryCargoByBatch, cancelMergeCargo, getOrderByParentId, mergeCargo, remove } from '../../services/cargo'
 import ItemCell from './components/Cell'
-import { Loading, TransferDomDirective as TransferDom } from 'vux'
+import { Loading, TransferDomDirective as TransferDom, Actionsheet } from 'vux'
 import { mapMutations, mapGetters } from 'vuex'
 
 export default {
@@ -43,18 +71,32 @@ export default {
     return {
       list: [],
       showLoading: false,
-      showNoneList: false
+      showNoneList: false,
+      type: '',
+      showActionsheet: false,
+      deleteItem: {},
+      msg: '确定咩?<br/><span style="color:#666;font-size:12px;">删除后订单将回到待合单状态,需要重新合单!</span>',
+      menus: {
+        delete: '<span style="color:red">删除</span>'
+      }
     }
   },
   created () {
-    this.getCargoList()
+    const { type } = this.$route.query
+    this.type = type
+    if (type === 'build') {
+      this.getCargoList()
+    }
+    if (type === 'cancel') {
+      this.getOrderByParentId()
+      console.log(1231)
+    }
   },
   computed: {
     ...mapGetters([
       'getCargoBuildList'
     ]),
     itemCount () {
-      console.log('getCargoBuildList', this.getCargoBuildList)
       return Object.keys(this.getCargoBuildList).length
     }
   },
@@ -62,6 +104,65 @@ export default {
     ...mapMutations([
       'SET_CAEGO_BUILD_LIST'
     ]),
+    async mergeCargoClick () {
+      console.log('getCargoBuildList', this.getCargoBuildList)
+      const data = await mergeCargo({
+        data: Object.keys(this.getCargoBuildList),
+        params: {
+          // cargoType -1:普货 -2:特货
+          cargoType: -2,
+          // type 1:集运订单 0:直邮订单
+          type: 1
+        }
+      })
+      this.SET_CAEGO_BUILD_LIST({
+        cargoBuildList: {}
+      })
+      console.log('data', data)
+      this.getCargoList()
+    },
+    cancelClick (item) {
+      this.showActionsheet = !this.showActionsheet
+      this.deleteItem = item
+    },
+    async onClickMenu (item) {
+      console.log('item', item)
+      console.log('this.deleteItem', this.deleteItem)
+      try {
+        this.showLoading = true
+        const id = this.deleteItem.ID
+        const data = await cancelMergeCargo([id])
+        console.log('data', data)
+        if (data.code === 200 && data.obj) {
+          alert('撤销成功')
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.showLoading = false
+      }
+      this.getOrderByParentId()
+    },
+    async getOrderByParentId () {
+      try {
+        this.showLoading = true
+        const id = this.$route.query.id
+        const data = await getOrderByParentId({id})
+        if (data.code === 200) {
+          if (!data.obj || data.obj.length === 0) {
+            await remove({ids: id})
+            this.$router.push({path: '/cargo/list'})
+          }
+          this.list = data.obj
+        } else {
+          this.showNoneList = true
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.showLoading = false
+      }
+    },
     // 获取集运订单列表
     async getCargoList () {
       try {
@@ -82,7 +183,8 @@ export default {
   },
   components: {
     Loading,
-    ItemCell
+    ItemCell,
+    Actionsheet
   },
   directives: {
     TransferDom
@@ -166,6 +268,33 @@ export default {
       p {
         font-size: 1.6rem;
         color: #fff;
+      }
+    }
+    .order-cancel {
+      margin: 0.8rem;
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 3px;
+      color: #333;
+      line-height: 2em;
+      font-size: 1.4rem;
+      display: flex;
+      text-align: center;
+      &-item1 {
+        flex: 1;
+      }
+      &-item2 {
+        flex: 1;
+      }
+      &-item3 {
+        flex: 1;
+      }
+      &-item4 {
+        flex: 1;
+      }
+      &-item5 {
+        flex: 1;
+        color: #ffa414;
       }
     }
   }
