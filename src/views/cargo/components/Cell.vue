@@ -14,8 +14,8 @@
       </div>
       <div class="cargolistitem-container">
         <div class="cargolistitem-container-item1">{{data.kdCompany.companyName}}</div>
-        <div class="cargolistitem-container-item2">特货</div>
-        <div class="cargolistitem-container-item3">5.7KG</div>
+        <div class="cargolistitem-container-item2">{{data.parcelTypes | filterCargoType}}</div>
+        <div class="cargolistitem-container-item3">{{data.weight}}KG</div>
         <div class="cargolistitem-container-item4">待合单</div>
       </div>
     </div>

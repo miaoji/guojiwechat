@@ -47,8 +47,8 @@
           <div class="order-cancel" v-for="(item,index) in list" :key="index">
             <div class="order-cancel-item1">{{item.CN_NO}}</div>
             <div class="order-cancel-item2">顺丰速递</div>
-            <div class="order-cancel-item3">1.0kg</div>
-            <div class="order-cancel-item4">普货</div>
+            <div class="order-cancel-item3">{{item.WEIGHT}}kg</div>
+            <div class="order-cancel-item4">{{item.PARCEL_TYPES | filterCargoType}}</div>
             <div @click='cancelClick(item)' class="order-cancel-item5">删除</div>
           </div>
           <div class="seat"></div>
@@ -226,7 +226,7 @@ export default {
       font-size: 1rem;
       line-height: 2rem;
       &-active {
-        font-size: 1.6rem;
+        font-size: 1.2rem;
       }
     }
     &-right {

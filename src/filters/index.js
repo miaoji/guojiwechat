@@ -2,6 +2,14 @@ export const addOne = function (num) {
   return Number(num) + 1
 }
 
+export const filterCargoType = (val) => {
+  const raplText = {
+    0: '普货',
+    1: '特货'
+  }
+  return raplText[val]
+}
+
 export const sendstatus = function (val) {
   // 状态1.等待接单，2.中转中，3.已派送，4.已签收 5. 已取消
   const sendsta = {
