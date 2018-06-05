@@ -6,7 +6,7 @@
       <div class="caogobuild-container">
         <div class="none-list" v-show="showNoneList">
           <img src="../../assets/images/coupon_none_2.png" alt="">
-          <p>{{'coupon.nocoupon' | translate}}</p>
+          <p>暂无可以操作的订单</p>
         </div>
         <scroller
           class="list-scroller"
@@ -39,15 +39,15 @@
       <div class="caogobuild-container">
         <div class="none-list" v-show="showNoneList">
           <img src="../../assets/images/coupon_none_2.png" alt="">
-          <p>{{'coupon.nocoupon' | translate}}</p>
+          <p>暂无可以操作的订单</p>
         </div>
         <scroller
           class="list-scroller"
         >
           <div class="order-cancel" v-for="(item,index) in list" :key="index">
             <div class="order-cancel-item1">{{item.CN_NO}}</div>
-            <div class="order-cancel-item2">顺丰速递</div>
-            <div class="order-cancel-item3">{{item.WEIGHT}}kg</div>
+            <div class="order-cancel-item2">{{item.company_name}}</div>
+            <div class="order-cancel-item3" v-show="item.WEIGHT">{{`${item.WEIGHT} kg`}}</div>
             <div class="order-cancel-item4">{{item.PARCEL_TYPES | filterCargoType}}</div>
             <div @click='cancelClick(item)' class="order-cancel-item5">删除</div>
           </div>
@@ -281,10 +281,13 @@ export default {
       display: flex;
       text-align: center;
       &-item1 {
-        flex: 1;
+        flex: 2;
       }
       &-item2 {
-        flex: 1;
+        flex: 2;
+        overflow: hidden;
+        white-space:nowrap;
+        text-overflow:ellipsis;
       }
       &-item3 {
         flex: 1;
