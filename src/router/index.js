@@ -27,7 +27,6 @@ const payresult = r => require.ensure([], () => r(require('@/views/pay/Result'))
 const feedrecommend = r => require.ensure([], () => r(require('@/views/feed/Recommend')), 'FeedContainer')
 const couponlist = r => require.ensure([], () => r(require('@/views/coupon/List')), 'CouponList')
 const coupondetail = r => require.ensure([], () => r(require('@/views/coupon/Detail')), 'CouponDetail')
-const cargolist = r => require.ensure([], () => r(require('@/views/cargo/List')), 'CargoList')
 const promote = r => require.ensure([], () => r(require('@/views/promote/Index')), 'Promote')
 const qrimage = r => require.ensure([], () => r(require('@/views/promote/QrImage')), 'qrimage')
 const promoteearings = r => require.ensure([], () => r(require('@/views/promote/Earnings')), 'promoteearings')
@@ -39,7 +38,8 @@ const promotehandlewithdraw = r => require.ensure([], () => r(require('@/views/p
 const promotewithdrawdetail = r => require.ensure([], () => r(require('@/views/promote/WithdrawDetail')), 'promotewithdrawdetail')
 const promotesetting = r => require.ensure([], () => r(require('@/views/promote/Setting')), 'promotesetting')
 const usersetting = r => require.ensure([], () => r(require('@/views/user/Setting')), 'usersetting')
-const cargobuild = r => require.ensure([], () => r(require('@/views/cargo/Build')), 'cargobuild')
+// const cargobuild = r => require.ensure([], () => r(require('@/views/cargo/Build')), 'cargobuild')
+// const cargolist = r => require.ensure([], () => r(require('@/views/cargo/List')), 'CargoList')
 
 export default new Router({
   base: __dirname,
@@ -235,23 +235,26 @@ export default new Router({
     meta: {
       intro: '404错误'
     }
-  }, {
-    path: '/cargo/list',
-    name: 'CargoList',
-    component: cargolist,
-    meta: {
-      intro: '集运列表',
-      requiresAuth: true
-    }
-  }, {
-    path: '/cargo/build',
-    name: 'CargoBuild',
-    component: cargobuild,
-    meta: {
-      intro: '集运合单',
-      requiresAuth: true
-    }
-  }, {
+  },
+  // {
+  //   path: '/cargo/list',
+  //   name: 'CargoList',
+  //   component: cargolist,
+  //   meta: {
+  //     intro: '集运列表',
+  //     requiresAuth: true
+  //   }
+  // },
+  // {
+  //   path: '/cargo/build',
+  //   name: 'CargoBuild',
+  //   component: cargobuild,
+  //   meta: {
+  //     intro: '集运合单',
+  //     requiresAuth: true
+  //   }
+  // },
+  {
     path: '/promote',
     name: 'Promote',
     component: promote,
