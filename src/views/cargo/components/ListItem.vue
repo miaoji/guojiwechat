@@ -59,7 +59,7 @@
       <p class="edit__time">{{item.createTime | formatedatestamp}}</p>
       <div>
         <button class="order-btn" v-show="item.parentId === 0 && item.cargoStatus === 1" @click="goPath('/cargo/build', {'batch': item.batch, type: 'build'})">进行合单</button>
-        <button class="order-btn" v-show="item.parentId < 0 && item.cargoStatus === 1" @click="goPath('/cargo/build', {'id': item.id, type: 'cancel'})">修改合单</button>
+        <button class="order-btn" v-show="item.status < 2 && item.parentId < 0 && item.cargoStatus === 1" @click="goPath('/cargo/build', {'id': item.id, type: 'cancel'})">修改合单</button>
         <button class="order-btn" @click="goPath('/orderroute', {'id': orderId})">{{'cargo.item.checkroute' | translate}}</button>
       </div>
     </div>
