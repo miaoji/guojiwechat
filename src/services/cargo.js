@@ -97,3 +97,13 @@ export async function mergeCargo ({ data, params }) {
     params
   })
 }
+
+export async function selectOrderByCargoType (params) {
+  console.log('params', params)
+  return request({
+    url: cargoApi.selectOrderByCargoType,
+    method: 'get',
+    auth: true,
+    data: params
+  })
+}

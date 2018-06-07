@@ -2,6 +2,22 @@ export const addOne = function (num) {
   return Number(num) + 1
 }
 
+export const filterParentId = (val) => {
+  if (val > 0) {
+    return '已合单'
+  }
+  if (val === 0) {
+    return '待合单'
+  }
+  if (val === -1) {
+    return '普货'
+  }
+  if (val === -2) {
+    return '特货'
+  }
+  return '未知'
+}
+
 export const filterCargoType = (val) => {
   const raplText = {
     0: '普货',

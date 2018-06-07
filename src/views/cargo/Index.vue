@@ -5,6 +5,10 @@
       <add-package />
     </div>
     <div class="cargo-bg-line"><div class="cargo-bg-line-detail"></div></div>
+    <div class="cargo-item cargo-item5">
+      <address-item />
+    </div>
+    <div class="cargo-bg-line"><div class="cargo-bg-line-detail"></div></div>
     <div class="cargo-item cargo-item2">
       <package-list />
     </div>
@@ -25,6 +29,7 @@ import AddPackage from './components/AddPackage'
 import PackageList from './components/PackageList'
 import TransferAddres from './components/TransferAddres'
 import MergeOrder from './components/MergeOrder'
+import AddressItem from './components/Address'
 
 export default {
   name: 'cargo',
@@ -32,7 +37,8 @@ export default {
     AddPackage,
     PackageList,
     TransferAddres,
-    MergeOrder
+    MergeOrder,
+    AddressItem
   },
   props: {
   }
@@ -73,6 +79,9 @@ export default {
     background-color: #fff;
     &.cargo-item1 {
       padding: 1rem 0;
+    }
+    &.cargo-item5 {
+      padding: 1rem 10px;
     }
   }
 }

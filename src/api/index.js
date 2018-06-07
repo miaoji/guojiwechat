@@ -4,11 +4,11 @@ let url
 switch (NODE_ENV) {
   case 'development':
     // 仝舟本地
-    // url = 'http://192.168.231.239:8078/'
+    url = 'http://192.168.231.239:8078/'
     // 测试 app 云端服务 Wechat
     // url = 'http://api.didalive.net/mzkd/'
     // 正式 app 云端服务 Wechat
-    url = 'http://api.mingz-tech.com/'
+    // url = 'http://api.mingz-tech.com/'
     break
   case 'production':
     url = 'http://api.mingz-tech.com/'
@@ -150,7 +150,8 @@ export const cargo = {
   queryCargoByBatch: url + 'api/orderInfo/listCargoOrder',
   getOrderByParentId: url + 'api/orderInfo/getOrderByParentId',
   cancelMergeCargo: url + 'api/orderInfo/cancelMergeCargo',
-  mergeCargo: url + 'api/orderInfo/mergeCargo'
+  mergeCargo: url + 'api/orderInfo/mergeCargo',
+  selectOrderByCargoType: url + 'api/orderInfo/selectOrderByCargoType'
 }
 
 // 用户信息等

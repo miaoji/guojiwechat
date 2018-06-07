@@ -21,7 +21,7 @@
 
       <div v-show="inputLen" class="input-search">
         <div class="input-search-container" v-show="searchResult.length !== 0">
-          <p v-for="item in searchResult" v-show="item.hiddenStatus === 1" @click.stop="onClickSearchRes(item)">
+          <p v-for="(item,index) in searchResult" :key="index" v-show="item.hiddenStatus === 1" @click.stop="onClickSearchRes(item)">
             {{item.companyName}}&nbsp;{{item.companyCode}}
           </p>
         </div>
@@ -36,7 +36,7 @@
         <div class="selectbox-container-item item-history">
           <div class="item-title">{{$t('component.selectbox.recentsearch')}}</div>
           <ul class="item-list">
-            <li v-for="item in recentSearch">
+            <li v-for="(item,index) in recentSearch" :key="index">
               <span class="item" @click.stop="onClickSearchItem({name: item})">
                 {{item}}
               </span>
@@ -49,7 +49,7 @@
         <div class="selectbox-container-item item-hot">
           <div class="item-title">{{$t('component.selectbox.hotexpress')}}</div>
           <ul class="item-list">
-            <li v-for="item in hotExpress">
+            <li v-for="(item,index) in hotExpress" :key="index">
               <span class="item" @click.stop="onClickSearchItem({name: item})">
                 {{item}}
               </span>
@@ -161,6 +161,9 @@ export default {
         const item = searchResult[0]
         this.$emit('listenBoxConfirm', item)
       }
+      if (this.type === 'cargo') {
+        return
+      }
       this.$router.go(-1)
     },
     /**
@@ -178,6 +181,9 @@ export default {
      */
     onClickSearchRes (item) {
       this.$emit('listenBoxConfirm', item)
+      if (this.type === 'cargo') {
+        return
+      }
       this.$router.go(-1)
     },
     /**

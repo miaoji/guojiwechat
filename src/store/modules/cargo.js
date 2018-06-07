@@ -1,4 +1,6 @@
 import { query } from '@/services/cargo'
+import { getDefaultAddr } from '@/services/user'
+
 import * as types from '../mutation-types'
 
 export const state = {
@@ -7,14 +9,23 @@ export const state = {
     rows: 15,
     data: [],
     total: 0
-  }
+  },
+  receiveAddressesId: 0
 }
 
 export const getters = {
-  getCargoList: state => state.list
+  getCargoList: state => state.list,
+  getReceiveAddressesId: state => state.receiveAddressesId
 }
 
 export const actions = {
+  async getDefaultAddr ({getters, state}) {
+    const data = await getDefaultAddr({WxUserId: getters.getUserId})
+    if (data.code === 200) {
+      console.log('data', data)
+      state.receiveAddressesId = data.obj.receiveAddresses[0].id
+    }
+  },
   /**
    * [获取集运订单列表信息]
    * @param {[type]} options.dispatch [description]
