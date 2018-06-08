@@ -1,34 +1,31 @@
 <template>
   <div class="cargo">
     <div class="cargo-bg-header"></div>
-    <div class="cargo-item cargo-item1">
-      <add-package />
-    </div>
-    <div class="cargo-bg-line"><div class="cargo-bg-line-detail"></div></div>
     <div class="cargo-item cargo-item5">
       <address-item />
     </div>
-    <div class="cargo-bg-line"><div class="cargo-bg-line-detail"></div></div>
-    <div class="cargo-item cargo-item2">
-      <package-list />
-    </div>
-    <div class="cargo-bg-line"><div class="cargo-bg-line-detail"></div></div>
     <div class="cargo-item cargo-item3">
       <transfer-addres />
     </div>
     <div class="cargo-bg-line"><div class="cargo-bg-line-detail"></div></div>
-    <div class="cargo-item cargo-item4">
-      <merge-order />
+    <div class="cargo-item cargo-item1">
+      <add-package />
+    </div>
+    <div class="cargo-bg-footer"></div>
+    <div class="cargo-item-title">我的包裹</div>
+    <div class="cargo-bg-header"></div>
+    <div class="cargo-item cargo-item2">
+      <package-list />
     </div>
     <div class="cargo-bg-footer"></div>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import AddPackage from './components/AddPackage'
 import PackageList from './components/PackageList'
 import TransferAddres from './components/TransferAddres'
-import MergeOrder from './components/MergeOrder'
 import AddressItem from './components/Address'
 
 export default {
@@ -37,10 +34,13 @@ export default {
     AddPackage,
     PackageList,
     TransferAddres,
-    MergeOrder,
     AddressItem
   },
-  props: {
+  methods: {
+    ...mapMutations(['SET_PAGE'])
+  },
+  created () {
+    this.SET_PAGE({page: 'cargo'})
   }
 }
 
@@ -53,7 +53,11 @@ export default {
   background: url("../../assets/images/bg/bj.png");
   overflow: hidden;
   min-height: 100vh;
-  padding: 28px 10px;
+  padding: 28px 10px 100px;
+  .cargo-item-title {
+    color: #fff;
+    line-height: 4rem;
+  }
   .cargo-bg-header {
     background: url("../../assets/images/border_bg.png");
     background-size: 100% 1000%;

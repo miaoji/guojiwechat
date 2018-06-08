@@ -33,6 +33,8 @@ export default {
   padding: 10px;
 }
 .transferAddres {
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
   margin: auto;
   display: flex;
   align-items: center;

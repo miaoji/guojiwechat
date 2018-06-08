@@ -1,31 +1,44 @@
 <template>
   <div class="mergeOrder">
-    <div class="mergeOrder-title">已合并订单</div>
     <div class="mergeOrder-content">
         <ul>
-          <li>
-            <div class="mergeOrder-container-item item1">33652114568512</div>
-            <div class="mergeOrder-container-item item2">待出库</div>
-            <div class="mergeOrder-container-item item3">
-              <div class="express-btn">物流轨迹</div>
+          <li v-for="(item,index) in CargoBuildList" :key="index">
+            <div class="mergeOrder-container-item item1">{{item.orderNo}}</div>
+            <div class="mergeOrder-container-item item2">{{item.cargoStatus | filterCargoStatus}}</div>
+            <div class="mergeOrder-container-item item3" v-show="item.cargoStatus === 2">
+              <div class="express-btn" @click="goPath('/orderroute', {'id': item.id})">物流轨迹</div>
             </div>
-          </li>
-          <li>
-            <div class="mergeOrder-container-item item1">33652114568512</div>
-            <div class="mergeOrder-container-item item2">待出库</div>
-            <div class="mergeOrder-container-item item3">
-              <div class="express-btn">物流轨迹</div>
+            <div class="mergeOrder-container-item item4">
+              <div class="express-btn" @click="goPath('/orderroute', {'id': 3})">详情</div>
             </div>
           </li>
         </ul>
+        <div v-show="CargoBuildList.length === 0">暂时还没有已合订单信息</div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'mergeOrder',
   props: {
+  },
+  computed: {
+    ...mapGetters({
+      CargoBuildList: 'getCargoBuildList'
+    })
+  },
+  created () {
+    this.getCargoListByUserId()
+  },
+  methods: {
+    ...mapActions({
+      getCargoListByUserId: 'getCargoListByUserId'
+    }),
+    goPath (path, query) {
+      this.$router.push({path, query})
+    }
   }
 }
 </script>
@@ -39,26 +52,44 @@ export default {
     font-size: 1.4rem;
     line-height: 2em;
   }
-  ul {
-    li {
-      list-style: none;
-      display: flex;
-      padding: 5px 0px;
-      height: 2rem;
-      .mergeOrder-container-item {
-        flex: 1;
+  .mergeOrder-content {
+    padding: 0px 10px;
+    ul {
+      li {
+        &:first-child {
+          border-top: 1px solid #ccc;
+        }
+        border-bottom: 1px solid #ccc;
+        list-style: none;
+        display: flex;
+        padding: 5px 0px;
         height: 2rem;
-        line-height: 2rem;
-        text-align: center;
-        justify-content: center;
-        .express-btn {
-          width: 4rem;
-          background-color: #ffa414;
-          border-radius: 3px;
-          line-height: 2em;
-          padding: 0px 5px;
-          color: #fff;
-          margin: auto;
+        .mergeOrder-container-item {
+          &.item1 {
+            flex: 3;
+          }
+          &.item2 {
+            flex: 3;
+          }
+          &.item3 {
+            flex: 2;
+          }
+          &.item4 {
+            flex: 2;
+          }
+          height: 2rem;
+          line-height: 2rem;
+          text-align: center;
+          justify-content: center;
+          .express-btn {
+            width: 4rem;
+            background-color: #ffa414;
+            border-radius: 3px;
+            line-height: 2em;
+            padding: 0px 3px;
+            color: #fff;
+            margin: auto;
+          }
         }
       }
     }

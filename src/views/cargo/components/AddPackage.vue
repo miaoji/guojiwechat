@@ -69,7 +69,6 @@ export default {
   },
   created () {
     this.addressId = storage({key: 'cargo_pickupaddress'}) ? JSON.parse(storage({key: 'cargo_pickupaddress'})).id : ''
-    console.log('cargo_pickupaddress', this.addressId)
     if (!this.addressId) {
       this.getDefaultAddr()
     }
@@ -77,11 +76,9 @@ export default {
   methods: {
     ...mapActions(['getDefaultAddr']),
     onExpressClose () {
-      console.log(1)
       this.selectExpressShow = false
     },
     onExpressConfirm (val) {
-      console.log('val', val)
       this.selectExpressShow = false
       this.company = val
     },

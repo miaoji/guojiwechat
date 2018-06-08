@@ -67,6 +67,8 @@ export default {
   },
   methods: {
     goPath (path) {
+      console.log('ss', this.page)
+      console.log('1231231', path)
       this.$router.push({path})
     }
   }

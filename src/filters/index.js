@@ -26,6 +26,15 @@ export const filterCargoType = (val) => {
   return raplText[val]
 }
 
+export const filterCargoStatus = (val) => {
+  const raplText = {
+    0: '未入库',
+    1: '已入库',
+    2: '已出库'
+  }
+  return raplText[val]
+}
+
 export const sendstatus = function (val) {
   // 状态1.等待接单，2.中转中，3.已派送，4.已签收 5. 已取消
   const sendsta = {

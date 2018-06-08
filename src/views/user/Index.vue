@@ -199,7 +199,7 @@ export default {
           openId: openid,
           type: 0
         })
-        if (couponRes.code === 200) {
+        if (couponRes.code === 200 && couponRes.obj && couponRes.obj.length > 0) {
           this.couponsLen = couponRes.obj.length
         }
       } catch (e) {

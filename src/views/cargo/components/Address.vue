@@ -46,7 +46,6 @@ export default {
   },
   created () {
     this.addressId = storage({key: 'cargo_pickupaddress'}) ? JSON.parse(storage({key: 'cargo_pickupaddress'})).id : ''
-    console.log('this.addressId', this.addressId)
     if (!this.addressId) {
       this.getDefaultAddr()
     } else {
@@ -56,7 +55,6 @@ export default {
   methods: {
     ...mapActions(['getDefaultAddr']),
     async getAddresInfo ({id}) {
-      console.log('1231231231231')
       const data = await show({id})
       if (data.code === 200 && data.obj) {
         this.addressInfo = data.obj

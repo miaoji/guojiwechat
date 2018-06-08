@@ -1,12 +1,12 @@
 <template>
   <div class="selectCell">
-    <div class="selectCell-cell" v-for="(item,index) in data" :key="index" @click.stop="onCellClick(item)">
+    <div class="selectCell-cell" v-for="item in data" :key="item.ID" @click.stop="onCellClick(item)">
       <div class="selectCell-cell-row">
         <div class="selectCell-cell-row-radio">
           <div :class="{
             radio: true,
-            radio_info: true,
-            radio_active: false,
+            radio_info: selectData.indexOf(item.ID) === -1,
+            radio_active: selectData.indexOf(item.ID) !== -1,
             radio_dis: false,
           }"></div>
         </div>
@@ -30,11 +30,28 @@ export default {
     data: {
       type: Array,
       default: []
+    },
+    selectList: {
+      type: Array,
+      default: []
     }
   },
+  data () {
+    return {
+      selectData: []
+    }
+  },
+  computed: {
+  },
   methods: {
-    onCellClick (index) {
-      console.log('index', index)
+    onCellClick (item) {
+      const index = this.selectData.indexOf(item.ID)
+      if (index > -1) {
+        this.selectData.splice(index, 1)
+      } else {
+        this.selectData = [...this.selectData, item.ID]
+      }
+      this.$emit('selectChange', this.selectData)
     }
   }
 }

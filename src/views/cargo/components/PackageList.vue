@@ -1,10 +1,10 @@
 <template>
   <div class="packageList">
-    <div class="title">我的包裹</div>
     <div class="packageList-header">
       <button-tab v-model="index">
         <button-tab-item @on-item-click="clickIndex()">未到库</button-tab-item>
         <button-tab-item @on-item-click="clickIndex()">已到库</button-tab-item>
+        <button-tab-item @on-item-click="clickIndex()">已合并</button-tab-item>
       </button-tab>
     </div>
     <div class="packageList-container">
@@ -15,28 +15,31 @@
             <div class="packageList-container-item item4">{{item.ORDER_NAME}}</div>
             <div class="packageList-container-item item2">{{item.COMPANY_NAME}}</div>
             <div class="packageList-container-item item3">
-              <div class="express-btn">物流轨迹</div>
+              <div class="express-btn" @click="goPath('/orderroute', {'id': item.ID})">物流轨迹</div>
             </div>
           </li>
         </ul>
-        <div v-show="noWmsData.length < 1">
+        <div v-show="noWmsData.length === 0">
           暂时还没有包裹信息
         </div>
       </div>
       <div class="packageList-container-shut" v-show="index === 1">
-        <select-cell :data="wmsData" />
+        <select-cell :selectList="selectList" @selectChange="selectChange" :data="wmsData" />
         <div class="build_info" v-show="wmsData.length > 0">
           <div class="build_info_row">
             <p>注：特货和普货合单将以特货价值结算</p>
             <p>已选: 1</p>
           </div>
           <div class="build_info_row">
-            <div class="build_btn">合单</div>
+            <div class="build_btn" @click="onOrderBuild">合单</div>
           </div>
         </div>
         <div v-show="wmsData.length < 1">
           暂时还没有包裹信息
         </div>
+      </div>
+      <div class="cargo-item cargo-item4" v-show="index === 2">
+        <merge-order />
       </div>
     </div>
   </div>
@@ -45,41 +48,50 @@
 <script>
 import { ButtonTab, ButtonTabItem } from 'vux'
 import SelectCell from '@/components/SelectCell'
-import { selectOrderByCargoType } from '@/services/cargo'
+import { mapActions, mapGetters } from 'vuex'
+import MergeOrder from './MergeOrder'
 
 export default {
   name: 'packageList',
   components: {
     ButtonTab,
     ButtonTabItem,
-    SelectCell
+    SelectCell,
+    MergeOrder
   },
   props: {
+  },
+  computed: {
+    ...mapGetters(['noWmsData', 'wmsData'])
   },
   data () {
     return {
       index: 0,
-      wmsData: [],
-      noWmsData: []
+      selectList: []
     }
   },
   created () {
-    console.log('打他啊啊啊啊啊啊啊啊啊', this.index)
     this.selectOrderByCargoType({cargoStatus: this.index})
   },
   methods: {
-    async selectOrderByCargoType ({cargoStatus}) {
-      const data = await selectOrderByCargoType({cargoStatus})
-      if (data.code === 200 && data.obj) {
-        if (cargoStatus === 0) {
-          this.noWmsData = data.obj
-        }
-        if (cargoStatus === 1) {
-          this.wmsData = data.obj
-        }
+    ...mapActions(['selectOrderByCargoType', 'orderBuild']),
+    onOrderBuild () {
+      if (this.selectList.length === 0) {
+        return
       }
+      this.orderBuild({selectList: this.selectList})
+      this.selectList = []
+    },
+    selectChange (val) {
+      this.selectList = val
+    },
+    goPath (path, query) {
+      this.$router.push({path, query})
     },
     clickIndex () {
+      if (this.index === 2) {
+        return
+      }
       this.selectOrderByCargoType({cargoStatus: this.index})
     }
   }
@@ -101,6 +113,7 @@ export default {
         background-color: #ffa414;
       }
       a.vux-button-tab-item-last:after,
+      a.vux-button-tab-item-middle:after,
       a.vux-button-tab-item-first:after {
         border-color: #ffa414;
       }
@@ -109,6 +122,7 @@ export default {
   .packageList-container {
     // border: 1px solid #666;
     margin: 20px 10px;
+    min-height: 200px;
     &-open {
       ul {
         li {
