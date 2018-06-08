@@ -79,12 +79,12 @@ export async function getOrderByParentId (params) {
   })
 }
 
-export async function cancelMergeCargo (params) {
+export async function cancelMergeCargo ({ data }) {
   return request({
     url: cargoApi.cancelMergeCargo,
     method: 'post',
     auth: true,
-    data: params
+    data
   })
 }
 

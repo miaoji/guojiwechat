@@ -74,7 +74,7 @@ export default {
     this.selectOrderByCargoType({cargoStatus: this.index})
   },
   methods: {
-    ...mapActions(['selectOrderByCargoType', 'orderBuild']),
+    ...mapActions(['selectOrderByCargoType', 'orderBuild', 'getCargoListByUserId']),
     onOrderBuild () {
       if (this.selectList.length === 0) {
         return
@@ -90,7 +90,7 @@ export default {
     },
     clickIndex () {
       if (this.index === 2) {
-        return
+        this.getCargoListByUserId()
       }
       this.selectOrderByCargoType({cargoStatus: this.index})
     }

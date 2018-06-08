@@ -1,5 +1,6 @@
-import { query, show, selectOrderByCargoType, mergeCargo } from '@/services/cargo'
+import { query, remove, show, cancelMergeCargo, selectOrderByCargoType, mergeCargo } from '@/services/cargo'
 import { getDefaultAddr } from '@/services/user'
+import router from '@/router'
 
 import * as types from '../mutation-types'
 
@@ -14,7 +15,8 @@ export const state = {
   cargoBuildList: [],
   noWmsData: [],
   wmsData: [],
-  index: 0
+  index: 0,
+  packageList: []
 }
 
 export const getters = {
@@ -22,10 +24,33 @@ export const getters = {
   getReceiveAddressesId: state => state.receiveAddressesId,
   getCargoBuildList: state => state.cargoBuildList,
   noWmsData: state => state.noWmsData,
-  wmsData: state => state.wmsData
+  wmsData: state => state.wmsData,
+  packageList: state => state.packageList
 }
 
 export const actions = {
+  // 取消合单
+  async cancelBuild ({dispatch}, {id, parentId}) {
+    const data = await cancelMergeCargo({data: [id]})
+    if (data.code === 200) {
+      dispatch('getPackageList', {parentId})
+    }
+  },
+  // 根据parentId查询子订单
+  async getPackageList ({state}, {parentId}) {
+    const data = await show({parentId})
+    console.log('data', data)
+    if (data.code === 200) {
+      if (!data.obj) {
+        const res = await remove({ids: parentId})
+        if (res.code === 200) {
+          router.push({path: '/cargo'})
+        }
+      }
+      state.packageList = data.obj || []
+    }
+  },
+  // 合并订单
   async orderBuild ({getters, dispatch, state}, {selectList}) {
     const data = await mergeCargo(
       {
@@ -67,8 +92,8 @@ export const actions = {
       parentId: -10,
       wxUserId: getters.getUserId
     })
-    if (data.code === 200 && data.obj && data.obj.length) {
-      commit(types.SET_CARGO_STATE, {cargoBuildList: data.obj})
+    if (data.code === 200) {
+      commit(types.SET_CARGO_STATE, {cargoBuildList: data.obj || []})
     }
   },
   async getDefaultAddr ({getters, state}) {

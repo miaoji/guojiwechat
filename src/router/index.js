@@ -40,6 +40,7 @@ const promotesetting = r => require.ensure([], () => r(require('@/views/promote/
 const usersetting = r => require.ensure([], () => r(require('@/views/user/Setting')), 'usersetting')
 // const cargobuild = r => require.ensure([], () => r(require('@/views/cargo/Build')), 'cargobuild')
 // const cargolist = r => require.ensure([], () => r(require('@/views/cargo/List')), 'CargoList')
+const cancelbuild = r => require.ensure([], () => r(require('@/views/cargo/CancelBuild')), 'cancelbuild')
 
 export default new Router({
   base: __dirname,
@@ -245,15 +246,15 @@ export default new Router({
   //     requiresAuth: true
   //   }
   // },
-  // {
-  //   path: '/cargo/build',
-  //   name: 'CargoBuild',
-  //   component: cargobuild,
-  //   meta: {
-  //     intro: '集运合单',
-  //     requiresAuth: true
-  //   }
-  // },
+  {
+    path: '/cargo/cancelbuild',
+    name: 'cancelbuild',
+    component: cancelbuild,
+    meta: {
+      intro: '取消合单',
+      requiresAuth: true
+    }
+  },
   {
     path: '/promote',
     name: 'Promote',

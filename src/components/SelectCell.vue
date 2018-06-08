@@ -53,6 +53,13 @@ export default {
       }
       this.$emit('selectChange', this.selectData)
     }
+  },
+  watch: {
+    selectList (val) {
+      if (val.length === 0) {
+        this.selectData = []
+      }
+    }
   }
 }
 </script>

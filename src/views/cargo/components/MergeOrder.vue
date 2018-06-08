@@ -9,7 +9,7 @@
               <div class="express-btn" @click="goPath('/orderroute', {'id': item.id})">物流轨迹</div>
             </div>
             <div class="mergeOrder-container-item item4">
-              <div class="express-btn" @click="goPath('/orderroute', {'id': 3})">详情</div>
+              <div class="express-btn" @click="goPath('/cargo/cancelbuild', {parentId: item.id,orderNo: item.orderNo})">详情</div>
             </div>
           </li>
         </ul>
