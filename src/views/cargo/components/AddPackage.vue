@@ -5,14 +5,14 @@
       <div class="addPackage-modal-title">添加包裹</div>
       <group label-width="7rem" label-align="left">
         <x-input title="品名" v-model="form.orderName" placeholder="请填写品名"></x-input>
-        <x-input title="价值(RMB)" v-model="form.totalFee" placeholder="请填写包裹价值(¥2000以内)"></x-input>
+        <x-input title="价值(RMB)" type="number" v-model="form.totalFee" placeholder="请填写包裹价值(¥2000以内)"></x-input>
         <cell
           title="快递公司"
           is-link
           :value="company.companyName"
           @click.native="selectExpressShow = true"
         />
-        <x-input title="单号" v-model="form.cnNo" placeholder="请填写国内单号(9~23位)"></x-input>
+        <x-input title="单号" type="number" v-model="form.cnNo" placeholder="请填写国内单号(9~23位)"></x-input>
       </group>
       <div class="instructions">
         <img src="../../../assets/images/tips.png"/>  你的包裹提交后,请关注包裹的入库信息,需要您合并包裹后才会从中转仓库发出!
@@ -62,7 +62,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'getReceiveAddressesId'
+      'getReceiveAddressesId',
+      'getUserId'
     ])
   },
   props: {
@@ -74,7 +75,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getDefaultAddr']),
+    ...mapActions(['getDefaultAddr', 'selectOrderByCargoType']),
     onExpressClose () {
       this.selectExpressShow = false
     },
@@ -91,12 +92,34 @@ export default {
       }
     },
     async addPackage ({ type }) {
+      if (!this.form.orderName) {
+        return this.$vux.toast.show({
+          width: '18rem',
+          type: 'warn',
+          text: '请输入品名'
+        })
+      }
+      if (!this.company.companyCode) {
+        return this.$vux.toast.show({
+          width: '18rem',
+          type: 'warn',
+          text: '请选择快递公司'
+        })
+      }
+      if (!this.form.cnNo) {
+        return this.$vux.toast.show({
+          width: '18rem',
+          type: 'warn',
+          text: '请输入国内单号'
+        })
+      }
       const data = await save({
         orderName: this.form.orderName,
         cnNo: this.form.cnNo,
         kdCompanyCodeCn: this.company.companyCode,
-        totalFee: Number(this.form.totalFee) * 100,
-        type: 1
+        totalFee: Number(this.form.totalFee || 0) * 100,
+        type: 1,
+        wxUserId: this.getUserId
       }, {
         receiveAddrId: this.addressId || this.getReceiveAddressesId
       })
@@ -109,6 +132,13 @@ export default {
           text: '新增成功'
         })
         this.handleReset()
+        this.selectOrderByCargoType({cargoStatus: 0})
+      } else if (data.code === 500) {
+        this.$vux.toast.show({
+          width: '18rem',
+          type: 'warn',
+          text: '您已经添加过这个订单了,不能重复添加'
+        })
       }
     }
   }

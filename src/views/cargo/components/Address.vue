@@ -1,10 +1,13 @@
 <template>
   <div class="addres">
     <div class="addres-left">
-      收件地址
+      <span class="icon">
+        收
+      </span>
     </div>
     <div class="addres-right">
       <div class="addres-info" v-show="addressInfo !== {}">
+        <div>{{addressInfo.NAME}} {{addressInfo.MOBILE}}</div>
         <div>{{addressInfo.COUNTRY_CN}},{{addressInfo.ADDRESS}},{{addressInfo.NAME}}</div>
       </div>
       <div class="addres-info" v-show="addressInfo === {}">
@@ -74,12 +77,17 @@ export default {
   align-items: center;
   &-left {
     flex: 1;
+    .icon {
+      background-color: red;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 50%;
+    }
   }
   &-right {
-    flex: 4;
-    text-align: right;
+    flex: 2;
     .addres-info {
-      text-align: center;
+      text-align: left;
       color: #333;
     }
   }

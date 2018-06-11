@@ -1,5 +1,6 @@
 import { query, remove, show, cancelMergeCargo, selectOrderByCargoType, mergeCargo } from '@/services/cargo'
 import { getDefaultAddr } from '@/services/user'
+import { query as queryTransfer } from '@/services/transferAddr'
 import router from '@/router'
 
 import * as types from '../mutation-types'
@@ -16,7 +17,11 @@ export const state = {
   noWmsData: [],
   wmsData: [],
   index: 0,
-  packageList: []
+  packageList: [],
+  defaultTransfer: {
+    provinces: {},
+    districts: {}
+  }
 }
 
 export const getters = {
@@ -25,33 +30,42 @@ export const getters = {
   getCargoBuildList: state => state.cargoBuildList,
   noWmsData: state => state.noWmsData,
   wmsData: state => state.wmsData,
-  packageList: state => state.packageList
+  packageList: state => state.packageList,
+  defaultTransfer: state => state.defaultTransfer
 }
 
 export const actions = {
-  // 取消合单
-  async cancelBuild ({dispatch}, {id, parentId}) {
-    const data = await cancelMergeCargo({data: [id]})
+  // 获取默认中转站地址
+  async getDefaultTransfer({ commit }) {
+    const data = await queryTransfer({ isDefault: 1 })
+    console.log('data', data)
     if (data.code === 200) {
-      dispatch('getPackageList', {parentId})
+      commit(types.SET_CARGO_STATE, { defaultTransfer: data.obj[0] || [] })
+    }
+  },
+  // 取消合单
+  async cancelBuild({ dispatch }, { id, parentId }) {
+    const data = await cancelMergeCargo({ data: [id] })
+    if (data.code === 200) {
+      dispatch('getPackageList', { parentId })
     }
   },
   // 根据parentId查询子订单
-  async getPackageList ({state}, {parentId}) {
-    const data = await show({parentId})
+  async getPackageList({ state }, { parentId }) {
+    const data = await show({ parentId })
     console.log('data', data)
     if (data.code === 200) {
       if (!data.obj) {
-        const res = await remove({ids: parentId})
+        const res = await remove({ ids: parentId })
         if (res.code === 200) {
-          router.push({path: '/cargo'})
+          router.push({ path: '/cargo' })
         }
       }
       state.packageList = data.obj || []
     }
   },
   // 合并订单
-  async orderBuild ({getters, dispatch, state}, {selectList}) {
+  async orderBuild({ getters, dispatch, state }, { selectList }) {
     const data = await mergeCargo(
       {
         data: selectList,
@@ -66,7 +80,7 @@ export const actions = {
     if (data.code === 200) {
       dispatch('getCargoListByUserId')
       console.log('state.index', state.index)
-      dispatch('selectOrderByCargoType', {cargoStatus: state.index})
+      dispatch('selectOrderByCargoType', { cargoStatus: state.index })
       // this.$vux.toast.show({
       //   type: 'success',
       //   text: '合单成功'
@@ -74,9 +88,12 @@ export const actions = {
     }
   },
   // 查询未到库订单和已到库订单
-  async selectOrderByCargoType ({state}, {cargoStatus}) {
+  async selectOrderByCargoType({ state, getters }, { cargoStatus }) {
     state.index = cargoStatus
-    const data = await selectOrderByCargoType({cargoStatus})
+    const data = await selectOrderByCargoType({
+      cargoStatus,
+      wxUserId: getters.getUserId
+    })
     if (data.code === 200) {
       if (cargoStatus === 0) {
         state.noWmsData = data.obj || []
@@ -87,17 +104,17 @@ export const actions = {
     }
   },
   // 根据微信userId 查询用户已合订单
-  async getCargoListByUserId ({getters, commit}) {
+  async getCargoListByUserId({ getters, commit }) {
     const data = await show({
       parentId: -10,
       wxUserId: getters.getUserId
     })
     if (data.code === 200) {
-      commit(types.SET_CARGO_STATE, {cargoBuildList: data.obj || []})
+      commit(types.SET_CARGO_STATE, { cargoBuildList: data.obj || [] })
     }
   },
-  async getDefaultAddr ({getters, state}) {
-    const data = await getDefaultAddr({WxUserId: getters.getUserId})
+  async getDefaultAddr({ getters, state }) {
+    const data = await getDefaultAddr({ WxUserId: getters.getUserId })
     if (data.code === 200) {
       state.receiveAddressesId = data.obj.receiveAddresses[0].id
     }
@@ -108,7 +125,7 @@ export const actions = {
    * @param {[type]} options.commit   [description]
    * @param {[type]} options.openid   [description]
    */
-  async setCargoList ({ dispatch, commit, rootGetters }, {page = 1, rows = 10}) {
+  async setCargoList({ dispatch, commit, rootGetters }, { page = 1, rows = 10 }) {
     try {
       const userId = rootGetters.getUserId
       const res = await query({
@@ -125,7 +142,7 @@ export const actions = {
           data,
           total: res.total
         }
-        commit(types.SET_CARGOLIST, {list})
+        commit(types.SET_CARGOLIST, { list })
         return {
           text: '获取订单列表成功',
           width: '18rem',
@@ -149,10 +166,12 @@ export const actions = {
 }
 
 export const mutations = {
-  [types.SET_CARGOLIST] (state, { list }) {
+  [types.SET_CARGOLIST](state, { list }) {
     state.list = list
   },
-  [types.SET_CARGO_STATE] (state, {cargoBuildList}) {
-    state.cargoBuildList = cargoBuildList
+  [types.SET_CARGO_STATE](state, payload) {
+    for (let key in payload) {
+      state[key] = payload[key]
+    }
   }
 }

@@ -164,9 +164,9 @@
                   </template>
                 </colon-span>
               </div>
-              <div class="detail-box">
+              <!-- <div class="detail-box">
                 <colon-span :title="'orderdetail.batchno' | translate" :value="orderInfo.batch"></colon-span>
-              </div>
+              </div> -->
               <div class="detail-box">
                 <colon-span :title="'orderdetail.ordertime' | translate" :value="createTime"></colon-span>
               </div>
@@ -481,7 +481,7 @@ export default {
         orderNo: this.orderInfo.orderNo
       })
       this.getBootStatusDone = true
-      if (this.orderInfo['batch']) {
+      if (this.orderInfo['parentId'] < 0) {
         await this.getBatchList()
       }
     } catch (err) {

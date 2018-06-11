@@ -6,7 +6,7 @@
       </div>
       <div class="transferAddres-right">
         <div class="transferAddres-info">
-          上海市,闵行区,泰虹路168弄万科时一区1号楼302室,明彰,15022554455
+          {{defaultTransfer.provinces.province}},{{defaultTransfer.districts.district}},{{defaultTransfer.transferAddress}},{{defaultTransfer.transferCompany}},{{defaultTransfer.transferMobile}}
         </div>
         <div class="transferAddres-notice">
           用户电商平台下单地址,下单时请在地址后加上客户编号哦
@@ -15,15 +15,31 @@
     </div>
     <div class="user-no">
       <div class="user-no-left">客户编码</div>
-      <div class="user-no-right">MZA100049</div>
+      <div class="user-no-right">{{userInfo.customerNo}}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'transferAddres',
+  computed: {
+    ...mapGetters({
+      userInfo: 'getUserInfo',
+      defaultTransfer: 'defaultTransfer'
+    })
+  },
+  methods: {
+    ...mapActions({
+      getDefaultTransfer: 'getDefaultTransfer'
+    })
+  },
   props: {
+  },
+  created () {
+    this.getDefaultTransfer()
+    console.log('defaultTransfer', this.defaultTransfer)
   }
 }
 </script>

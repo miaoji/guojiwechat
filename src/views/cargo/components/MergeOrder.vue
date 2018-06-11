@@ -3,13 +3,22 @@
     <div class="mergeOrder-content">
         <ul>
           <li v-for="(item,index) in CargoBuildList" :key="index">
-            <div class="mergeOrder-container-item item1">{{item.orderNo}}</div>
-            <div class="mergeOrder-container-item item2">{{item.cargoStatus | filterCargoStatus}}</div>
-            <div class="mergeOrder-container-item item3" v-show="item.cargoStatus === 2">
-              <div class="express-btn" @click="goPath('/orderroute', {'id': item.id})">物流轨迹</div>
+            <div class="list-item">
+              <div class="mergeOrder-container-item item1">{{item.orderNo}}</div>
+              <div class="mergeOrder-container-item item2">{{item.cargoStatus | filterCargoStatus}}</div>
+              <div class="mergeOrder-container-item item1">{{item.createTime | formatdate}}</div>
             </div>
-            <div class="mergeOrder-container-item item4">
-              <div class="express-btn" @click="goPath('/cargo/cancelbuild', {parentId: item.id,orderNo: item.orderNo})">详情</div>
+            <div class="list-item">
+              <!-- <div class="mergeOrder-container-item item3" v-show="item.cargoStatus === 2"> -->
+              <div class="mergeOrder-container-item item3">
+                <div class="express-btn" @click="goPath('/orderroute', {'id': item.id})">物流轨迹</div>
+              </div>
+              <div class="mergeOrder-container-item item4">
+                <div class="express-btn" @click="goPath('/cargo/cancelbuild', {parentId: item.id,orderNo: item.orderNo})">合单修改</div>
+              </div>
+              <div class="mergeOrder-container-item item4">
+                <div class="express-btn" @click="goPath('/orderdetail', {id: item.id,orderNo: item.orderNo})">订单详情</div>
+              </div>
             </div>
           </li>
         </ul>
@@ -61,34 +70,36 @@ export default {
         }
         border-bottom: 1px solid #ccc;
         list-style: none;
-        display: flex;
-        padding: 5px 0px;
-        height: 2rem;
-        .mergeOrder-container-item {
-          &.item1 {
-            flex: 3;
-          }
-          &.item2 {
-            flex: 3;
-          }
-          &.item3 {
-            flex: 2;
-          }
-          &.item4 {
-            flex: 2;
-          }
+        .list-item {
+          display: flex;
+          padding: 5px 0px;
           height: 2rem;
-          line-height: 2rem;
-          text-align: center;
-          justify-content: center;
-          .express-btn {
-            width: 4rem;
-            background-color: #ffa414;
-            border-radius: 3px;
-            line-height: 2em;
-            padding: 0px 3px;
-            color: #fff;
-            margin: auto;
+          .mergeOrder-container-item {
+            &.item1 {
+              flex: 3;
+            }
+            &.item2 {
+              flex: 3;
+            }
+            &.item3 {
+              flex: 2;
+            }
+            &.item4 {
+              flex: 2;
+            }
+            height: 2rem;
+            line-height: 2rem;
+            text-align: center;
+            justify-content: center;
+            .express-btn {
+              width: 5rem;
+              background-color: #ffa414;
+              border-radius: 3px;
+              line-height: 2em;
+              padding: 0px 3px;
+              color: #fff;
+              margin: auto;
+            }
           }
         }
       }

@@ -10,6 +10,14 @@
     <div class="packageList-container">
       <div class="packageList-container-open" v-show="index === 0">
         <ul>
+          <li>
+            <div class="packageList-container-item item1">国内单号</div>
+            <div class="packageList-container-item item4">品名</div>
+            <div class="packageList-container-item item2">快递公司</div>
+            <div class="packageList-container-item item3">
+              操作
+            </div>
+          </li>
           <li v-for="(item,index) in noWmsData" :key="index">
             <div class="packageList-container-item item1">{{item.CN_NO}}</div>
             <div class="packageList-container-item item4">{{item.ORDER_NAME}}</div>
@@ -91,6 +99,7 @@ export default {
     clickIndex () {
       if (this.index === 2) {
         this.getCargoListByUserId()
+        return
       }
       this.selectOrderByCargoType({cargoStatus: this.index})
     }

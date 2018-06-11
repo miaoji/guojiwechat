@@ -7,8 +7,8 @@
             <!-- 路由信息 -->
             <div class="express">
               <div class="express-info" v-show="orderInfo['type'] === 1">
-                <p>
-                  {{'business.batchno' | translate}}: {{orderInfo['batch']}}
+                <p v-show="orderInfo['orderNo']">
+                  订单号: {{orderInfo['orderNo']}}
                 </p>
                 <p v-show="orderInfo['parentId'] === 0">
                   {{'business.chineseorderno' | translate}}: {{orderInfo['cnNo']}}

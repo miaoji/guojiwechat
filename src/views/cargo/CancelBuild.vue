@@ -16,6 +16,7 @@
           </div>
         </li>
       </ul>
+      <div class="footer-info">注：实际运费会因合包后重量和体积产生出入而产生差异，预计运费仅做参考，以实际结算为准</div>
     </div>
     <div class="cancelbuild-bg-footer"></div>
     <actionsheet v-model="showActionsheet" :menus="menus" show-cancel @on-click-menu="onClickMenu">
@@ -95,6 +96,10 @@ export default {
     background-color: #fff;
     min-height: 100px;
     padding: 0px 0px 20px 0px;
+    .footer-info {
+      padding: 0px 10px;
+      text-align: left;
+    }
     ul {
       overflow: hidden;
       li {
