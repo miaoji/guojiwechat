@@ -133,10 +133,10 @@ export default {
         path: '/order/list',
         show: true
       }, {
-        key: 'cargolist',
+        key: 'cargo',
         src: require('../../assets/images/cargo_ico.png'),
         name: this.$i18n.translate('usercenter.cargoorder'),
-        path: '/cargo/list',
+        path: '/cargo',
         show: true
       }, {
         key: 'promote',
