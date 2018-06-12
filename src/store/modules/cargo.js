@@ -65,13 +65,17 @@ export const actions = {
     }
   },
   // 合并订单
-  async orderBuild({ getters, dispatch, state }, { selectList }) {
+  async orderBuild({ getters, dispatch, state }, { selectList, orderParcelType }) {
+    const raplText = {
+      0: -1,
+      1: -2
+    }
     const data = await mergeCargo(
       {
         data: selectList,
         params: {
           type: 1,
-          cargoType: -1,
+          cargoType: raplText[orderParcelType],
           // 货物类型, -1普货, -2特货
           wxUserId: getters.getUserId
         }

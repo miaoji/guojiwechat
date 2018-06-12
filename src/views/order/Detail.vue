@@ -533,7 +533,7 @@ export default {
       try {
         const res = await cargoShow({
           wxUserId: this.userid,
-          batch: this.orderInfo.batch,
+          // batch: this.orderInfo.batch,
           id: this.orderInfo.id
         })
         if (res.success && res.code === 200) {

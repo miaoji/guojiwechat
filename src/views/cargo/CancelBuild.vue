@@ -11,8 +11,8 @@
           <div class="item-right">
             <div>国内单号: {{item.cnNo}}</div>
             <div>物流公司: {{item.kdCompany.companyName}}</div>
-            <div>重量: {{item.wieght || 0}}KG</div>
-            <div>类型: {{item.cargoType | filterCargoType}}<span @click="onCancelbuild({id: item.id})" class="item-right-update">删除</span></div>
+            <div>重量: {{item.weight || 0}}KG<span @click="onCancelbuild({id: item.id})" class="item-right-update">删除</span></div>
+            <!-- <div>类型: {{item.cargoType | filterCargoType}}</div> -->
           </div>
         </li>
       </ul>

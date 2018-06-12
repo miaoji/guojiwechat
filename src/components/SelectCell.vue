@@ -15,7 +15,7 @@
       </div>
       <div class="selectCell-cell-row">
         <div class="selectCell-cell-row-item1">{{item.COMPANY_NAME}}</div>
-        <div class="selectCell-cell-row-item2">{{item.CARGO_TYPE | filterCargoType}}</div>
+        <div class="selectCell-cell-row-item2">{{item.PARCEL_TYPES | filterCargoType}}</div>
         <div class="selectCell-cell-row-item3">{{item.WEIGHT || 0}}KG</div>
         <div class="selectCell-cell-row-item4">{{item.PARENT_ID | filterParentId}}</div>
       </div>
@@ -36,26 +36,35 @@ export default {
       default: []
     }
   },
-  data () {
+  data() {
     return {
-      selectData: []
+      selectData: [],
+      selectListObj: {}
     }
   },
   computed: {
   },
   methods: {
-    onCellClick (item) {
+    onCellClick(item) {
       const index = this.selectData.indexOf(item.ID)
+      let orderParcelType = 0
       if (index > -1) {
+        delete this.selectListObj[item.ID]
         this.selectData.splice(index, 1)
       } else {
+        this.selectListObj[item.ID] = item
         this.selectData = [...this.selectData, item.ID]
       }
-      this.$emit('selectChange', this.selectData)
+      for (let key in this.selectListObj) {
+        if (this.selectListObj[key].PARCEL_TYPES === 1) {
+          orderParcelType = 1
+        }
+      }
+      this.$emit('selectChange', { selectDate: this.selectData, orderParcelType })
     }
   },
   watch: {
-    selectList (val) {
+    selectList(val) {
       if (val.length === 0) {
         this.selectData = []
       }
@@ -86,13 +95,13 @@ export default {
           width: 16px;
           height: 16px;
           &.radio_info {
-            background: url('../assets/images/select_cargo.png');
+            background: url("../assets/images/select_cargo.png");
           }
           &.radio_active {
-            background: url('../assets/images/select_active.png');
+            background: url("../assets/images/select_active.png");
           }
           &.radio_dis {
-            background: url('../assets/images/select_dis.png');
+            background: url("../assets/images/select_dis.png");
           }
         }
       }

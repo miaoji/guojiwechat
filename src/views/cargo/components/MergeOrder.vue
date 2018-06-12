@@ -4,8 +4,19 @@
         <ul>
           <li v-for="(item,index) in CargoBuildList" :key="index">
             <div class="list-item">
+              <div>订单号:</div>
               <div class="mergeOrder-container-item item1">{{item.orderNo}}</div>
+            </div>
+            <div class="list-item">
+              <div>订单状态:</div>
               <div class="mergeOrder-container-item item2">{{item.cargoStatus | filterCargoStatus}}</div>
+            </div>
+            <div class="list-item">
+              <div>订单类型:</div>
+              <div class="mergeOrder-container-item item2">{{item.parentId | filterParentId}}</div>
+            </div>
+            <div class="list-item">
+              <div>创建时间:</div>
               <div class="mergeOrder-container-item item1">{{item.createTime | formatdate}}</div>
             </div>
             <div class="list-item">

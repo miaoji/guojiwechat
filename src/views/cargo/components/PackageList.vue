@@ -35,8 +35,8 @@
         <select-cell :selectList="selectList" @selectChange="selectChange" :data="wmsData" />
         <div class="build_info" v-show="wmsData.length > 0">
           <div class="build_info_row">
-            <p>注：特货和普货合单将以特货价值结算</p>
-            <p>已选: 1</p>
+            <p>已选: {{selectList.length}}</p>
+            <p>注：特货和普货合单将以特货价值结算,实际运费会因合包后重量和体积产生出入而产生差异，预计运费仅做参考，以实际结算为准</p>
           </div>
           <div class="build_info_row">
             <div class="build_btn" @click="onOrderBuild">合单</div>
@@ -75,7 +75,8 @@ export default {
   data () {
     return {
       index: 0,
-      selectList: []
+      selectList: [],
+      orderParcelType: 0
     }
   },
   created () {
@@ -87,11 +88,12 @@ export default {
       if (this.selectList.length === 0) {
         return
       }
-      this.orderBuild({selectList: this.selectList})
+      this.orderBuild({selectList: this.selectList, orderParcelType: this.orderParcelType})
       this.selectList = []
     },
     selectChange (val) {
-      this.selectList = val
+      this.selectList = val.selectDate
+      this.orderParcelType = val.orderParcelType
     },
     goPath (path, query) {
       this.$router.push({path, query})
