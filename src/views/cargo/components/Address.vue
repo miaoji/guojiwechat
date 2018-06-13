@@ -1,9 +1,9 @@
 <template>
   <div class="addres">
     <div class="addres-left">
-      <span class="icon">
+      <div class="icon">
         收
-      </span>
+      </div>
     </div>
     <div class="addres-right">
       <div class="addres-info" v-show="addressInfo !== {}">
@@ -80,7 +80,12 @@ export default {
     .icon {
       background-color: red;
       color: #fff;
-      padding: 1rem;
+      font-size: 1.4rem;
+      width: 3rem;
+      margin: auto;
+      height: 3rem;
+      line-height: 3rem;
+      text-align: center;
       border-radius: 50%;
     }
   }

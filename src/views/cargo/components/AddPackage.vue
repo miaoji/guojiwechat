@@ -171,8 +171,8 @@ export default {
     .weui-cell {
       text-align: left;
     }
-    width: 25rem;
-    height: 29rem;
+    width: 90vw;
+    height: 50vh;
     position: absolute;
     left:0;
 		right:0;

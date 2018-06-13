@@ -10,7 +10,7 @@
     <div class="packageList-container">
       <div class="packageList-container-open" v-show="index === 0">
         <ul>
-          <li>
+          <li v-show="noWmsData.length !== 0">
             <div class="packageList-container-item item1">国内单号</div>
             <div class="packageList-container-item item4">品名</div>
             <div class="packageList-container-item item2">快递公司</div>
@@ -133,7 +133,7 @@ export default {
   .packageList-container {
     // border: 1px solid #666;
     margin: 20px 10px;
-    min-height: 200px;
+    min-height: 100px;
     &-open {
       ul {
         li {

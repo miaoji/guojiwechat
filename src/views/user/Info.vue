@@ -30,7 +30,4 @@ export default {
 @import '../../assets/styles/vars.less';
 @import '~vux/src/styles/close';
 
-.userinfo {
-
-}
 </style>

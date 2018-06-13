@@ -2,6 +2,7 @@ import { query, remove, show, cancelMergeCargo, selectOrderByCargoType, mergeCar
 import { getDefaultAddr } from '@/services/user'
 import { query as queryTransfer } from '@/services/transferAddr'
 import router from '@/router'
+import { storage } from '@/utils'
 
 import * as types from '../mutation-types'
 
@@ -121,6 +122,7 @@ export const actions = {
     const data = await getDefaultAddr({ WxUserId: getters.getUserId })
     if (data.code === 200) {
       state.receiveAddressesId = data.obj.receiveAddresses[0].id
+      storage({key: 'cargo_pickupaddress', type: 'set', val: JSON.stringify(data.obj.receiveAddresses[0])})
     }
   },
   /**

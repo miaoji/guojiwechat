@@ -5,27 +5,31 @@
           <li v-for="(item,index) in CargoBuildList" :key="index">
             <div class="list-item">
               <div>订单号:</div>
-              <div class="mergeOrder-container-item item1">{{item.orderNo}}</div>
+              <div class="mergeOrder-container-item item4">{{item.orderNo}}</div>
             </div>
             <div class="list-item">
               <div>订单状态:</div>
-              <div class="mergeOrder-container-item item2">{{item.cargoStatus | filterCargoStatus}}</div>
+              <div class="mergeOrder-container-item item4">{{item.status | orderstatus}}</div>
+            </div>
+            <div class="list-item">
+              <div>包裹状态:</div>
+              <div class="mergeOrder-container-item item4">{{item.wmsStatus === 1 ? '已出库': (item.cargoStatus | filterCargoStatus)}}</div>
             </div>
             <div class="list-item">
               <div>订单类型:</div>
-              <div class="mergeOrder-container-item item2">{{item.parentId | filterParentId}}</div>
+              <div class="mergeOrder-container-item item4">{{item.parentId | filterParentId}}</div>
             </div>
             <div class="list-item">
               <div>创建时间:</div>
-              <div class="mergeOrder-container-item item1">{{item.createTime | formatdate}}</div>
+              <div class="mergeOrder-container-item item4">{{item.createTime | formatdate}}</div>
             </div>
             <div class="list-item">
               <!-- <div class="mergeOrder-container-item item3" v-show="item.cargoStatus === 2"> -->
-              <div class="mergeOrder-container-item item3">
+              <!-- <div class="mergeOrder-container-item item3">
                 <div class="express-btn" @click="goPath('/orderroute', {'id': item.id})">物流轨迹</div>
-              </div>
+              </div> -->
               <div class="mergeOrder-container-item item4">
-                <div class="express-btn" @click="goPath('/cargo/cancelbuild', {parentId: item.id,orderNo: item.orderNo})">合单修改</div>
+                <div v-show="item.status < 2" class="express-btn" @click="goPath('/cargo/cancelbuild', {parentId: item.id,orderNo: item.orderNo})">合单修改</div>
               </div>
               <div class="mergeOrder-container-item item4">
                 <div class="express-btn" @click="goPath('/orderdetail', {id: item.id,orderNo: item.orderNo})">订单详情</div>
@@ -76,6 +80,7 @@ export default {
     padding: 0px 10px;
     ul {
       li {
+        padding: 0px 20px;
         &:first-child {
           border-top: 1px solid #ccc;
         }
@@ -109,7 +114,7 @@ export default {
               line-height: 2em;
               padding: 0px 3px;
               color: #fff;
-              margin: auto;
+              // margin: auto;
             }
           }
         }
