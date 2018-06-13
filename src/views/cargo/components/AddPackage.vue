@@ -172,6 +172,7 @@ export default {
       text-align: left;
     }
     width: 90vw;
+    min-height: 340px;
     height: 50vh;
     position: absolute;
     left:0;
