@@ -74,6 +74,7 @@ export default {
   overflow: hidden;
   min-height: 100vh;
   padding: 0px 10px 0px;
+  font-size: 1.4rem;
   .cancelbuild-item-title {
     color: #333;
     line-height: 4rem;

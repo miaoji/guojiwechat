@@ -155,6 +155,7 @@ export default {
   border-radius: 3px;
   line-height: 3rem;
   margin: auto;
+  font-size: 1.4rem;
   padding: 0 3rem;
   .select-box {
     position: fixed;

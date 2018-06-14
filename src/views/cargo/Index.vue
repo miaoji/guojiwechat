@@ -56,6 +56,7 @@ export default {
   padding: 28px 10px 100px;
   .cargo-item-title {
     color: #fff;
+    font-size: 1.4rem;
     line-height: 4rem;
   }
   .cargo-bg-header {

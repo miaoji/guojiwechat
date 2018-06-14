@@ -72,6 +72,7 @@ export default {
   padding: 10px;
 }
 .addres {
+  font-size: 1.4rem;
   margin: auto;
   display: flex;
   align-items: center;

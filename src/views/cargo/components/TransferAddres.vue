@@ -37,7 +37,7 @@ export default {
   },
   props: {
   },
-  created () {
+  created() {
     this.getDefaultTransfer()
     console.log('defaultTransfer', this.defaultTransfer)
   }
@@ -49,6 +49,7 @@ export default {
   padding: 10px;
 }
 .transferAddres {
+  font-size: 1.4rem;
   border-top: 1px solid #ccc;
   padding-top: 10px;
   margin: auto;
@@ -69,6 +70,7 @@ export default {
   }
 }
 .user-no {
+  font-size: 1.4rem;
   border-top: 1px #ccc solid;
   margin-top: 10px;
   padding-top: 10px;
